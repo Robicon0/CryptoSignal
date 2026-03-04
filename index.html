@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoSignal</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg0: #06060a;
+      --bg1: #0d0d16;
+      --bg2: #13131f;
+      --bg3: #1a1a2c;
+      --bg4: #222238;
+      --border: rgba(120,120,220,.13);
+      --border-hi: rgba(124,58,237,.45);
+      --accent: #7c3aed;
+      --accent-dim: rgba(124,58,237,.14);
+      --t1: #f0f4ff;
+      --t2: #94a3b8;
+      --t3: #556070;
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,.1);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg0);
+      color: var(--t1);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .hdr {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6,6,10,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 11px 22px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 19px; font-weight: 800; letter-spacing: -.5px;
+      margin-right: auto;
+    }
+    .logo-mark {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg,#7c3aed,#2563eb);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .logo-text {
+      background: linear-gradient(135deg,#a78bfa,#60a5fa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hdr-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 13px;
+      color: var(--t2); font-size: 13px; cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .hdr-btn:hover { border-color: var(--accent); color: var(--t1); }
+    .hdr-btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--t1); }
+    .spin { display: inline-block; }
+    .spinning { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .countdown { font-variant-numeric: tabular-nums; color: var(--accent); }
+    .ai-chip {
+      display: flex; align-items: center; gap: 5px;
+      background: linear-gradient(135deg,rgba(124,58,237,.18),rgba(37,99,235,.18));
+      border: 1px solid rgba(124,58,237,.38);
+      border-radius: 6px; padding: 4px 10px;
+      font-size: 12px; color: #b09ffa;
+    }
+    .ai-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 6px var(--green);
+      animation: blink 2s ease infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    /* ── Layout ── */
+    .layout { display: flex; height: calc(100vh - 53px); }
+    .content { flex: 1; overflow-y: auto; padding: 18px 22px; min-width: 0; }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .chain-tabs {
+      display: flex; background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 3px; gap: 2px;
+    }
+    .ctab {
+      padding: 5px 13px; border-radius: 7px;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; color: var(--t2);
+      transition: all .15s; border: none; background: none;
+    }
+    .ctab:hover { color: var(--t1); background: var(--bg4); }
+    .ctab.on { background: var(--accent); color: #fff; }
+    .search {
+      flex: 1; max-width: 260px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 12px;
+      color: var(--t1); font-size: 13px; outline: none;
+      transition: border-color .2s;
+    }
+    .search::placeholder { color: var(--t3); }
+    .search:focus { border-color: var(--accent); }
+    .tok-count { margin-left: auto; color: var(--t3); font-size: 13px; }
+
+    /* ── AI Banner ── */
+    .ai-banner {
+      display: none;
+      background: linear-gradient(135deg,rgba(124,58,237,.09),rgba(37,99,235,.09));
+      border: 1px solid rgba(124,58,237,.22);
+      border-radius: 12px; padding: 15px 18px; margin-bottom: 18px;
+    }
+    .ai-banner.show { display: block; }
+    .ai-banner-top {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; margin-bottom: 10px;
+    }
+    .ai-banner-label {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13px; font-weight: 600; color: #b09ffa;
+    }
+    .ai-text { font-size: 13px; color: var(--t2); line-height: 1.65; }
+    .ai-text.dim { color: var(--t3); }
+
+    /* ── Token Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+      gap: 11px;
+    }
+
+    /* ── Token Card ── */
+    .card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 15px; cursor: pointer;
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+      position: relative; overflow: hidden;
+    }
+    .card:hover {
+      border-color: var(--border-hi);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(0,0,0,.35);
+    }
+    .card.sel { border-color: var(--accent); background: var(--bg3); }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 11px; }
+    .tok-id { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .tok-img {
+      width: 34px; height: 34px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0; background: var(--bg4);
+    }
+    .tok-initials {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg,var(--accent),#2563eb);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .tok-sym { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tok-name { font-size: 11px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .badge {
+      font-size: 10px; font-weight: 700; padding: 3px 8px;
+      border-radius: 5px; flex-shrink: 0;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .c-sol  { background: rgba(153,69,255,.18); color: #c084fc; }
+    .c-eth  { background: rgba(98,126,234,.18); color: #93a8f4; }
+    .c-bsc  { background: rgba(240,185,11,.18); color: #f0b90b; }
+    .c-base { background: rgba(37,99,235,.18); color: #60a5fa; }
+    .c-arb  { background: rgba(22,172,246,.18); color: #38bdf8; }
+    .c-poly { background: rgba(130,71,229,.18); color: #a855f7; }
+    .c-avax { background: rgba(232,65,66,.18); color: #f87171; }
+    .c-misc { background: rgba(100,116,139,.18); color: var(--t2); }
+
+    .price-row { display: flex; align-items: baseline; gap: 7px; margin-bottom: 9px; }
+    .price { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .pill {
+      font-size: 11px; font-weight: 600; padding: 2px 6px;
+      border-radius: 4px; white-space: nowrap;
+    }
+    .up   { background: var(--green-dim); color: var(--green); }
+    .dn   { background: var(--red-dim); color: var(--red); }
+    .flat { background: rgba(100,116,139,.12); color: var(--t3); }
+
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 9px; }
+    .met { background: var(--bg0); border-radius: 7px; padding: 8px 10px; }
+    .met-lbl { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+    .met-val { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .changes { display: flex; gap: 5px; }
+
+    /* ── Skeleton ── */
+    .skel {
+      background: linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite; border-radius: 6px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ── Side Panel ── */
+    .panel {
+      width: 370px; flex-shrink: 0;
+      border-left: 1px solid var(--border);
+      background: var(--bg1);
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .panel.open { transform: none; }
+    .pc { padding: 18px; }
+    .ph { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+    .ph-tok { display: flex; align-items: center; gap: 11px; }
+    .p-img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
+    .p-init {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg,var(--accent),#2563eb);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700;
+    }
+    .p-sym { font-size: 21px; font-weight: 800; }
+    .p-name { font-size: 12px; color: var(--t3); margin-top: 2px; }
+    .close-x {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 7px; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--t2); font-size: 15px;
+      transition: all .2s; flex-shrink: 0;
+    }
+    .close-x:hover { background: var(--bg4); color: var(--t1); }
+    .p-price { font-size: 30px; font-weight: 900; margin-bottom: 6px; }
+    .p-changes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+    .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 18px; }
+    .p-met {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 9px; padding: 11px 13px;
+    }
+    .p-met-lbl { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .p-met-val { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .sec { margin-bottom: 18px; }
+    .sec-lbl {
+      font-size: 11px; font-weight: 600; color: var(--t3);
+      text-transform: uppercase; letter-spacing: .9px; margin-bottom: 8px;
+    }
+    .link-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px;
+      color: var(--t2); font-size: 13px; text-decoration: none;
+      transition: all .2s; margin-bottom: 5px;
+    }
+    .link-row:hover { border-color: var(--accent); color: var(--t1); background: var(--accent-dim); }
+    .link-row span:last-child { margin-left: auto; font-size: 11px; color: var(--t3); }
+    .addr {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px;
+      color: var(--t3); word-break: break-all; cursor: pointer;
+      transition: border-color .2s;
+    }
+    .addr:hover { border-color: var(--accent); color: var(--t2); }
+    .txn-bar-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 9px; padding: 11px 13px;
+    }
+    .txn-labels {
+      display: flex; justify-content: space-between;
+      font-size: 12px; margin-bottom: 7px;
+    }
+    .txn-bar { height: 6px; background: var(--red-dim); border-radius: 3px; overflow: hidden; }
+    .txn-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width .5s; }
+    /* Panel AI */
+    .p-ai {
+      background: linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.08));
+      border: 1px solid rgba(124,58,237,.2);
+      border-radius: 10px; padding: 13px; margin-bottom: 18px;
+    }
+    .p-ai-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+    .p-ai-lbl { font-size: 13px; font-weight: 600; color: #b09ffa; }
+    .p-ai-txt { font-size: 12px; color: var(--t2); line-height: 1.65; }
+    .about {
+      font-size: 13px; color: var(--t2); line-height: 1.6;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 11px;
+    }
+
+    /* ── Buttons ── */
+    .btn-grad {
+      background: linear-gradient(135deg,#7c3aed,#2563eb);
+      border: none; border-radius: 7px; padding: 6px 13px;
+      color: #fff; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .btn-grad:hover { opacity: .85; }
+    .btn-grad:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── Modal ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.72); backdrop-filter: blur(4px);
+      z-index: 1000; display: none; align-items: center; justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 26px; width: 450px; max-width: 92vw;
+      box-shadow: 0 28px 56px rgba(0,0,0,.55);
+    }
+    .modal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+    .modal-title { font-size: 17px; font-weight: 700; }
+    .form-lbl { display: block; font-size: 13px; font-weight: 600; color: var(--t2); margin-bottom: 7px; }
+    .form-inp {
+      width: 100%; background: var(--bg0); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 13px; color: var(--t1);
+      font-size: 13px; font-family: 'SF Mono', 'Fira Code', monospace;
+      outline: none; transition: border-color .2s;
+    }
+    .form-inp::placeholder { color: var(--t3); }
+    .form-inp:focus { border-color: var(--accent); }
+    .form-hint { font-size: 11px; color: var(--t3); margin-top: 6px; line-height: 1.5; }
+    .save-btn {
+      display: block; width: 100%; margin-top: 20px;
+      background: linear-gradient(135deg,#7c3aed,#2563eb);
+      border: none; border-radius: 8px; padding: 10px;
+      color: #fff; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .save-btn:hover { opacity: .9; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 22px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 18px;
+      font-size: 13px; color: var(--t1);
+      z-index: 2000; transition: transform .3s; white-space: nowrap;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Misc ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+    @media (max-width: 700px) {
+      .panel {
+        position: fixed; right: 0; top: 0; bottom: 0;
+        z-index: 200; width: min(370px, 100vw);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-mark">◈</div>
+    <span class="logo-text">CryptoSignal</span>
+  </div>
+  <div class="ai-chip" id="aiChip" style="display:none">
+    <div class="ai-dot"></div>Grok AI
+  </div>
+  <button class="hdr-btn" id="refreshBtn" onclick="manualRefresh()">
+    <span class="spin" id="spinIcon">↻</span>
+    Refresh <span class="countdown" id="countdown">60s</span>
+  </button>
+  <button class="hdr-btn" id="settingsBtn" onclick="openSettings()">⚙ Settings</button>
+</header>
+
+<!-- Layout -->
+<div class="layout">
+  <div class="content" id="content">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="chain-tabs" id="chainTabs">
+        <button class="ctab on" data-chain="all"      onclick="setChain('all')">All</button>
+        <button class="ctab"    data-chain="solana"   onclick="setChain('solana')">SOL</button>
+        <button class="ctab"    data-chain="ethereum" onclick="setChain('ethereum')">ETH</button>
+        <button class="ctab"    data-chain="bsc"      onclick="setChain('bsc')">BSC</button>
+        <button class="ctab"    data-chain="base"     onclick="setChain('base')">BASE</button>
+      </div>
+      <input class="search" id="searchInput" placeholder="Search tokens…" oninput="applyFilters()">
+      <span class="tok-count" id="tokCount">Loading…</span>
+    </div>
+
+    <!-- AI Banner -->
+    <div class="ai-banner" id="aiBanner">
+      <div class="ai-banner-top">
+        <div class="ai-banner-label">◈ Grok Market Analysis</div>
+        <button class="btn-grad" id="analyzeBtn" onclick="runBulkAnalysis()">Analyze Trends</button>
+      </div>
+      <div class="ai-text dim" id="aiText">Click "Analyze Trends" to get AI-powered insights on current trending tokens.</div>
+    </div>
+
+    <!-- Token Grid -->
+    <div class="grid" id="grid"></div>
+
+  </div>
+
+  <!-- Side Panel -->
+  <div class="panel" id="panel">
+    <div class="pc" id="panelBody"></div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="overlay" id="settingsModal" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-title">Settings</div>
+      <button class="close-x" onclick="closeSettings()">✕</button>
+    </div>
+    <label class="form-lbl">Grok API Key</label>
+    <input class="form-inp" type="password" id="grokInput" placeholder="xai-…" />
+    <div class="form-hint">
+      Get your key at <strong>console.x.ai</strong>. Stored locally — only sent to api.x.ai.
+    </div>
+    <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ── State ──────────────────────────────────────────────────────────────────
+let allTokens = [];
+let filtered  = [];
+let selected  = null;
+let chain     = 'all';
+let query     = '';
+let cdSecs    = 60;
+let cdTimer   = null;
+let loading   = false;
+let grokKey   = localStorage.getItem('cs_grok') || '';
+
+// ── Chain config ──────────────────────────────────────────────────────────
+const CHAINS = {
+  solana:   { lbl:'SOL',  cls:'c-sol',  ex:'https://solscan.io/token/' },
+  ethereum: { lbl:'ETH',  cls:'c-eth',  ex:'https://etherscan.io/token/' },
+  bsc:      { lbl:'BSC',  cls:'c-bsc',  ex:'https://bscscan.com/token/' },
+  base:     { lbl:'BASE', cls:'c-base', ex:'https://basescan.org/token/' },
+  arbitrum: { lbl:'ARB',  cls:'c-arb',  ex:'https://arbiscan.io/token/' },
+  polygon:  { lbl:'POLY', cls:'c-poly', ex:'https://polygonscan.com/token/' },
+  avalanche:{ lbl:'AVAX', cls:'c-avax', ex:'https://snowtrace.io/token/' },
+};
+function cc(chainId) {
+  return CHAINS[chainId] || { lbl: (chainId||'?').slice(0,4).toUpperCase(), cls:'c-misc', ex: null };
+}
+
+// ── Formatters ────────────────────────────────────────────────────────────
+function fmtPrice(v) {
+  if (!v) return '$0';
+  const n = parseFloat(v);
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(2) + 'K';
+  if (n >= 1)   return '$' + n.toFixed(4);
+  if (n >= .01) return '$' + n.toFixed(5);
+  if (n >= .0001) return '$' + n.toFixed(6);
+  const e = Math.abs(parseInt(n.toExponential().split('e')[1]));
+  return '$' + n.toFixed(Math.min(e + 3, 12));
+}
+function fmtNum(n) {
+  if (!n) return '$0';
+  n = parseFloat(n);
+  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
+  return '$' + n.toFixed(0);
+}
+function pc(v) {
+  if (v == null) return 'flat';
+  return parseFloat(v) >= 0 ? 'up' : 'dn';
+}
+function sg(v) { return (v == null || parseFloat(v) === 0) ? '' : parseFloat(v) > 0 ? '+' : ''; }
+function fmt(v, d=2) { return v != null ? parseFloat(v).toFixed(d) : '0'; }
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Fetch data ────────────────────────────────────────────────────────────
+async function fetchData() {
+  if (loading) return;
+  loading = true;
+  setSpinning(true);
+  showSkeletons();
+
+  try {
+    const boosts = await (await fetch('https://api.dexscreener.com/token-boosts/latest/v1')).json();
+
+    // Deduplicate: keep highest totalAmount per chain:address
+    const byKey = new Map();
+    for (const b of boosts) {
+      const k = b.chainId + ':' + b.tokenAddress;
+      if (!byKey.has(k) || b.totalAmount > byKey.get(k).totalAmount) byKey.set(k, b);
+    }
+
+    // Group by chain, cap per chain
+    const byChain = {};
+    for (const b of [...byKey.values()].sort((a,b) => b.totalAmount - a.totalAmount)) {
+      if (!byChain[b.chainId]) byChain[b.chainId] = [];
+      if (byChain[b.chainId].length < 20) byChain[b.chainId].push(b);
+    }
+
+    // Fetch price data in parallel per chain
+    const enriched = [];
+    await Promise.all(Object.entries(byChain).map(async ([cid, tokens]) => {
+      const addrs = tokens.map(t => t.tokenAddress).join(',');
+      try {
+        const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addrs}`);
+        if (!r.ok) return;
+        const d = await r.json();
+        if (!d.pairs) return;
+
+        // Best pair per base address = highest USD liquidity
+        const best = new Map();
+        for (const p of d.pairs) {
+          const a = p.baseToken?.address?.toLowerCase();
+          if (!a) continue;
+          if (!best.has(a) || (p.liquidity?.usd||0) > (best.get(a).liquidity?.usd||0)) best.set(a, p);
+        }
+
+        for (const boost of tokens) {
+          const pair = best.get(boost.tokenAddress.toLowerCase());
+          if (pair) enriched.push({ ...pair, _boost: boost });
+        }
+      } catch (e) { console.warn(cid, e); }
+    }));
+
+    // Sort by 24h volume
+    enriched.sort((a,b) => (b.volume?.h24||0) - (a.volume?.h24||0));
+    allTokens = enriched;
+    applyFilters();
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('grid').innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--t3)">
+        <div style="font-size:36px;margin-bottom:12px">⚠</div>
+        <div style="font-size:15px;color:var(--t2);font-weight:600;margin-bottom:6px">Failed to load data</div>
+        <div>Check your connection and try again</div>
+      </div>`;
+    document.getElementById('tokCount').textContent = '0 tokens';
+  } finally {
+    loading = false;
+    setSpinning(false);
+  }
+}
+
+function setSpinning(on) {
+  document.getElementById('spinIcon').classList.toggle('spinning', on);
+}
+
+function showSkeletons() {
+  const sk = (w, h, r=6) => `<div class="skel" style="width:${w};height:${h}px;border-radius:${r}px"></div>`;
+  document.getElementById('grid').innerHTML = Array(12).fill(0).map(() => `
+    <div class="card" style="pointer-events:none">
+      <div class="card-top">
+        <div class="tok-id">
+          ${sk('34px',34,17)}
+          <div>${sk('90px',15)} <div style="margin-top:5px">${sk('55px',11)}</div></div>
+        </div>
+        ${sk('42px',20,5)}
+      </div>
+      ${sk('130px',22)} <div style="margin-top:9px"></div>
+      <div class="metrics">${sk('100%',46,7)}${sk('100%',46,7)}</div>
+      <div style="display:flex;gap:5px">${sk('65px',20,4)}${sk('65px',20,4)}</div>
+    </div>`).join('');
+}
+
+// ── Filter & Render ───────────────────────────────────────────────────────
+function applyFilters() {
+  let t = [...allTokens];
+  if (chain !== 'all') t = t.filter(x => x.chainId === chain);
+  if (query.trim()) {
+    const q = query.toLowerCase();
+    t = t.filter(x =>
+      x.baseToken?.symbol?.toLowerCase().includes(q) ||
+      x.baseToken?.name?.toLowerCase().includes(q) ||
+      x.baseToken?.address?.toLowerCase().includes(q)
+    );
+  }
+  filtered = t;
+  renderGrid(t);
+  document.getElementById('tokCount').textContent = `${t.length} token${t.length !== 1 ? 's' : ''}`;
+}
+
+function setChain(c) {
+  chain = c;
+  document.querySelectorAll('.ctab').forEach(b => b.classList.toggle('on', b.dataset.chain === c));
+  applyFilters();
+}
+
+function renderGrid(tokens) {
+  const grid = document.getElementById('grid');
+  if (!tokens.length) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--t3)">
+        <div style="font-size:32px;margin-bottom:10px">◈</div>
+        <div>No tokens found</div>
+      </div>`;
+    return;
+  }
+  grid.innerHTML = tokens.map((t, i) => cardHTML(t, i)).join('');
+}
+
+function cardHTML(t, i) {
+  const c    = cc(t.chainId);
+  const sym  = esc(t.baseToken?.symbol || '?');
+  const name = esc(t.baseToken?.name   || '');
+  const isSel = selected && selected.baseToken?.address === t.baseToken?.address && selected.chainId === t.chainId;
+  const imgH = t._boost?.icon
+    ? `<img class="tok-img" src="${esc(t._boost.icon)}" alt="${sym}" onerror="imgFail(this)">`
+    : `<div class="tok-initials">${sym.slice(0,2)}</div>`;
+  return `
+    <div class="card${isSel?' sel':''}" onclick="selectToken(${i})">
+      <div class="card-top">
+        <div class="tok-id">
+          ${imgH}
+          <div>
+            <div class="tok-sym">${sym}</div>
+            <div class="tok-name">${name}</div>
+          </div>
+        </div>
+        <span class="badge ${c.cls}">${c.lbl}</span>
+      </div>
+      <div class="price-row">
+        <span class="price">${fmtPrice(t.priceUsd)}</span>
+        <span class="pill ${pc(t.priceChange?.h24)}">${sg(t.priceChange?.h24)}${fmt(t.priceChange?.h24)}%</span>
+      </div>
+      <div class="metrics">
+        <div class="met"><div class="met-lbl">24h Vol</div><div class="met-val">${fmtNum(t.volume?.h24)}</div></div>
+        <div class="met"><div class="met-lbl">Liquidity</div><div class="met-val">${fmtNum(t.liquidity?.usd)}</div></div>
+      </div>
+      <div class="changes">
+        <span class="pill ${pc(t.priceChange?.m5)}">5m ${sg(t.priceChange?.m5)}${fmt(t.priceChange?.m5)}%</span>
+        <span class="pill ${pc(t.priceChange?.h1)}">1h ${sg(t.priceChange?.h1)}${fmt(t.priceChange?.h1)}%</span>
+      </div>
+    </div>`;
+}
+
+function imgFail(el) {
+  el.style.display = 'none';
+  const sym = el.closest('.tok-id')?.querySelector('.tok-sym')?.textContent || '?';
+  const ph = document.createElement('div');
+  ph.className = 'tok-initials';
+  ph.textContent = sym.slice(0,2);
+  el.parentNode.insertBefore(ph, el);
+}
+
+// ── Select token (side panel) ─────────────────────────────────────────────
+function selectToken(i) {
+  selected = filtered[i];
+  renderGrid(filtered);
+  renderPanel(selected);
+  document.getElementById('panel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  selected = null;
+  renderGrid(filtered);
+}
+
+function renderPanel(t) {
+  const c      = cc(t.chainId);
+  const sym    = esc(t.baseToken?.symbol || '?');
+  const name   = esc(t.baseToken?.name   || '');
+  const addr   = t.baseToken?.address || '';
+  const dexUrl = t.url || `https://dexscreener.com/${t.chainId}/${addr}`;
+  const exUrl  = c.ex ? c.ex + addr : null;
+
+  const buys = t.txns?.h24?.buys || 0;
+  const sells = t.txns?.h24?.sells || 0;
+  const total = buys + sells;
+  const buyPct = total ? Math.round(buys / total * 100) : 50;
+
+  const imgH = t._boost?.icon
+    ? `<img class="p-img" src="${esc(t._boost.icon)}" alt="${sym}" onerror="pImgFail(this)">`
+    : `<div class="p-init">${sym.slice(0,2)}</div>`;
+
+  const linkIcon = type => ({ twitter:'🐦', telegram:'✈️', discord:'💬', website:'🌐', github:'⚡' }[type?.toLowerCase()] || '🔗');
+  const socialLinks = (t._boost?.links || []).filter(l => l.url).map(l => `
+    <a class="link-row" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">
+      <span>${linkIcon(l.type)}</span>
+      <span>${esc(l.label || l.type)}</span>
+      <span>↗</span>
+    </a>`).join('');
+
+  document.getElementById('panelBody').innerHTML = `
+    <div class="ph">
+      <div class="ph-tok">
+        ${imgH}
+        <div>
+          <div class="p-sym">${sym}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+            <span class="badge ${c.cls}">${c.lbl}</span>
+            <span class="p-name">${name}</span>
+          </div>
+        </div>
+      </div>
+      <button class="close-x" onclick="closePanel()">✕</button>
+    </div>
+
+    <div class="p-price">${fmtPrice(t.priceUsd)}</div>
+    <div class="p-changes">
+      <span class="pill ${pc(t.priceChange?.m5)}">5m ${sg(t.priceChange?.m5)}${fmt(t.priceChange?.m5)}%</span>
+      <span class="pill ${pc(t.priceChange?.h1)}">1h ${sg(t.priceChange?.h1)}${fmt(t.priceChange?.h1)}%</span>
+      <span class="pill ${pc(t.priceChange?.h6)}">6h ${sg(t.priceChange?.h6)}${fmt(t.priceChange?.h6)}%</span>
+      <span class="pill ${pc(t.priceChange?.h24)}">24h ${sg(t.priceChange?.h24)}${fmt(t.priceChange?.h24)}%</span>
+    </div>
+
+    <div class="p-grid">
+      <div class="p-met"><div class="p-met-lbl">24h Volume</div><div class="p-met-val">${fmtNum(t.volume?.h24)}</div></div>
+      <div class="p-met"><div class="p-met-lbl">Liquidity</div><div class="p-met-val">${fmtNum(t.liquidity?.usd)}</div></div>
+      <div class="p-met"><div class="p-met-lbl">Market Cap</div><div class="p-met-val">${fmtNum(t.marketCap || t.fdv)}</div></div>
+      <div class="p-met"><div class="p-met-lbl">1h Volume</div><div class="p-met-val">${fmtNum(t.volume?.h1)}</div></div>
+    </div>
+
+    <!-- 24h Transactions -->
+    <div class="sec">
+      <div class="sec-lbl">24h Transactions</div>
+      <div class="txn-bar-wrap">
+        <div class="txn-labels">
+          <span style="color:var(--green)">▲ ${buys} Buys (${buyPct}%)</span>
+          <span style="color:var(--red)">▼ ${sells} Sells (${100-buyPct}%)</span>
+        </div>
+        <div class="txn-bar"><div class="txn-fill" style="width:${buyPct}%"></div></div>
+      </div>
+    </div>
+
+    ${grokKey ? `
+    <!-- Grok Analysis (per token) -->
+    <div class="p-ai">
+      <div class="p-ai-top">
+        <div class="p-ai-lbl">◈ Grok Analysis</div>
+        <button class="btn-grad" id="tokAnalyzeBtn" onclick="analyzeToken()">Analyze</button>
+      </div>
+      <div class="p-ai-txt" id="tokAiText">Click Analyze for AI insights on ${sym}.</div>
+    </div>` : ''}
+
+    <!-- Contract address -->
+    <div class="sec">
+      <div class="sec-lbl">Contract Address</div>
+      <div class="addr" onclick="copyAddr('${esc(addr)}')" title="Click to copy">${esc(addr)}</div>
+    </div>
+
+    <!-- Links -->
+    <div class="sec">
+      <div class="sec-lbl">Links</div>
+      <a class="link-row" href="${esc(dexUrl)}" target="_blank" rel="noopener noreferrer">
+        <span>📊</span><span>DexScreener</span><span>↗</span>
+      </a>
+      ${exUrl ? `<a class="link-row" href="${esc(exUrl)}" target="_blank" rel="noopener noreferrer">
+        <span>🔍</span><span>Block Explorer</span><span>↗</span>
+      </a>` : ''}
+      ${socialLinks}
+    </div>
+
+    ${t._boost?.description ? `
+    <div class="sec">
+      <div class="sec-lbl">About</div>
+      <div class="about">${esc(t._boost.description)}</div>
+    </div>` : ''}
+  `;
+}
+
+function pImgFail(el) {
+  el.style.display = 'none';
+  const sym = el.closest('.ph-tok')?.querySelector('.p-sym')?.textContent || '?';
+  const ph = document.createElement('div');
+  ph.className = 'p-init';
+  ph.textContent = sym.slice(0,2);
+  el.parentNode.insertBefore(ph, el);
+}
+
+function copyAddr(addr) {
+  navigator.clipboard.writeText(addr).then(() => toast('Address copied!'));
+}
+
+// ── Grok API ──────────────────────────────────────────────────────────────
+async function callGrok(prompt, maxTokens = 350) {
+  const r = await fetch('https://api.x.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${grokKey}` },
+    body: JSON.stringify({
+      model: 'grok-3-mini',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: maxTokens,
+    }),
+  });
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    throw new Error(e.error?.message || `HTTP ${r.status}`);
+  }
+  const d = await r.json();
+  return d.choices?.[0]?.message?.content || 'No response.';
+}
+
+async function runBulkAnalysis() {
+  if (!grokKey) return;
+  const btn = document.getElementById('analyzeBtn');
+  const txt = document.getElementById('aiText');
+  btn.disabled = true; btn.textContent = 'Analyzing…';
+  txt.className = 'ai-text dim'; txt.textContent = 'Grok is analyzing trending tokens…';
+
+  const snapshot = filtered.slice(0, 15).map(t => ({
+    symbol: t.baseToken?.symbol, chain: t.chainId,
+    priceUsd: t.priceUsd,
+    change5m: t.priceChange?.m5, change1h: t.priceChange?.h1, change24h: t.priceChange?.h24,
+    volume24h: t.volume?.h24, liquidity: t.liquidity?.usd,
+  }));
+
+  const prompt = `You are a crypto market analyst. Analyze these DexScreener trending tokens:\n${JSON.stringify(snapshot, null, 2)}\n\nProvide a 3-4 sentence market overview: overall sentiment, standout performers, any red flags, and a brief outlook. Be concise and data-driven.`;
+
+  try {
+    const analysis = await callGrok(prompt, 320);
+    txt.className = 'ai-text';
+    txt.textContent = analysis;
+  } catch (e) {
+    txt.className = 'ai-text';
+    txt.style.color = 'var(--red)';
+    txt.textContent = `Analysis failed: ${e.message}`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Analyze Trends';
+  }
+}
+
+async function analyzeToken() {
+  if (!grokKey || !selected) return;
+  const btn = document.getElementById('tokAnalyzeBtn');
+  const txt = document.getElementById('tokAiText');
+  if (!btn || !txt) return;
+
+  btn.disabled = true; btn.textContent = 'Analyzing…';
+  txt.textContent = 'Analyzing…';
+
+  const t = selected;
+  const data = {
+    symbol: t.baseToken?.symbol, name: t.baseToken?.name, chain: t.chainId,
+    priceUsd: t.priceUsd, priceChange: t.priceChange,
+    volume: t.volume, liquidity: t.liquidity,
+    txns24h: t.txns?.h24, marketCap: t.marketCap || t.fdv,
+  };
+
+  const prompt = `Analyze this crypto token and give a 2-3 sentence assessment covering price action, volume trends, liquidity health, buy/sell pressure, and risk level:\n${JSON.stringify(data, null, 2)}\n\nBe concise, factual, and cite specific numbers.`;
+
+  try {
+    txt.textContent = await callGrok(prompt, 220);
+  } catch (e) {
+    txt.style.color = 'var(--red)';
+    txt.textContent = `Failed: ${e.message}`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Analyze';
+  }
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────
+function openSettings() {
+  document.getElementById('grokInput').value = grokKey;
+  document.getElementById('settingsModal').classList.add('open');
+  document.getElementById('settingsBtn').classList.add('active');
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('open');
+  document.getElementById('settingsBtn').classList.remove('active');
+}
+function overlayClick(e) { if (e.target === e.currentTarget) closeSettings(); }
+function saveSettings() {
+  grokKey = document.getElementById('grokInput').value.trim();
+  localStorage.setItem('cs_grok', grokKey);
+  updateGrokUI();
+  closeSettings();
+  toast(grokKey ? 'Grok AI enabled!' : 'Settings saved.');
+}
+function updateGrokUI() {
+  const on = !!grokKey;
+  document.getElementById('aiChip').style.display   = on ? 'flex'  : 'none';
+  document.getElementById('aiBanner').classList.toggle('show', on);
+  if (selected) renderPanel(selected); // refresh panel AI section
+}
+
+// ── Countdown ─────────────────────────────────────────────────────────────
+function startCountdown() {
+  clearInterval(cdTimer);
+  cdSecs = 60;
+  document.getElementById('countdown').textContent = '60s';
+  cdTimer = setInterval(() => {
+    cdSecs--;
+    document.getElementById('countdown').textContent = cdSecs + 's';
+    if (cdSecs <= 0) { fetchData(); cdSecs = 60; }
+  }, 1000);
+}
+
+function manualRefresh() { fetchData(); startCountdown(); }
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+updateGrokUI();
+fetchData();
+startCountdown();
+</script>
+</body>
+</html>
