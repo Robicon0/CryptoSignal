@@ -1,0 +1,13 @@
+{
+  "name": "cryptosignal",
+  "version": "3.0.0",
+  "description": "CryptoSignal — crypto monitoring dashboard with paper trading",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "cd server && nodemon index.js",
+    "install:server": "cd server && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

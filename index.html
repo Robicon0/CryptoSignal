@@ -535,6 +535,81 @@
         z-index: 200; width: min(370px, 100vw);
       }
     }
+
+    /* ── Paper Trading view ── */
+    .paper-view { display: none; }
+    .paper-view.show { display: block; }
+
+    /* Stats strip */
+    .pt-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px; margin-bottom: 18px;
+    }
+    .pt-stat {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+    }
+    .pt-stat-lbl { font-size: 11px; color: var(--t3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+    .pt-stat-val { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .pt-stat-val.pos { color: var(--green); }
+    .pt-stat-val.neg { color: var(--red); }
+
+    /* Config bar */
+    .pt-config {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px 14px; margin-bottom: 18px;
+      font-size: 12px; color: var(--t2);
+    }
+    .pt-config label { display: flex; align-items: center; gap: 6px; }
+    .pt-config input[type=number] {
+      width: 70px; background: var(--bg0);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 4px 8px; color: var(--t1); font-size: 12px;
+      outline: none; transition: border-color .2s;
+    }
+    .pt-config input[type=number]:focus { border-color: var(--accent); }
+    .pt-config-actions { margin-left: auto; display: flex; gap: 7px; }
+
+    /* Positions table */
+    .pt-table { width: 100%; border-collapse: collapse; }
+    .pt-table th {
+      text-align: left; font-size: 11px; font-weight: 600;
+      color: var(--t3); text-transform: uppercase; letter-spacing: .7px;
+      padding: 0 10px 10px 10px; border-bottom: 1px solid var(--border);
+    }
+    .pt-table th.r { text-align: right; }
+    .pt-row { border-bottom: 1px solid var(--border); transition: background .15s; }
+    .pt-row:last-child { border-bottom: none; }
+    .pt-row:hover { background: var(--bg3); }
+    .pt-row td { padding: 10px 10px; font-size: 13px; vertical-align: middle; font-variant-numeric: tabular-nums; }
+    .pt-row td.r { text-align: right; }
+
+    /* PnL pill in table */
+    .pnl-pos { color: var(--green); font-weight: 700; }
+    .pnl-neg { color: var(--red);   font-weight: 700; }
+    .pnl-flat{ color: var(--t3);   font-weight: 700; }
+
+    /* Status badge */
+    .status-open   { background: rgba(34,197,94,.12);  color: var(--green); padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .status-tp     { background: rgba(34,197,94,.12);  color: var(--green); padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .status-sl     { background: rgba(239,68,68,.12);  color: var(--red);   padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .status-manual { background: rgba(100,116,139,.1); color: var(--t2);    padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+
+    /* Backend status bar */
+    .pt-server-bar {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--t3);
+      background: var(--bg0); border-radius: 8px;
+      padding: 7px 12px; margin-bottom: 14px;
+    }
+    .pt-server-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 5px var(--green);
+      animation: blink 2s infinite; flex-shrink: 0;
+    }
+    .pt-server-dot.off { background: var(--red); box-shadow: 0 0 5px var(--red); animation: none; }
   </style>
 </head>
 <body>
@@ -567,6 +642,9 @@
       <button class="main-tab" data-view="wallets" onclick="switchView('wallets')">
         ◎ Smart Wallets
         <span class="notif-badge" id="walletBadge"></span>
+      </button>
+      <button class="main-tab" data-view="paper" onclick="switchView('paper')">
+        ◆ Paper Trading
       </button>
     </div>
 
@@ -656,6 +734,89 @@
       </div>
 
     </div><!-- /walletsView -->
+
+    <!-- ═══ PAPER TRADING VIEW ═══ -->
+    <div class="paper-view" id="paperView">
+
+      <!-- Server status bar -->
+      <div class="pt-server-bar">
+        <div class="pt-server-dot off" id="ptServerDot"></div>
+        <span id="ptServerStatus">Connecting to trading server…</span>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="pt-stats" id="ptStats">
+        <div class="pt-stat">
+          <div class="pt-stat-lbl">Total P&amp;L</div>
+          <div class="pt-stat-val" id="ptTotalPnl">—</div>
+        </div>
+        <div class="pt-stat">
+          <div class="pt-stat-lbl">Open P&amp;L</div>
+          <div class="pt-stat-val" id="ptOpenPnl">—</div>
+        </div>
+        <div class="pt-stat">
+          <div class="pt-stat-lbl">Today P&amp;L</div>
+          <div class="pt-stat-val" id="ptDailyPnl">—</div>
+        </div>
+        <div class="pt-stat">
+          <div class="pt-stat-lbl">Win Rate</div>
+          <div class="pt-stat-val" id="ptWinRate">—</div>
+        </div>
+        <div class="pt-stat">
+          <div class="pt-stat-lbl">Open Positions</div>
+          <div class="pt-stat-val" id="ptOpenCount">—</div>
+        </div>
+        <div class="pt-stat">
+          <div class="pt-stat-lbl">Closed Trades</div>
+          <div class="pt-stat-val" id="ptClosedCount">—</div>
+        </div>
+      </div>
+
+      <!-- Config bar -->
+      <div class="pt-config" id="ptConfig">
+        <label>Trade size $<input type="number" id="cfgTradeSize" min="1" max="10000" step="1" value="100" /></label>
+        <label>TP %<input type="number" id="cfgTakeProfit" min="1" max="1000" step="1" value="50" /></label>
+        <label>SL %<input type="number" id="cfgStopLoss" min="1" max="100" step="1" value="30" /></label>
+        <label>Max positions<input type="number" id="cfgMaxPos" min="1" max="20" step="1" value="5" /></label>
+        <label>Daily loss limit $<input type="number" id="cfgDailyLimit" min="1" max="100000" step="1" value="500" /></label>
+        <div class="pt-config-actions">
+          <button class="btn-sec" onclick="ptSaveConfig()">Save Config</button>
+          <button class="btn-sec danger" onclick="ptResetTrades()">Reset Trades</button>
+        </div>
+      </div>
+
+      <!-- Open positions -->
+      <div class="section-card" style="margin-bottom:14px">
+        <div class="section-hdr">
+          <div class="section-title">◆ Open Positions</div>
+          <div class="section-actions">
+            <button class="btn-sec" onclick="ptRefresh()">↻ Refresh</button>
+          </div>
+        </div>
+        <div id="ptOpenPositions">
+          <div class="empty">
+            <div class="empty-icon">◆</div>
+            <div class="empty-title">No open positions</div>
+            <div class="empty-desc">Positions open automatically when tracked wallets buy tokens on Solana.<br>Add wallets in the Smart Wallets tab to start.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade history -->
+      <div class="section-card">
+        <div class="section-hdr">
+          <div class="section-title">◈ Trade History</div>
+        </div>
+        <div id="ptClosedTrades">
+          <div class="empty">
+            <div class="empty-icon">◈</div>
+            <div class="empty-title">No closed trades yet</div>
+            <div class="empty-desc">Trades close when take-profit or stop-loss is hit,<br>or when you close them manually.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /paperView -->
 
   </div><!-- /content -->
 
@@ -1238,13 +1399,14 @@ function saveAlerts() {
 // ═══════════════════════════════════════════════════════════════════════════
 // BITQUERY V1 API
 // ═══════════════════════════════════════════════════════════════════════════
-const BQ_URL = 'https://graphql.bitquery.io';
+// Bitquery V2 streaming API
+const BQ_URL = 'https://streaming.bitquery.io/graphql';
 
 async function bqQuery(query) {
   if (!bitqueryKey) throw new Error('No Bitquery API key — add one in Settings.');
   const r = await fetch(BQ_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-API-KEY': bitqueryKey },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${bitqueryKey}` },
     body: JSON.stringify({ query }),
   });
   if (!r.ok) throw new Error(`Bitquery HTTP ${r.status}`);
@@ -1253,9 +1415,9 @@ async function bqQuery(query) {
   return d.data;
 }
 
-// Map DexScreener chainId → Bitquery network name
+// Map DexScreener chainId → Bitquery V2 EVM network name
 function bqNet(chainId) {
-  return { ethereum:'ethereum', bsc:'bsc', base:'base', arbitrum:'arbitrum', polygon:'matic' }[chainId] || null;
+  return { ethereum:'eth', bsc:'bsc', base:'base', arbitrum:'arbitrum', polygon:'matic' }[chainId] || null;
 }
 
 // Fetch first N buyers of a token (by first trade timestamp)
@@ -1264,155 +1426,194 @@ async function fetchEarlyBuyers(token) {
   const addr = token.baseToken?.address;
   if (!addr) return [];
 
-  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0,10);
-  let query;
+  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0,10) + 'T00:00:00Z';
 
   if (chainId === 'solana') {
-    query = `{
-      solana(network: solana) {
-        dexTrades(
-          options: {limit: 30, asc: "block.timestamp.time"}
-          baseCurrency: {is: "${addr}"}
-          date: {since: "${since}"}
+    const query = `{
+      Solana {
+        DEXTradeByTokens(
+          where: {
+            Trade: { Currency: { MintAddress: { is: "${addr}" } } Price: { gt: 0 } }
+            Transaction: { Result: { Success: true } }
+            Block: { Time: { since: "${since}" } }
+          }
+          orderBy: { ascending: Block_Time }
+          limit: { count: 30 }
         ) {
-          buyer { address }
-          quotePrice
-          block { timestamp { time } }
-          baseCurrency { symbol address }
-          transaction { signature }
+          Block { Time }
+          Trade { Account { Address } Currency { Symbol MintAddress } PriceInUSD }
+          Transaction { Signature Signer }
         }
       }
     }`;
+    const data = await bqQuery(query);
+    const raw = data?.Solana?.DEXTradeByTokens || [];
+    const seen = new Set();
+    const buyers = [];
+    for (const t of raw) {
+      const a = t.Transaction?.Signer || t.Trade?.Account?.Address;
+      if (!a) continue;
+      if (seen.has(a)) continue;
+      seen.add(a);
+      buyers.push({
+        address: a, chain: chainId,
+        firstBuyTime:  t.Block?.Time,
+        firstBuyPrice: t.Trade?.PriceInUSD,
+        txId: t.Transaction?.Signature,
+      });
+      if (buyers.length >= 10) break;
+    }
+    return buyers;
   } else {
     const net = bqNet(chainId);
     if (!net) return [];
-    query = `{
-      ethereum(network: ${net}) {
-        dexTrades(
-          options: {limit: 30, asc: "block.timestamp.time"}
-          baseCurrency: {is: "${addr}"}
-          buySide: true
-          date: {since: "${since}"}
+    const query = `{
+      EVM(network: ${net}) {
+        DEXTrades(
+          where: {
+            Trade: { Buy: { Currency: { SmartContract: { is: "${addr}" } } } }
+            Block: { Time: { since: "${since}" } }
+          }
+          orderBy: { ascending: Block_Time }
+          limit: { count: 30 }
         ) {
-          buyer { address }
-          quotePrice
-          block { timestamp { time } }
-          baseCurrency { symbol address }
-          transaction { hash }
+          Trade { Buy { Buyer PriceInUSD Currency { Symbol SmartContract } } }
+          Block { Time }
+          Transaction { Hash }
         }
       }
     }`;
+    const data = await bqQuery(query);
+    const raw = data?.EVM?.DEXTrades || [];
+    const seen = new Set();
+    const buyers = [];
+    for (const t of raw) {
+      const a = t.Trade?.Buy?.Buyer;
+      if (!a || a === '0x0000000000000000000000000000000000000000') continue;
+      if (seen.has(a)) continue;
+      seen.add(a);
+      buyers.push({
+        address: a, chain: chainId,
+        firstBuyTime:  t.Block?.Time,
+        firstBuyPrice: t.Trade?.Buy?.PriceInUSD,
+        txId: t.Transaction?.Hash,
+      });
+      if (buyers.length >= 10) break;
+    }
+    return buyers;
   }
-
-  const data = await bqQuery(query);
-  const trades = chainId === 'solana' ? data?.solana?.dexTrades : data?.ethereum?.dexTrades;
-  if (!trades?.length) return [];
-
-  // Deduplicate: keep first trade per buyer address
-  const seen = new Set();
-  const buyers = [];
-  for (const t of trades) {
-    const a = t.buyer?.address;
-    if (!a || a === '0x0000000000000000000000000000000000000000') continue;
-    if (seen.has(a)) continue;
-    seen.add(a);
-    buyers.push({
-      address: a, chain: chainId,
-      firstBuyTime:  t.block?.timestamp?.time,
-      firstBuyPrice: t.quotePrice,
-      txId: t.transaction?.signature || t.transaction?.hash,
-    });
-    if (buyers.length >= 10) break;
-  }
-  return buyers;
 }
 
 // Fetch a wallet's buy-side trade history (last 30 days)
 async function fetchWalletTrades(address, chainId) {
-  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0,10);
-  let query;
+  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0,10) + 'T00:00:00Z';
 
   if (chainId === 'solana') {
-    query = `{
-      solana(network: solana) {
-        dexTrades(
-          options: {limit: 100, desc: "block.timestamp.time"}
-          buyer: {is: "${address}"}
-          date: {since: "${since}"}
+    const query = `{
+      Solana {
+        DEXTradeByTokens(
+          where: {
+            Transaction: { Signer: { is: "${address}" } }
+            Block: { Time: { since: "${since}" } }
+          }
+          orderBy: { descending: Block_Time }
+          limit: { count: 100 }
         ) {
-          quotePrice
-          block { timestamp { time } }
-          baseCurrency { symbol address }
-          transaction { signature }
+          Block { Time }
+          Trade { Currency { Symbol MintAddress } PriceInUSD }
+          Transaction { Signature }
         }
       }
     }`;
+    const data = await bqQuery(query);
+    return (data?.Solana?.DEXTradeByTokens || []).map(t => ({
+      baseCurrency: { address: t.Trade?.Currency?.MintAddress, symbol: t.Trade?.Currency?.Symbol },
+      quotePrice:   t.Trade?.PriceInUSD,
+      block:        { timestamp: { time: t.Block?.Time } },
+      transaction:  { signature: t.Transaction?.Signature },
+    })).filter(t => t.baseCurrency?.address);
   } else {
     const net = bqNet(chainId);
     if (!net) return [];
-    query = `{
-      ethereum(network: ${net}) {
-        dexTrades(
-          options: {limit: 100, desc: "block.timestamp.time"}
-          buyer: {is: "${address}"}
-          buySide: true
-          date: {since: "${since}"}
+    const query = `{
+      EVM(network: ${net}) {
+        DEXTrades(
+          where: {
+            Trade: { Buy: { Buyer: { is: "${address}" } } }
+            Block: { Time: { since: "${since}" } }
+          }
+          orderBy: { descending: Block_Time }
+          limit: { count: 100 }
         ) {
-          quotePrice
-          block { timestamp { time } }
-          baseCurrency { symbol address }
-          transaction { hash }
+          Trade { Buy { PriceInUSD Currency { Symbol SmartContract } } }
+          Block { Time }
+          Transaction { Hash }
         }
       }
     }`;
+    const data = await bqQuery(query);
+    return (data?.EVM?.DEXTrades || []).map(t => ({
+      baseCurrency: { address: t.Trade?.Buy?.Currency?.SmartContract, symbol: t.Trade?.Buy?.Currency?.Symbol },
+      quotePrice:   t.Trade?.Buy?.PriceInUSD,
+      block:        { timestamp: { time: t.Block?.Time } },
+      transaction:  { hash: t.Transaction?.Hash },
+    })).filter(t => t.baseCurrency?.address);
   }
-
-  const data = await bqQuery(query);
-  return (chainId === 'solana' ? data?.solana?.dexTrades : data?.ethereum?.dexTrades) || [];
 }
 
 // Fetch the latest few trades for polling (new buy detection)
 async function fetchLatestBuys(wallet) {
   const { address, chain: chainId } = wallet;
-  let query;
 
   if (chainId === 'solana') {
-    query = `{
-      solana(network: solana) {
-        dexTrades(
-          options: {limit: 5, desc: "block.timestamp.time"}
-          buyer: {is: "${address}"}
+    const query = `{
+      Solana {
+        DEXTradeByTokens(
+          where: { Transaction: { Signer: { is: "${address}" } } }
+          orderBy: { descending: Block_Time }
+          limit: { count: 5 }
         ) {
-          baseCurrency { symbol address }
-          quotePrice
-          block { timestamp { time } }
-          transaction { signature }
+          Block { Time }
+          Trade { Currency { Symbol MintAddress } PriceInUSD }
+          Transaction { Signature }
         }
       }
     }`;
+    try {
+      const data = await bqQuery(query);
+      return (data?.Solana?.DEXTradeByTokens || []).map(t => ({
+        baseCurrency: { address: t.Trade?.Currency?.MintAddress, symbol: t.Trade?.Currency?.Symbol },
+        quotePrice:   t.Trade?.PriceInUSD,
+        block:        { timestamp: { time: t.Block?.Time } },
+        transaction:  { signature: t.Transaction?.Signature },
+      }));
+    } catch { return null; }
   } else {
     const net = bqNet(chainId);
     if (!net) return null;
-    query = `{
-      ethereum(network: ${net}) {
-        dexTrades(
-          options: {limit: 5, desc: "block.timestamp.time"}
-          buyer: {is: "${address}"}
-          buySide: true
+    const query = `{
+      EVM(network: ${net}) {
+        DEXTrades(
+          where: { Trade: { Buy: { Buyer: { is: "${address}" } } } }
+          orderBy: { descending: Block_Time }
+          limit: { count: 5 }
         ) {
-          baseCurrency { symbol address }
-          quotePrice
-          block { timestamp { time } }
-          transaction { hash }
+          Trade { Buy { PriceInUSD Currency { Symbol SmartContract } } }
+          Block { Time }
+          Transaction { Hash }
         }
       }
     }`;
+    try {
+      const data = await bqQuery(query);
+      return (data?.EVM?.DEXTrades || []).map(t => ({
+        baseCurrency: { address: t.Trade?.Buy?.Currency?.SmartContract, symbol: t.Trade?.Buy?.Currency?.Symbol },
+        quotePrice:   t.Trade?.Buy?.PriceInUSD,
+        block:        { timestamp: { time: t.Block?.Time } },
+        transaction:  { hash: t.Transaction?.Hash },
+      }));
+    } catch { return null; }
   }
-
-  try {
-    const data = await bqQuery(query);
-    return (chainId === 'solana' ? data?.solana?.dexTrades : data?.ethereum?.dexTrades) || [];
-  } catch { return null; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1743,6 +1944,7 @@ function switchView(view) {
   activeView = view;
   document.getElementById('trendingView').classList.toggle('hide', view !== 'trending');
   document.getElementById('walletsView').classList.toggle('show', view === 'wallets');
+  document.getElementById('paperView').classList.toggle('show', view === 'paper');
   document.querySelectorAll('.main-tab').forEach(b => b.classList.toggle('on', b.dataset.view === view));
 
   if (view === 'wallets') {
@@ -1750,6 +1952,9 @@ function switchView(view) {
     renderLeaderboard();
     renderAlerts();
     updatePollStatus();
+  }
+  if (view === 'paper') {
+    ptRefresh();
   }
 }
 
@@ -1978,6 +2183,234 @@ startCountdown();
 
 // Refresh alert timestamps every minute
 setInterval(() => { if (activeView === 'wallets' && alertsList.length) renderAlerts(); }, 60000);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 3 — PAPER TRADING
+// ═══════════════════════════════════════════════════════════════════════════
+
+const PT_API = 'http://localhost:3001';
+let ptServerOnline = false;
+let ptPollTimer    = null;
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+function fmtPnl(val) {
+  if (val === null || val === undefined || isNaN(val)) return '—';
+  const n = parseFloat(val);
+  const sign = n >= 0 ? '+' : '';
+  return sign + '$' + Math.abs(n).toFixed(2);
+}
+function fmtPct(val) {
+  if (val === null || val === undefined || isNaN(val)) return '';
+  const n = parseFloat(val);
+  const sign = n >= 0 ? '+' : '';
+  return ` (${sign}${n.toFixed(1)}%)`;
+}
+function pnlCls(val) {
+  const n = parseFloat(val);
+  if (n > 0)  return 'pnl-pos';
+  if (n < 0)  return 'pnl-neg';
+  return 'pnl-flat';
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+function shortToken(addr) {
+  if (!addr) return '—';
+  return addr.length > 12 ? addr.slice(0, 6) + '…' + addr.slice(-4) : addr;
+}
+function statusBadge(trade) {
+  if (trade.status === 'open')    return '<span class="status-open">OPEN</span>';
+  if (trade.closeReason === 'take_profit') return '<span class="status-tp">TAKE PROFIT</span>';
+  if (trade.closeReason === 'stop_loss')   return '<span class="status-sl">STOP LOSS</span>';
+  return '<span class="status-manual">CLOSED</span>';
+}
+
+// ── API calls ─────────────────────────────────────────────────────────────
+async function ptFetch(path, opts) {
+  const res = await fetch(PT_API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(opts?.headers) } });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json();
+}
+
+async function ptCheckServer() {
+  try {
+    await ptFetch('/api/health');
+    ptServerOnline = true;
+    document.getElementById('ptServerDot').classList.remove('off');
+    document.getElementById('ptServerStatus').textContent = 'Trading server online — polling every 15s';
+  } catch {
+    ptServerOnline = false;
+    document.getElementById('ptServerDot').classList.add('off');
+    document.getElementById('ptServerStatus').textContent = 'Server offline — run: cd server && npm install && npm start';
+  }
+}
+
+// ── Refresh (poll stats + trades) ─────────────────────────────────────────
+async function ptRefresh() {
+  await ptCheckServer();
+  if (!ptServerOnline) return;
+
+  try {
+    const [trades, stats, cfg] = await Promise.all([
+      ptFetch('/api/trades'),
+      ptFetch('/api/stats'),
+      ptFetch('/api/config'),
+    ]);
+    ptRenderStats(stats);
+    ptRenderConfig(cfg);
+    ptRenderOpen(trades.open || []);
+    ptRenderClosed(trades.closed || []);
+  } catch (err) {
+    console.error('[PaperTrade] Refresh error:', err);
+  }
+}
+
+// ── Render stats ──────────────────────────────────────────────────────────
+function ptRenderStats(s) {
+  const set = (id, val, cls) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val;
+    el.className = 'pt-stat-val' + (cls ? ' ' + cls : '');
+  };
+
+  set('ptTotalPnl',   fmtPnl(s.totalPnl),   pnlCls(s.totalPnl));
+  set('ptOpenPnl',    fmtPnl(s.openPnl),    pnlCls(s.openPnl));
+  set('ptDailyPnl',   fmtPnl(s.dailyPnl),   pnlCls(s.dailyPnl));
+  set('ptWinRate',    s.closedTrades ? s.winRate + '%' : '—', s.winRate >= 50 ? 'pos' : (s.closedTrades ? 'neg' : ''));
+  set('ptOpenCount',  s.openPositions  ?? '—');
+  set('ptClosedCount',s.closedTrades   ?? '—');
+}
+
+// ── Render config ─────────────────────────────────────────────────────────
+function ptRenderConfig(cfg) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  set('cfgTradeSize',  cfg.tradeSize);
+  set('cfgTakeProfit', cfg.takeProfitPct);
+  set('cfgStopLoss',   cfg.stopLossPct);
+  set('cfgMaxPos',     cfg.maxOpenPositions);
+  set('cfgDailyLimit', cfg.dailyLossLimit);
+}
+
+// ── Render open positions ─────────────────────────────────────────────────
+function ptRenderOpen(positions) {
+  const el = document.getElementById('ptOpenPositions');
+  if (!el) return;
+
+  if (!positions.length) {
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">◆</div>
+        <div class="empty-title">No open positions</div>
+        <div class="empty-desc">Positions open automatically when tracked wallets buy tokens on Solana.<br>Add wallets in the Smart Wallets tab to start.</div>
+      </div>`;
+    return;
+  }
+
+  const rows = positions.map(t => `
+    <tr class="pt-row">
+      <td><strong>${esc(t.symbol)}</strong><br><span style="font-size:11px;color:var(--t3);font-family:monospace">${shortToken(t.tokenAddress)}</span></td>
+      <td>$${parseFloat(t.entryPrice).toPrecision(5)}</td>
+      <td>$${parseFloat(t.currentPrice || t.entryPrice).toPrecision(5)}</td>
+      <td class="${pnlCls(t.pnl)}">${fmtPnl(t.pnl)}${fmtPct(t.pnlPct)}</td>
+      <td>$${parseFloat(t.amount).toFixed(2)}</td>
+      <td>${fmtDate(t.openedAt)}</td>
+      <td class="r">${statusBadge(t)}</td>
+      <td class="r"><button class="btn-sec danger" style="font-size:11px;padding:3px 8px" onclick="ptClosePosition('${esc(t.id)}')">Close</button></td>
+    </tr>`).join('');
+
+  el.innerHTML = `
+    <table class="pt-table">
+      <thead><tr>
+        <th>Token</th><th>Entry</th><th>Current</th><th>P&amp;L</th><th>Size</th><th>Opened</th><th class="r">Status</th><th class="r"></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── Render closed trades ──────────────────────────────────────────────────
+function ptRenderClosed(closed) {
+  const el = document.getElementById('ptClosedTrades');
+  if (!el) return;
+
+  if (!closed.length) {
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">◈</div>
+        <div class="empty-title">No closed trades yet</div>
+        <div class="empty-desc">Trades close when take-profit or stop-loss is hit,<br>or when you close them manually.</div>
+      </div>`;
+    return;
+  }
+
+  // Show newest first
+  const sorted = [...closed].reverse();
+  const rows = sorted.map(t => `
+    <tr class="pt-row">
+      <td><strong>${esc(t.symbol)}</strong><br><span style="font-size:11px;color:var(--t3);font-family:monospace">${shortToken(t.tokenAddress)}</span></td>
+      <td>$${parseFloat(t.entryPrice).toPrecision(5)}</td>
+      <td>$${parseFloat(t.currentPrice || t.entryPrice).toPrecision(5)}</td>
+      <td class="${pnlCls(t.pnl)}">${fmtPnl(t.pnl)}${fmtPct(t.pnlPct)}</td>
+      <td>$${parseFloat(t.amount).toFixed(2)}</td>
+      <td>${fmtDate(t.openedAt)}</td>
+      <td>${fmtDate(t.closedAt)}</td>
+      <td class="r">${statusBadge(t)}</td>
+    </tr>`).join('');
+
+  el.innerHTML = `
+    <table class="pt-table">
+      <thead><tr>
+        <th>Token</th><th>Entry</th><th>Exit</th><th>P&amp;L</th><th>Size</th><th>Opened</th><th>Closed</th><th class="r">Result</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────
+async function ptClosePosition(id) {
+  try {
+    await ptFetch(`/api/trades/${id}/close`, { method: 'POST' });
+    toast('Position closed');
+    ptRefresh();
+  } catch (err) {
+    toast('Error closing position: ' + err.message);
+  }
+}
+
+async function ptSaveConfig() {
+  const cfg = {
+    tradeSize:        parseInt(document.getElementById('cfgTradeSize').value)  || 100,
+    takeProfitPct:    parseInt(document.getElementById('cfgTakeProfit').value) || 50,
+    stopLossPct:      parseInt(document.getElementById('cfgStopLoss').value)   || 30,
+    maxOpenPositions: parseInt(document.getElementById('cfgMaxPos').value)     || 5,
+    dailyLossLimit:   parseInt(document.getElementById('cfgDailyLimit').value) || 500,
+  };
+  try {
+    await ptFetch('/api/config', { method: 'POST', body: JSON.stringify(cfg) });
+    toast('Config saved');
+  } catch (err) {
+    toast('Error saving config: ' + err.message);
+  }
+}
+
+async function ptResetTrades() {
+  if (!confirm('Reset ALL paper trading data? This cannot be undone.')) return;
+  try {
+    await ptFetch('/api/trades/reset', { method: 'POST' });
+    toast('All trades reset');
+    ptRefresh();
+  } catch (err) {
+    toast('Error resetting: ' + err.message);
+  }
+}
+
+// ── Auto-poll every 15s when paper view is active ─────────────────────────
+setInterval(() => { if (activeView === 'paper') ptRefresh(); }, 15000);
+
+// Initial server ping (non-blocking)
+ptCheckServer();
 </script>
 </body>
 </html>
