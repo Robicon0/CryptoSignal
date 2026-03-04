@@ -1070,15 +1070,32 @@ function copyAddr(addr) {
 }
 
 // ── Grok API ──────────────────────────────────────────────────────────────
+// Returns analysis text. Throws with err.grokAuth=true for 401/402/403.
 async function callGrok(prompt, maxTokens=350) {
   const r = await fetch('https://api.x.ai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${grokKey}` },
     body: JSON.stringify({ model:'grok-3-mini', messages:[{role:'user',content:prompt}], max_tokens:maxTokens }),
   });
-  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${r.status}`); }
+  if (!r.ok) {
+    const e = await r.json().catch(()=>({}));
+    const err = new Error(e.error?.message || `HTTP ${r.status}`);
+    if ([401, 402, 403].includes(r.status)) err.grokAuth = true;
+    throw err;
+  }
   const d = await r.json();
   return d.choices?.[0]?.message?.content || 'No response.';
+}
+
+// Shared helper: returns the HTML to show when Grok can't run
+function grokUnavailableHTML(inline = false) {
+  const style = inline
+    ? 'font-size:12px;color:var(--t3);line-height:1.5'
+    : 'font-size:13px;color:var(--t3);line-height:1.6';
+  return `<span style="${style}">
+    Add credits at <a href="https://console.x.ai" target="_blank" rel="noopener noreferrer"
+      style="color:var(--t2);text-underline-offset:2px">console.x.ai</a> to enable AI analysis.
+  </span>`;
 }
 
 async function runBulkAnalysis() {
@@ -1086,7 +1103,7 @@ async function runBulkAnalysis() {
   const btn = document.getElementById('analyzeBtn');
   const txt = document.getElementById('aiText');
   btn.disabled = true; btn.textContent = 'Analyzing…';
-  txt.className = 'ai-text dim'; txt.textContent = 'Grok is analyzing trending tokens…';
+  txt.className = 'ai-text dim'; txt.style.color = ''; txt.textContent = 'Grok is analyzing trending tokens…';
 
   const snapshot = filtered.slice(0,15).map(t => ({
     symbol:t.baseToken?.symbol, chain:t.chainId, priceUsd:t.priceUsd,
@@ -1096,11 +1113,16 @@ async function runBulkAnalysis() {
   const prompt = `You are a crypto market analyst. Analyze these DexScreener trending tokens:\n${JSON.stringify(snapshot,null,2)}\n\nProvide a 3-4 sentence market overview: overall sentiment, standout performers, any red flags, and a brief outlook. Be concise and data-driven.`;
 
   try {
-    txt.className = 'ai-text';
-    txt.textContent = await callGrok(prompt, 320);
+    const analysis = await callGrok(prompt, 320);
+    txt.className = 'ai-text'; txt.style.color = '';
+    txt.textContent = analysis;
   } catch(e) {
-    txt.className = 'ai-text'; txt.style.color = 'var(--red)';
-    txt.textContent = `Analysis failed: ${e.message}`;
+    txt.className = 'ai-text'; txt.style.color = '';
+    if (e.grokAuth) {
+      txt.innerHTML = grokUnavailableHTML();
+    } else {
+      txt.textContent = 'Analysis unavailable — try again in a moment.';
+    }
   } finally { btn.disabled = false; btn.textContent = 'Analyze Trends'; }
 }
 
@@ -1109,15 +1131,26 @@ async function analyzeToken() {
   const btn = document.getElementById('tokAnalyzeBtn');
   const txt = document.getElementById('tokAiText');
   if (!btn || !txt) return;
-  btn.disabled = true; btn.textContent = 'Analyzing…'; txt.textContent = 'Analyzing…';
+  btn.disabled = true; btn.textContent = 'Analyzing…';
+  txt.style.color = ''; txt.textContent = 'Analyzing…';
+
   const t = selected;
   const data = { symbol:t.baseToken?.symbol, name:t.baseToken?.name, chain:t.chainId,
     priceUsd:t.priceUsd, priceChange:t.priceChange, volume:t.volume, liquidity:t.liquidity,
     txns24h:t.txns?.h24, marketCap:t.marketCap||t.fdv };
   const prompt = `Analyze this crypto token and give a 2-3 sentence assessment covering price action, volume trends, liquidity health, buy/sell pressure, and risk level:\n${JSON.stringify(data,null,2)}\n\nBe concise, factual, and cite specific numbers.`;
-  try { txt.textContent = await callGrok(prompt, 220); }
-  catch(e) { txt.style.color = 'var(--red)'; txt.textContent = `Failed: ${e.message}`; }
-  finally { btn.disabled = false; btn.textContent = 'Analyze'; }
+
+  try {
+    txt.style.color = '';
+    txt.textContent = await callGrok(prompt, 220);
+  } catch(e) {
+    txt.style.color = '';
+    if (e.grokAuth) {
+      txt.innerHTML = grokUnavailableHTML(true);
+    } else {
+      txt.textContent = 'Analysis unavailable — try again in a moment.';
+    }
+  } finally { btn.disabled = false; btn.textContent = 'Analyze'; }
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────
