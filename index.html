@@ -89,6 +89,33 @@
     .layout { display: flex; height: calc(100vh - 53px); }
     .content { flex: 1; overflow-y: auto; padding: 18px 22px; min-width: 0; }
 
+    /* ── Main nav tabs ── */
+    .main-nav {
+      display: flex; background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 3px; gap: 2px; margin-bottom: 18px; width: fit-content;
+    }
+    .main-tab {
+      padding: 6px 16px; border-radius: 7px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; color: var(--t2);
+      transition: all .15s; border: none; background: none;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .main-tab:hover { color: var(--t1); background: var(--bg4); }
+    .main-tab.on { background: var(--accent); color: #fff; }
+    .notif-badge {
+      display: none; background: var(--red); color: #fff;
+      border-radius: 10px; padding: 1px 6px;
+      font-size: 10px; font-weight: 700; line-height: 1.4;
+    }
+
+    /* ── Views ── */
+    .trending-view { display: block; }
+    .trending-view.hide { display: none; }
+    .wallet-view { display: none; }
+    .wallet-view.show { display: block; }
+
     /* ── Filter bar ── */
     .filter-bar {
       display: flex; align-items: center; gap: 8px;
@@ -280,7 +307,6 @@
     }
     .txn-bar { height: 6px; background: var(--red-dim); border-radius: 3px; overflow: hidden; }
     .txn-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width .5s; }
-    /* Panel AI */
     .p-ai {
       background: linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.08));
       border: 1px solid rgba(124,58,237,.2);
@@ -304,6 +330,14 @@
     }
     .btn-grad:hover { opacity: .85; }
     .btn-grad:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-sec {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 7px; padding: 5px 12px;
+      font-size: 12px; font-weight: 600; color: var(--t2);
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-sec:hover { border-color: var(--accent); color: var(--t1); }
+    .btn-sec.danger:hover { border-color: var(--red); color: var(--red); }
 
     /* ── Modal ── */
     .overlay {
@@ -314,11 +348,20 @@
     .overlay.open { display: flex; }
     .modal {
       background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 16px; padding: 26px; width: 450px; max-width: 92vw;
+      border-radius: 16px; padding: 26px; width: 480px; max-width: 92vw;
       box-shadow: 0 28px 56px rgba(0,0,0,.55);
+      max-height: 90vh; overflow-y: auto;
     }
     .modal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
     .modal-title { font-size: 17px; font-weight: 700; }
+    .modal-section-title {
+      font-size: 11px; font-weight: 700; color: var(--t3);
+      text-transform: uppercase; letter-spacing: .8px;
+      margin: 18px 0 12px 0; padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+    .modal-section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+    .form-group { margin-bottom: 14px; }
     .form-lbl { display: block; font-size: 13px; font-weight: 600; color: var(--t2); margin-bottom: 7px; }
     .form-inp {
       width: 100%; background: var(--bg0); border: 1px solid var(--border);
@@ -349,6 +392,137 @@
       pointer-events: none;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Phase 2: Section cards ── */
+    .section-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px; margin-bottom: 16px;
+    }
+    .section-hdr {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 16px; gap: 10px;
+    }
+    .section-title {
+      font-size: 14px; font-weight: 700; color: var(--t1);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-sub { font-size: 12px; color: var(--t3); font-weight: 400; }
+    .section-actions { display: flex; gap: 7px; align-items: center; }
+
+    /* ── Leaderboard table ── */
+    .lb-table { width: 100%; border-collapse: collapse; }
+    .lb-table th {
+      text-align: left; font-size: 11px; font-weight: 600;
+      color: var(--t3); text-transform: uppercase; letter-spacing: .7px;
+      padding: 0 10px 10px 10px; border-bottom: 1px solid var(--border);
+    }
+    .lb-table th.r { text-align: right; }
+    .lb-row { border-bottom: 1px solid var(--border); transition: background .15s; }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-row:hover { background: var(--bg3); }
+    .lb-row td { padding: 11px 10px; font-size: 13px; vertical-align: middle; }
+    .lb-row td.r { text-align: right; }
+    .rank-num { font-size: 13px; font-weight: 700; color: var(--t3); }
+    .rank-gold   { color: #f59e0b; }
+    .rank-silver { color: #94a3b8; }
+    .rank-bronze { color: #b87333; }
+    .wr-badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 6px;
+      font-size: 13px; font-weight: 700;
+    }
+    .wr-great { background: rgba(34,197,94,.15);  color: var(--green); }
+    .wr-good  { background: rgba(234,179,8,.13);  color: #eab308; }
+    .wr-low   { background: rgba(239,68,68,.12);  color: var(--red); }
+    .wr-none  { background: rgba(100,116,139,.1); color: var(--t3); }
+    .wallet-addr-cell {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px; color: var(--t2); cursor: pointer;
+    }
+    .wallet-addr-cell:hover { color: var(--accent); }
+    .poll-indicator {
+      display: inline-block; width: 7px; height: 7px;
+      border-radius: 50%; margin-left: 5px; vertical-align: middle;
+    }
+    .poll-on  { background: var(--green); box-shadow: 0 0 5px var(--green); animation: blink 2s infinite; }
+    .poll-off { background: var(--t3); }
+
+    /* ── Add wallet row ── */
+    .add-wallet-row { display: flex; gap: 7px; margin-top: 14px; }
+    .add-wallet-inp {
+      flex: 1; background: var(--bg0); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 12px; color: var(--t1);
+      font-size: 12px; font-family: 'SF Mono','Fira Code',monospace;
+      outline: none; transition: border-color .2s;
+    }
+    .add-wallet-inp::placeholder { color: var(--t3); }
+    .add-wallet-inp:focus { border-color: var(--accent); }
+
+    /* ── Alerts ── */
+    .alert-card {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
+      animation: fadeSlide .3s ease;
+    }
+    @keyframes fadeSlide { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+    .alert-card.fresh { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.05); }
+    .alert-icon { font-size: 18px; flex-shrink: 0; }
+    .alert-body { flex: 1; min-width: 0; }
+    .alert-title { font-size: 13px; font-weight: 600; color: var(--t1); margin-bottom: 3px; }
+    .alert-sub { font-size: 11px; color: var(--t3); display: flex; align-items: center; gap: 6px; }
+    .alert-time { font-size: 11px; color: var(--t3); flex-shrink: 0; }
+
+    /* ── Early Buyers in panel ── */
+    .buyer-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 10px; margin-bottom: 5px;
+      transition: border-color .2s;
+    }
+    .buyer-row:hover { border-color: var(--border-hi); }
+    .buyer-rank { font-size: 11px; color: var(--t3); font-weight: 700; width: 16px; flex-shrink: 0; }
+    .buyer-addr { flex: 1; font-family: 'SF Mono','Fira Code',monospace; font-size: 11px; color: var(--t2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .buyer-wr { font-size: 11px; font-weight: 700; flex-shrink: 0; min-width: 48px; text-align: right; }
+    .buyer-btn {
+      flex-shrink: 0; padding: 3px 8px; border-radius: 5px;
+      font-size: 11px; font-weight: 600; cursor: pointer; transition: all .2s;
+      background: var(--accent-dim); border: 1px solid rgba(124,58,237,.3); color: #b09ffa;
+    }
+    .buyer-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .buyer-btn.on { background: var(--green-dim); border-color: rgba(34,197,94,.3); color: var(--green); }
+    .buyer-btn.on:hover { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+    /* ── Inline loading ── */
+    .inline-load {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 0; font-size: 12px; color: var(--t3);
+    }
+    .mini-spin {
+      width: 13px; height: 13px; border-radius: 50%;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      animation: spin .7s linear infinite; flex-shrink: 0;
+    }
+
+    /* ── Empty states ── */
+    .empty { text-align: center; padding: 36px 16px; color: var(--t3); }
+    .empty-icon { font-size: 26px; margin-bottom: 8px; }
+    .empty-title { font-size: 13px; font-weight: 600; color: var(--t2); margin-bottom: 5px; }
+    .empty-desc { font-size: 12px; line-height: 1.55; }
+
+    /* ── Poll status bar ── */
+    .poll-bar {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--t3);
+      background: var(--bg0); border-radius: 8px;
+      padding: 7px 12px; margin-bottom: 14px;
+    }
+    .poll-bar-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 5px var(--green);
+      animation: blink 2s infinite; flex-shrink: 0;
+    }
+    .poll-bar-dot.off { background: var(--t3); box-shadow: none; animation: none; }
 
     /* ── Misc ── */
     ::-webkit-scrollbar { width: 5px; }
@@ -385,32 +559,105 @@
 <div class="layout">
   <div class="content" id="content">
 
-    <!-- Filter bar -->
-    <div class="filter-bar">
-      <div class="chain-tabs" id="chainTabs">
-        <button class="ctab on" data-chain="all"      onclick="setChain('all')">All</button>
-        <button class="ctab"    data-chain="solana"   onclick="setChain('solana')">SOL</button>
-        <button class="ctab"    data-chain="ethereum" onclick="setChain('ethereum')">ETH</button>
-        <button class="ctab"    data-chain="bsc"      onclick="setChain('bsc')">BSC</button>
-        <button class="ctab"    data-chain="base"     onclick="setChain('base')">BASE</button>
-      </div>
-      <input class="search" id="searchInput" placeholder="Search tokens…" oninput="applyFilters()">
-      <span class="tok-count" id="tokCount">Loading…</span>
+    <!-- Main nav -->
+    <div class="main-nav">
+      <button class="main-tab on" data-view="trending" onclick="switchView('trending')">
+        ◈ Trending Tokens
+      </button>
+      <button class="main-tab" data-view="wallets" onclick="switchView('wallets')">
+        ◎ Smart Wallets
+        <span class="notif-badge" id="walletBadge"></span>
+      </button>
     </div>
 
-    <!-- AI Banner -->
-    <div class="ai-banner" id="aiBanner">
-      <div class="ai-banner-top">
-        <div class="ai-banner-label">◈ Grok Market Analysis</div>
-        <button class="btn-grad" id="analyzeBtn" onclick="runBulkAnalysis()">Analyze Trends</button>
+    <!-- ═══ TRENDING VIEW ═══ -->
+    <div class="trending-view" id="trendingView">
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="chain-tabs" id="chainTabs">
+          <button class="ctab on" data-chain="all"      onclick="setChain('all')">All</button>
+          <button class="ctab"    data-chain="solana"   onclick="setChain('solana')">SOL</button>
+          <button class="ctab"    data-chain="ethereum" onclick="setChain('ethereum')">ETH</button>
+          <button class="ctab"    data-chain="bsc"      onclick="setChain('bsc')">BSC</button>
+          <button class="ctab"    data-chain="base"     onclick="setChain('base')">BASE</button>
+        </div>
+        <input class="search" id="searchInput" placeholder="Search tokens…" oninput="applyFilters()">
+        <span class="tok-count" id="tokCount">Loading…</span>
       </div>
-      <div class="ai-text dim" id="aiText">Click "Analyze Trends" to get AI-powered insights on current trending tokens.</div>
-    </div>
 
-    <!-- Token Grid -->
-    <div class="grid" id="grid"></div>
+      <!-- AI Banner -->
+      <div class="ai-banner" id="aiBanner">
+        <div class="ai-banner-top">
+          <div class="ai-banner-label">◈ Grok Market Analysis</div>
+          <button class="btn-grad" id="analyzeBtn" onclick="runBulkAnalysis()">Analyze Trends</button>
+        </div>
+        <div class="ai-text dim" id="aiText">Click "Analyze Trends" to get AI-powered insights on current trending tokens.</div>
+      </div>
 
-  </div>
+      <!-- Token Grid -->
+      <div class="grid" id="grid"></div>
+
+    </div><!-- /trendingView -->
+
+    <!-- ═══ WALLETS VIEW ═══ -->
+    <div class="wallet-view" id="walletsView">
+
+      <!-- Poll status bar -->
+      <div class="poll-bar" id="pollBar">
+        <div class="poll-bar-dot off" id="pollDot"></div>
+        <span id="pollStatus">Polling inactive — add wallets to start tracking</span>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="section-card">
+        <div class="section-hdr">
+          <div class="section-title">
+            ◎ Wallet Leaderboard
+            <span class="section-sub">50%+ win rate • last 30 days</span>
+          </div>
+          <div class="section-actions">
+            <button class="btn-sec" id="refreshWRBtn" onclick="refreshAllWinRates()">Refresh Rates</button>
+          </div>
+        </div>
+
+        <div id="leaderboard">
+          <div class="empty">
+            <div class="empty-icon">◎</div>
+            <div class="empty-title">No wallets tracked</div>
+            <div class="empty-desc">Click a trending token and tap<br>Track next to any early buyer.</div>
+          </div>
+        </div>
+
+        <!-- Add wallet manually -->
+        <div class="add-wallet-row">
+          <input class="add-wallet-inp" id="addWalletInp" placeholder="Paste wallet address (0x… or Solana)…" />
+          <button class="btn-grad" onclick="addWalletManual()">+ Track</button>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="section-card">
+        <div class="section-hdr">
+          <div class="section-title">
+            🔔 Recent Buy Alerts
+          </div>
+          <div class="section-actions">
+            <button class="btn-sec danger" onclick="clearAlerts()">Clear</button>
+          </div>
+        </div>
+        <div id="alertsList">
+          <div class="empty">
+            <div class="empty-icon">🔔</div>
+            <div class="empty-title">No alerts yet</div>
+            <div class="empty-desc">Alerts appear here when tracked wallets<br>make new buys. Checked every 30 seconds.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /walletsView -->
+
+  </div><!-- /content -->
 
   <!-- Side Panel -->
   <div class="panel" id="panel">
@@ -425,11 +672,28 @@
       <div class="modal-title">Settings</div>
       <button class="close-x" onclick="closeSettings()">✕</button>
     </div>
-    <label class="form-lbl">Grok API Key</label>
-    <input class="form-inp" type="password" id="grokInput" placeholder="xai-…" />
-    <div class="form-hint">
-      Get your key at <strong>console.x.ai</strong>. Stored locally — only sent to api.x.ai.
+
+    <div class="modal-section-title">Grok AI (Market Analysis)</div>
+    <div class="form-group">
+      <label class="form-lbl">Grok API Key</label>
+      <input class="form-inp" type="password" id="grokInput" placeholder="xai-…" />
+      <div class="form-hint">Get your key at <strong>console.x.ai</strong>. Used for AI market analysis.</div>
     </div>
+
+    <div class="modal-section-title">Bitquery (Early Buyers + Wallet History)</div>
+    <div class="form-group">
+      <label class="form-lbl">Bitquery API Key</label>
+      <input class="form-inp" type="password" id="bitqueryInput" placeholder="BQY…" />
+      <div class="form-hint">Free at <strong>bitquery.io</strong> — sign up and get key from IDE. Powers early buyer lookup and win rate calculation for all chains.</div>
+    </div>
+
+    <div class="modal-section-title">Moralis (EVM Wallet Polling)</div>
+    <div class="form-group">
+      <label class="form-lbl">Moralis API Key</label>
+      <input class="form-inp" type="password" id="moralisInput" placeholder="eyJ…" />
+      <div class="form-hint">Free at <strong>moralis.io</strong> — used as a secondary source for polling ETH/BSC/Base wallets for new buys.</div>
+    </div>
+
     <button class="save-btn" onclick="saveSettings()">Save Settings</button>
   </div>
 </div>
@@ -440,7 +704,9 @@
 <script>
 'use strict';
 
-// ── State ──────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 1 STATE
+// ═══════════════════════════════════════════════════════════════════════════
 let allTokens = [];
 let filtered  = [];
 let selected  = null;
@@ -451,18 +717,18 @@ let cdTimer   = null;
 let loading   = false;
 let grokKey   = localStorage.getItem('cs_grok') || '';
 
-// ── Chain config ──────────────────────────────────────────────────────────
+// ── Chain config ─────────────────────────────────────────────────────────
 const CHAINS = {
-  solana:   { lbl:'SOL',  cls:'c-sol',  ex:'https://solscan.io/token/' },
-  ethereum: { lbl:'ETH',  cls:'c-eth',  ex:'https://etherscan.io/token/' },
-  bsc:      { lbl:'BSC',  cls:'c-bsc',  ex:'https://bscscan.com/token/' },
-  base:     { lbl:'BASE', cls:'c-base', ex:'https://basescan.org/token/' },
-  arbitrum: { lbl:'ARB',  cls:'c-arb',  ex:'https://arbiscan.io/token/' },
-  polygon:  { lbl:'POLY', cls:'c-poly', ex:'https://polygonscan.com/token/' },
-  avalanche:{ lbl:'AVAX', cls:'c-avax', ex:'https://snowtrace.io/token/' },
+  solana:   { lbl:'SOL',  cls:'c-sol',  ex:'https://solscan.io/token/',   txEx:'https://solscan.io/tx/' },
+  ethereum: { lbl:'ETH',  cls:'c-eth',  ex:'https://etherscan.io/token/', txEx:'https://etherscan.io/tx/' },
+  bsc:      { lbl:'BSC',  cls:'c-bsc',  ex:'https://bscscan.com/token/',  txEx:'https://bscscan.com/tx/' },
+  base:     { lbl:'BASE', cls:'c-base', ex:'https://basescan.org/token/', txEx:'https://basescan.org/tx/' },
+  arbitrum: { lbl:'ARB',  cls:'c-arb',  ex:'https://arbiscan.io/token/',  txEx:'https://arbiscan.io/tx/' },
+  polygon:  { lbl:'POLY', cls:'c-poly', ex:'https://polygonscan.com/token/', txEx:'https://polygonscan.com/tx/' },
+  avalanche:{ lbl:'AVAX', cls:'c-avax', ex:'https://snowtrace.io/token/', txEx:'https://snowtrace.io/tx/' },
 };
 function cc(chainId) {
-  return CHAINS[chainId] || { lbl: (chainId||'?').slice(0,4).toUpperCase(), cls:'c-misc', ex: null };
+  return CHAINS[chainId] || { lbl:(chainId||'?').slice(0,4).toUpperCase(), cls:'c-misc', ex:null, txEx:null };
 }
 
 // ── Formatters ────────────────────────────────────────────────────────────
@@ -485,18 +751,27 @@ function fmtNum(n) {
   if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
   return '$' + n.toFixed(0);
 }
-function pc(v) {
-  if (v == null) return 'flat';
-  return parseFloat(v) >= 0 ? 'up' : 'dn';
-}
-function sg(v) { return (v == null || parseFloat(v) === 0) ? '' : parseFloat(v) > 0 ? '+' : ''; }
-function fmt(v, d=2) { return v != null ? parseFloat(v).toFixed(d) : '0'; }
+function pc(v)    { return v == null ? 'flat' : parseFloat(v) >= 0 ? 'up' : 'dn'; }
+function sg(v)    { return (!v || parseFloat(v) === 0) ? '' : parseFloat(v) > 0 ? '+' : ''; }
+function fmt(v,d=2) { return v != null ? parseFloat(v).toFixed(d) : '0'; }
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function shortAddr(a) {
+  if (!a) return '???';
+  return a.length > 12 ? a.slice(0,6) + '…' + a.slice(-4) : a;
+}
+function timeAgo(ts) {
+  const m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m/60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h/24) + 'd ago';
+}
 
-// ── Fetch data ────────────────────────────────────────────────────────────
+// ── Fetch trending tokens ─────────────────────────────────────────────────
 async function fetchData() {
   if (loading) return;
   loading = true;
@@ -506,21 +781,18 @@ async function fetchData() {
   try {
     const boosts = await (await fetch('https://api.dexscreener.com/token-boosts/latest/v1')).json();
 
-    // Deduplicate: keep highest totalAmount per chain:address
     const byKey = new Map();
     for (const b of boosts) {
       const k = b.chainId + ':' + b.tokenAddress;
       if (!byKey.has(k) || b.totalAmount > byKey.get(k).totalAmount) byKey.set(k, b);
     }
 
-    // Group by chain, cap per chain
     const byChain = {};
     for (const b of [...byKey.values()].sort((a,b) => b.totalAmount - a.totalAmount)) {
       if (!byChain[b.chainId]) byChain[b.chainId] = [];
       if (byChain[b.chainId].length < 20) byChain[b.chainId].push(b);
     }
 
-    // Fetch price data in parallel per chain
     const enriched = [];
     await Promise.all(Object.entries(byChain).map(async ([cid, tokens]) => {
       const addrs = tokens.map(t => t.tokenAddress).join(',');
@@ -529,15 +801,12 @@ async function fetchData() {
         if (!r.ok) return;
         const d = await r.json();
         if (!d.pairs) return;
-
-        // Best pair per base address = highest USD liquidity
         const best = new Map();
         for (const p of d.pairs) {
           const a = p.baseToken?.address?.toLowerCase();
           if (!a) continue;
           if (!best.has(a) || (p.liquidity?.usd||0) > (best.get(a).liquidity?.usd||0)) best.set(a, p);
         }
-
         for (const boost of tokens) {
           const pair = best.get(boost.tokenAddress.toLowerCase());
           if (pair) enriched.push({ ...pair, _boost: boost });
@@ -545,7 +814,6 @@ async function fetchData() {
       } catch (e) { console.warn(cid, e); }
     }));
 
-    // Sort by 24h volume
     enriched.sort((a,b) => (b.volume?.h24||0) - (a.volume?.h24||0));
     allTokens = enriched;
     applyFilters();
@@ -570,7 +838,7 @@ function setSpinning(on) {
 }
 
 function showSkeletons() {
-  const sk = (w, h, r=6) => `<div class="skel" style="width:${w};height:${h}px;border-radius:${r}px"></div>`;
+  const sk = (w,h,r=6) => `<div class="skel" style="width:${w};height:${h}px;border-radius:${r}px"></div>`;
   document.getElementById('grid').innerHTML = Array(12).fill(0).map(() => `
     <div class="card" style="pointer-events:none">
       <div class="card-top">
@@ -586,7 +854,7 @@ function showSkeletons() {
     </div>`).join('');
 }
 
-// ── Filter & Render ───────────────────────────────────────────────────────
+// ── Filter & render ───────────────────────────────────────────────────────
 function applyFilters() {
   let t = [...allTokens];
   if (chain !== 'all') t = t.filter(x => x.chainId === chain);
@@ -600,7 +868,7 @@ function applyFilters() {
   }
   filtered = t;
   renderGrid(t);
-  document.getElementById('tokCount').textContent = `${t.length} token${t.length !== 1 ? 's' : ''}`;
+  document.getElementById('tokCount').textContent = `${t.length} token${t.length!==1?'s':''}`;
 }
 
 function setChain(c) {
@@ -614,32 +882,25 @@ function renderGrid(tokens) {
   if (!tokens.length) {
     grid.innerHTML = `
       <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--t3)">
-        <div style="font-size:32px;margin-bottom:10px">◈</div>
-        <div>No tokens found</div>
+        <div style="font-size:32px;margin-bottom:10px">◈</div><div>No tokens found</div>
       </div>`;
     return;
   }
-  grid.innerHTML = tokens.map((t, i) => cardHTML(t, i)).join('');
+  grid.innerHTML = tokens.map((t,i) => cardHTML(t,i)).join('');
 }
 
 function cardHTML(t, i) {
-  const c    = cc(t.chainId);
-  const sym  = esc(t.baseToken?.symbol || '?');
-  const name = esc(t.baseToken?.name   || '');
-  const isSel = selected && selected.baseToken?.address === t.baseToken?.address && selected.chainId === t.chainId;
+  const c   = cc(t.chainId);
+  const sym = esc(t.baseToken?.symbol || '?');
+  const nm  = esc(t.baseToken?.name   || '');
+  const sel = selected && selected.baseToken?.address === t.baseToken?.address && selected.chainId === t.chainId;
   const imgH = t._boost?.icon
     ? `<img class="tok-img" src="${esc(t._boost.icon)}" alt="${sym}" onerror="imgFail(this)">`
     : `<div class="tok-initials">${sym.slice(0,2)}</div>`;
   return `
-    <div class="card${isSel?' sel':''}" onclick="selectToken(${i})">
+    <div class="card${sel?' sel':''}" onclick="selectToken(${i})">
       <div class="card-top">
-        <div class="tok-id">
-          ${imgH}
-          <div>
-            <div class="tok-sym">${sym}</div>
-            <div class="tok-name">${name}</div>
-          </div>
-        </div>
+        <div class="tok-id">${imgH}<div><div class="tok-sym">${sym}</div><div class="tok-name">${nm}</div></div></div>
         <span class="badge ${c.cls}">${c.lbl}</span>
       </div>
       <div class="price-row">
@@ -666,7 +927,7 @@ function imgFail(el) {
   el.parentNode.insertBefore(ph, el);
 }
 
-// ── Select token (side panel) ─────────────────────────────────────────────
+// ── Side panel ────────────────────────────────────────────────────────────
 function selectToken(i) {
   selected = filtered[i];
   renderGrid(filtered);
@@ -681,29 +942,43 @@ function closePanel() {
 }
 
 function renderPanel(t) {
-  const c      = cc(t.chainId);
-  const sym    = esc(t.baseToken?.symbol || '?');
-  const name   = esc(t.baseToken?.name   || '');
-  const addr   = t.baseToken?.address || '';
+  const c    = cc(t.chainId);
+  const sym  = esc(t.baseToken?.symbol || '?');
+  const nm   = esc(t.baseToken?.name   || '');
+  const addr = t.baseToken?.address || '';
   const dexUrl = t.url || `https://dexscreener.com/${t.chainId}/${addr}`;
   const exUrl  = c.ex ? c.ex + addr : null;
 
-  const buys = t.txns?.h24?.buys || 0;
-  const sells = t.txns?.h24?.sells || 0;
-  const total = buys + sells;
-  const buyPct = total ? Math.round(buys / total * 100) : 50;
+  const buys   = t.txns?.h24?.buys  || 0;
+  const sells  = t.txns?.h24?.sells || 0;
+  const total  = buys + sells;
+  const buyPct = total ? Math.round(buys/total*100) : 50;
 
   const imgH = t._boost?.icon
     ? `<img class="p-img" src="${esc(t._boost.icon)}" alt="${sym}" onerror="pImgFail(this)">`
     : `<div class="p-init">${sym.slice(0,2)}</div>`;
 
-  const linkIcon = type => ({ twitter:'🐦', telegram:'✈️', discord:'💬', website:'🌐', github:'⚡' }[type?.toLowerCase()] || '🔗');
-  const socialLinks = (t._boost?.links || []).filter(l => l.url).map(l => `
+  const linkIcon = tp => ({twitter:'🐦',telegram:'✈️',discord:'💬',website:'🌐',github:'⚡'}[tp?.toLowerCase()]||'🔗');
+  const socialLinks = (t._boost?.links||[]).filter(l=>l.url).map(l=>`
     <a class="link-row" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">
-      <span>${linkIcon(l.type)}</span>
-      <span>${esc(l.label || l.type)}</span>
-      <span>↗</span>
+      <span>${linkIcon(l.type)}</span><span>${esc(l.label||l.type)}</span><span>↗</span>
     </a>`).join('');
+
+  // Early buyers section (Phase 2)
+  const hasBQ = !!bitqueryKey;
+  const earlyBuyersSection = `
+    <div class="sec">
+      <div class="sec-lbl" style="display:flex;align-items:center;justify-content:space-between">
+        Early Buyers
+        ${hasBQ ? `<button class="btn-sec" style="font-size:10px;padding:3px 8px" onclick="loadEarlyBuyers()">Load</button>` : ''}
+      </div>
+      <div id="earlyBuyersContent">
+        ${hasBQ
+          ? `<div style="font-size:12px;color:var(--t3)">Click Load to fetch first buyers + win rates.</div>`
+          : `<div style="font-size:12px;color:var(--t3)">Add a Bitquery API key in Settings to see early buyers.</div>`
+        }
+      </div>
+    </div>`;
 
   document.getElementById('panelBody').innerHTML = `
     <div class="ph">
@@ -713,7 +988,7 @@ function renderPanel(t) {
           <div class="p-sym">${sym}</div>
           <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
             <span class="badge ${c.cls}">${c.lbl}</span>
-            <span class="p-name">${name}</span>
+            <span class="p-name">${nm}</span>
           </div>
         </div>
       </div>
@@ -731,11 +1006,10 @@ function renderPanel(t) {
     <div class="p-grid">
       <div class="p-met"><div class="p-met-lbl">24h Volume</div><div class="p-met-val">${fmtNum(t.volume?.h24)}</div></div>
       <div class="p-met"><div class="p-met-lbl">Liquidity</div><div class="p-met-val">${fmtNum(t.liquidity?.usd)}</div></div>
-      <div class="p-met"><div class="p-met-lbl">Market Cap</div><div class="p-met-val">${fmtNum(t.marketCap || t.fdv)}</div></div>
+      <div class="p-met"><div class="p-met-lbl">Market Cap</div><div class="p-met-val">${fmtNum(t.marketCap||t.fdv)}</div></div>
       <div class="p-met"><div class="p-met-lbl">1h Volume</div><div class="p-met-val">${fmtNum(t.volume?.h1)}</div></div>
     </div>
 
-    <!-- 24h Transactions -->
     <div class="sec">
       <div class="sec-lbl">24h Transactions</div>
       <div class="txn-bar-wrap">
@@ -747,8 +1021,9 @@ function renderPanel(t) {
       </div>
     </div>
 
+    ${earlyBuyersSection}
+
     ${grokKey ? `
-    <!-- Grok Analysis (per token) -->
     <div class="p-ai">
       <div class="p-ai-top">
         <div class="p-ai-lbl">◈ Grok Analysis</div>
@@ -757,13 +1032,11 @@ function renderPanel(t) {
       <div class="p-ai-txt" id="tokAiText">Click Analyze for AI insights on ${sym}.</div>
     </div>` : ''}
 
-    <!-- Contract address -->
     <div class="sec">
       <div class="sec-lbl">Contract Address</div>
       <div class="addr" onclick="copyAddr('${esc(addr)}')" title="Click to copy">${esc(addr)}</div>
     </div>
 
-    <!-- Links -->
     <div class="sec">
       <div class="sec-lbl">Links</div>
       <a class="link-row" href="${esc(dexUrl)}" target="_blank" rel="noopener noreferrer">
@@ -797,20 +1070,13 @@ function copyAddr(addr) {
 }
 
 // ── Grok API ──────────────────────────────────────────────────────────────
-async function callGrok(prompt, maxTokens = 350) {
+async function callGrok(prompt, maxTokens=350) {
   const r = await fetch('https://api.x.ai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${grokKey}` },
-    body: JSON.stringify({
-      model: 'grok-3-mini',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: maxTokens,
-    }),
+    body: JSON.stringify({ model:'grok-3-mini', messages:[{role:'user',content:prompt}], max_tokens:maxTokens }),
   });
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    throw new Error(e.error?.message || `HTTP ${r.status}`);
-  }
+  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${r.status}`); }
   const d = await r.json();
   return d.choices?.[0]?.message?.content || 'No response.';
 }
@@ -822,26 +1088,20 @@ async function runBulkAnalysis() {
   btn.disabled = true; btn.textContent = 'Analyzing…';
   txt.className = 'ai-text dim'; txt.textContent = 'Grok is analyzing trending tokens…';
 
-  const snapshot = filtered.slice(0, 15).map(t => ({
-    symbol: t.baseToken?.symbol, chain: t.chainId,
-    priceUsd: t.priceUsd,
-    change5m: t.priceChange?.m5, change1h: t.priceChange?.h1, change24h: t.priceChange?.h24,
-    volume24h: t.volume?.h24, liquidity: t.liquidity?.usd,
+  const snapshot = filtered.slice(0,15).map(t => ({
+    symbol:t.baseToken?.symbol, chain:t.chainId, priceUsd:t.priceUsd,
+    change5m:t.priceChange?.m5, change1h:t.priceChange?.h1, change24h:t.priceChange?.h24,
+    volume24h:t.volume?.h24, liquidity:t.liquidity?.usd,
   }));
-
-  const prompt = `You are a crypto market analyst. Analyze these DexScreener trending tokens:\n${JSON.stringify(snapshot, null, 2)}\n\nProvide a 3-4 sentence market overview: overall sentiment, standout performers, any red flags, and a brief outlook. Be concise and data-driven.`;
+  const prompt = `You are a crypto market analyst. Analyze these DexScreener trending tokens:\n${JSON.stringify(snapshot,null,2)}\n\nProvide a 3-4 sentence market overview: overall sentiment, standout performers, any red flags, and a brief outlook. Be concise and data-driven.`;
 
   try {
-    const analysis = await callGrok(prompt, 320);
     txt.className = 'ai-text';
-    txt.textContent = analysis;
-  } catch (e) {
-    txt.className = 'ai-text';
-    txt.style.color = 'var(--red)';
+    txt.textContent = await callGrok(prompt, 320);
+  } catch(e) {
+    txt.className = 'ai-text'; txt.style.color = 'var(--red)';
     txt.textContent = `Analysis failed: ${e.message}`;
-  } finally {
-    btn.disabled = false; btn.textContent = 'Analyze Trends';
-  }
+  } finally { btn.disabled = false; btn.textContent = 'Analyze Trends'; }
 }
 
 async function analyzeToken() {
@@ -849,33 +1109,22 @@ async function analyzeToken() {
   const btn = document.getElementById('tokAnalyzeBtn');
   const txt = document.getElementById('tokAiText');
   if (!btn || !txt) return;
-
-  btn.disabled = true; btn.textContent = 'Analyzing…';
-  txt.textContent = 'Analyzing…';
-
+  btn.disabled = true; btn.textContent = 'Analyzing…'; txt.textContent = 'Analyzing…';
   const t = selected;
-  const data = {
-    symbol: t.baseToken?.symbol, name: t.baseToken?.name, chain: t.chainId,
-    priceUsd: t.priceUsd, priceChange: t.priceChange,
-    volume: t.volume, liquidity: t.liquidity,
-    txns24h: t.txns?.h24, marketCap: t.marketCap || t.fdv,
-  };
-
-  const prompt = `Analyze this crypto token and give a 2-3 sentence assessment covering price action, volume trends, liquidity health, buy/sell pressure, and risk level:\n${JSON.stringify(data, null, 2)}\n\nBe concise, factual, and cite specific numbers.`;
-
-  try {
-    txt.textContent = await callGrok(prompt, 220);
-  } catch (e) {
-    txt.style.color = 'var(--red)';
-    txt.textContent = `Failed: ${e.message}`;
-  } finally {
-    btn.disabled = false; btn.textContent = 'Analyze';
-  }
+  const data = { symbol:t.baseToken?.symbol, name:t.baseToken?.name, chain:t.chainId,
+    priceUsd:t.priceUsd, priceChange:t.priceChange, volume:t.volume, liquidity:t.liquidity,
+    txns24h:t.txns?.h24, marketCap:t.marketCap||t.fdv };
+  const prompt = `Analyze this crypto token and give a 2-3 sentence assessment covering price action, volume trends, liquidity health, buy/sell pressure, and risk level:\n${JSON.stringify(data,null,2)}\n\nBe concise, factual, and cite specific numbers.`;
+  try { txt.textContent = await callGrok(prompt, 220); }
+  catch(e) { txt.style.color = 'var(--red)'; txt.textContent = `Failed: ${e.message}`; }
+  finally { btn.disabled = false; btn.textContent = 'Analyze'; }
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────
 function openSettings() {
-  document.getElementById('grokInput').value = grokKey;
+  document.getElementById('grokInput').value     = grokKey;
+  document.getElementById('bitqueryInput').value = bitqueryKey;
+  document.getElementById('moralisInput').value  = moralisKey;
   document.getElementById('settingsModal').classList.add('open');
   document.getElementById('settingsBtn').classList.add('active');
 }
@@ -885,17 +1134,23 @@ function closeSettings() {
 }
 function overlayClick(e) { if (e.target === e.currentTarget) closeSettings(); }
 function saveSettings() {
-  grokKey = document.getElementById('grokInput').value.trim();
-  localStorage.setItem('cs_grok', grokKey);
+  grokKey      = document.getElementById('grokInput').value.trim();
+  bitqueryKey  = document.getElementById('bitqueryInput').value.trim();
+  moralisKey   = document.getElementById('moralisInput').value.trim();
+  localStorage.setItem('cs_grok',     grokKey);
+  localStorage.setItem('cs_bitquery', bitqueryKey);
+  localStorage.setItem('cs_moralis',  moralisKey);
   updateGrokUI();
+  updatePollStatus();
   closeSettings();
-  toast(grokKey ? 'Grok AI enabled!' : 'Settings saved.');
+  const keys = [grokKey && 'Grok', bitqueryKey && 'Bitquery', moralisKey && 'Moralis'].filter(Boolean);
+  toast(keys.length ? `${keys.join(', ')} enabled!` : 'Settings saved.');
 }
 function updateGrokUI() {
   const on = !!grokKey;
-  document.getElementById('aiChip').style.display   = on ? 'flex'  : 'none';
+  document.getElementById('aiChip').style.display = on ? 'flex' : 'none';
   document.getElementById('aiBanner').classList.toggle('show', on);
-  if (selected) renderPanel(selected); // refresh panel AI section
+  if (selected) renderPanel(selected);
 }
 
 // ── Countdown ─────────────────────────────────────────────────────────────
@@ -909,7 +1164,6 @@ function startCountdown() {
     if (cdSecs <= 0) { fetchData(); cdSecs = 60; }
   }, 1000);
 }
-
 function manualRefresh() { fetchData(); startCountdown(); }
 
 // ── Toast ─────────────────────────────────────────────────────────────────
@@ -919,13 +1173,778 @@ function toast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 2 STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let activeView     = 'trending';
+let bitqueryKey    = localStorage.getItem('cs_bitquery') || '';
+let moralisKey     = localStorage.getItem('cs_moralis')  || '';
+let trackedWallets = loadWallets();
+let alertsList     = loadAlerts();
+let pollTimer      = null;
+let pollIdx        = 0;
+let newAlertCount  = 0;
+
+function loadWallets() {
+  try { return JSON.parse(localStorage.getItem('cs_wallets') || '[]'); } catch { return []; }
+}
+function saveWallets() {
+  localStorage.setItem('cs_wallets', JSON.stringify(trackedWallets));
+}
+function loadAlerts() {
+  try { return JSON.parse(localStorage.getItem('cs_alerts') || '[]'); } catch { return []; }
+}
+function saveAlerts() {
+  localStorage.setItem('cs_alerts', JSON.stringify(alertsList.slice(0,50)));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BITQUERY V1 API
+// ═══════════════════════════════════════════════════════════════════════════
+const BQ_URL = 'https://graphql.bitquery.io';
+
+async function bqQuery(query) {
+  if (!bitqueryKey) throw new Error('No Bitquery API key — add one in Settings.');
+  const r = await fetch(BQ_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-API-KEY': bitqueryKey },
+    body: JSON.stringify({ query }),
+  });
+  if (!r.ok) throw new Error(`Bitquery HTTP ${r.status}`);
+  const d = await r.json();
+  if (d.errors?.length) throw new Error(d.errors[0]?.message || 'Bitquery query error');
+  return d.data;
+}
+
+// Map DexScreener chainId → Bitquery network name
+function bqNet(chainId) {
+  return { ethereum:'ethereum', bsc:'bsc', base:'base', arbitrum:'arbitrum', polygon:'matic' }[chainId] || null;
+}
+
+// Fetch first N buyers of a token (by first trade timestamp)
+async function fetchEarlyBuyers(token) {
+  const { chainId } = token;
+  const addr = token.baseToken?.address;
+  if (!addr) return [];
+
+  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0,10);
+  let query;
+
+  if (chainId === 'solana') {
+    query = `{
+      solana(network: solana) {
+        dexTrades(
+          options: {limit: 30, asc: "block.timestamp.time"}
+          baseCurrency: {is: "${addr}"}
+          date: {since: "${since}"}
+        ) {
+          buyer { address }
+          quotePrice
+          block { timestamp { time } }
+          baseCurrency { symbol address }
+          transaction { signature }
+        }
+      }
+    }`;
+  } else {
+    const net = bqNet(chainId);
+    if (!net) return [];
+    query = `{
+      ethereum(network: ${net}) {
+        dexTrades(
+          options: {limit: 30, asc: "block.timestamp.time"}
+          baseCurrency: {is: "${addr}"}
+          buySide: true
+          date: {since: "${since}"}
+        ) {
+          buyer { address }
+          quotePrice
+          block { timestamp { time } }
+          baseCurrency { symbol address }
+          transaction { hash }
+        }
+      }
+    }`;
+  }
+
+  const data = await bqQuery(query);
+  const trades = chainId === 'solana' ? data?.solana?.dexTrades : data?.ethereum?.dexTrades;
+  if (!trades?.length) return [];
+
+  // Deduplicate: keep first trade per buyer address
+  const seen = new Set();
+  const buyers = [];
+  for (const t of trades) {
+    const a = t.buyer?.address;
+    if (!a || a === '0x0000000000000000000000000000000000000000') continue;
+    if (seen.has(a)) continue;
+    seen.add(a);
+    buyers.push({
+      address: a, chain: chainId,
+      firstBuyTime:  t.block?.timestamp?.time,
+      firstBuyPrice: t.quotePrice,
+      txId: t.transaction?.signature || t.transaction?.hash,
+    });
+    if (buyers.length >= 10) break;
+  }
+  return buyers;
+}
+
+// Fetch a wallet's buy-side trade history (last 30 days)
+async function fetchWalletTrades(address, chainId) {
+  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0,10);
+  let query;
+
+  if (chainId === 'solana') {
+    query = `{
+      solana(network: solana) {
+        dexTrades(
+          options: {limit: 100, desc: "block.timestamp.time"}
+          buyer: {is: "${address}"}
+          date: {since: "${since}"}
+        ) {
+          quotePrice
+          block { timestamp { time } }
+          baseCurrency { symbol address }
+          transaction { signature }
+        }
+      }
+    }`;
+  } else {
+    const net = bqNet(chainId);
+    if (!net) return [];
+    query = `{
+      ethereum(network: ${net}) {
+        dexTrades(
+          options: {limit: 100, desc: "block.timestamp.time"}
+          buyer: {is: "${address}"}
+          buySide: true
+          date: {since: "${since}"}
+        ) {
+          quotePrice
+          block { timestamp { time } }
+          baseCurrency { symbol address }
+          transaction { hash }
+        }
+      }
+    }`;
+  }
+
+  const data = await bqQuery(query);
+  return (chainId === 'solana' ? data?.solana?.dexTrades : data?.ethereum?.dexTrades) || [];
+}
+
+// Fetch the latest few trades for polling (new buy detection)
+async function fetchLatestBuys(wallet) {
+  const { address, chain: chainId } = wallet;
+  let query;
+
+  if (chainId === 'solana') {
+    query = `{
+      solana(network: solana) {
+        dexTrades(
+          options: {limit: 5, desc: "block.timestamp.time"}
+          buyer: {is: "${address}"}
+        ) {
+          baseCurrency { symbol address }
+          quotePrice
+          block { timestamp { time } }
+          transaction { signature }
+        }
+      }
+    }`;
+  } else {
+    const net = bqNet(chainId);
+    if (!net) return null;
+    query = `{
+      ethereum(network: ${net}) {
+        dexTrades(
+          options: {limit: 5, desc: "block.timestamp.time"}
+          buyer: {is: "${address}"}
+          buySide: true
+        ) {
+          baseCurrency { symbol address }
+          quotePrice
+          block { timestamp { time } }
+          transaction { hash }
+        }
+      }
+    }`;
+  }
+
+  try {
+    const data = await bqQuery(query);
+    return (chainId === 'solana' ? data?.solana?.dexTrades : data?.ethereum?.dexTrades) || [];
+  } catch { return null; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MORALIS API  (EVM supplement for polling)
+// ═══════════════════════════════════════════════════════════════════════════
+const MORALIS_URL = 'https://deep-index.moralis.io/api/v2.2';
+const MORALIS_CHAIN = { ethereum:'eth', bsc:'bsc', base:'base', arbitrum:'arbitrum', polygon:'polygon' };
+
+async function moralisFetch(path, params={}) {
+  if (!moralisKey) throw new Error('No Moralis API key');
+  const url = new URL(MORALIS_URL + path);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
+  const r = await fetch(url, { headers: { 'X-API-Key': moralisKey, Accept: 'application/json' } });
+  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.message || `HTTP ${r.status}`); }
+  return r.json();
+}
+
+async function moralisLatestSwaps(address, chainId) {
+  const chain = MORALIS_CHAIN[chainId];
+  if (!chain) return null;
+  try {
+    const d = await moralisFetch(`/${address}/swaps`, { chain, order:'DESC', limit:'5' });
+    return d?.result || [];
+  } catch { return null; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WIN RATE CALCULATION
+// Uses: Bitquery trade history + DexScreener current prices
+// ═══════════════════════════════════════════════════════════════════════════
+async function computeWinRate(address, chainId) {
+  let trades = [];
+
+  // Try Bitquery first (works for all chains)
+  if (bitqueryKey) {
+    try { trades = await fetchWalletTrades(address, chainId); }
+    catch(e) { console.warn('BQ wallet trades:', e.message); }
+  }
+
+  // Fallback: Moralis for EVM if Bitquery failed/not set
+  if (!trades.length && moralisKey && chainId !== 'solana') {
+    try {
+      const swaps = await moralisFetch(`/${address}/swaps`, { chain: MORALIS_CHAIN[chainId]||'eth', order:'DESC', limit:'100' });
+      // Convert Moralis swap format to common format
+      trades = (swaps?.result || []).map(s => ({
+        baseCurrency: { address: s.tokenOut?.address, symbol: s.tokenOut?.symbol },
+        quotePrice: s.tokenIn?.usdAmount || null,
+        block: { timestamp: { time: s.blockTimestamp } },
+        transaction: { hash: s.transactionHash },
+      })).filter(t => t.baseCurrency?.address);
+    } catch(e) { console.warn('Moralis swaps:', e.message); }
+  }
+
+  if (!trades.length) return { winRate: null, total: 0, wins: 0, losses: 0 };
+
+  // Group by token — track avg buy price per token
+  const positions = new Map();
+  for (const t of trades) {
+    const ta = t.baseCurrency?.address?.toLowerCase();
+    if (!ta) continue;
+    if (!positions.has(ta)) {
+      positions.set(ta, { symbol: t.baseCurrency.symbol, prices: [] });
+    }
+    const p = parseFloat(t.quotePrice);
+    if (p > 0) positions.get(ta).prices.push(p);
+  }
+
+  if (positions.size < 3) return { winRate: null, total: positions.size, wins: 0, losses: 0 };
+
+  // Fetch current prices from DexScreener in batches of 30
+  const addrs = [...positions.keys()];
+  const currentPrices = new Map();
+  for (let i = 0; i < addrs.length; i += 30) {
+    const batch = addrs.slice(i, i+30).join(',');
+    try {
+      const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${batch}`);
+      if (r.ok) {
+        const d = await r.json();
+        for (const pair of d.pairs || []) {
+          const a = pair.baseToken?.address?.toLowerCase();
+          if (!a) continue;
+          if (!currentPrices.has(a) || (pair.liquidity?.usd||0) > (currentPrices.get(a)?.liq||0)) {
+            currentPrices.set(a, { price: parseFloat(pair.priceUsd||0), liq: pair.liquidity?.usd||0 });
+          }
+        }
+      }
+    } catch {}
+  }
+
+  // Score each position
+  let wins = 0, losses = 0;
+  for (const [addr, pos] of positions) {
+    if (!pos.prices.length) continue;
+    const avgBuy = pos.prices.reduce((a,b)=>a+b,0) / pos.prices.length;
+    if (avgBuy <= 0) continue;
+    const cur = currentPrices.get(addr);
+    if (!cur || cur.price <= 0) continue;
+    const ratio = cur.price / avgBuy;
+    if (ratio >= 1.10)      wins++;
+    else if (ratio <= 0.90) losses++;
+  }
+
+  const scored = wins + losses;
+  if (scored < 3) return { winRate: null, total: positions.size, wins, losses };
+  return { winRate: Math.round(wins/scored*100), total: positions.size, wins, losses };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WALLET TRACKING
+// ═══════════════════════════════════════════════════════════════════════════
+function detectChain(addr) {
+  if (/^0x[0-9a-fA-F]{40}$/.test(addr)) return 'ethereum';
+  if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)) return 'solana';
+  return null;
+}
+
+function isTracked(addr) {
+  return trackedWallets.some(w => w.address.toLowerCase() === addr.toLowerCase());
+}
+
+async function trackWallet(address, chainId, knownWR=null) {
+  if (isTracked(address)) { toast('Already tracking this wallet'); return; }
+  if (trackedWallets.length >= 20) { toast('Max 20 tracked wallets reached'); return; }
+
+  const wallet = {
+    address, chain: chainId,
+    winRate: knownWR, total: null, wins: null, losses: null,
+    lastRefresh: null, lastTxId: null, addedAt: Date.now(),
+  };
+  trackedWallets.push(wallet);
+  saveWallets();
+  updatePollStatus();
+  renderLeaderboard();
+  toast('Wallet added to tracking!');
+
+  // Kick off async win rate if not already known
+  if (knownWR === null) {
+    computeWinRate(address, chainId).then(result => {
+      const idx = trackedWallets.findIndex(w => w.address === address);
+      if (idx < 0 || !result) return;
+      Object.assign(trackedWallets[idx], {
+        winRate: result.winRate, total: result.total,
+        wins: result.wins, losses: result.losses, lastRefresh: Date.now(),
+      });
+      saveWallets();
+      if (activeView === 'wallets') renderLeaderboard();
+    }).catch(console.warn);
+  }
+}
+
+function untrackWallet(address) {
+  trackedWallets = trackedWallets.filter(w => w.address.toLowerCase() !== address.toLowerCase());
+  saveWallets();
+  renderLeaderboard();
+  updatePollStatus();
+  if (selected) renderPanel(selected); // refresh Track buttons in panel
+  toast('Wallet removed');
+}
+
+async function refreshAllWinRates() {
+  const btn = document.getElementById('refreshWRBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Refreshing…'; }
+
+  for (const wallet of [...trackedWallets]) {
+    try {
+      const result = await computeWinRate(wallet.address, wallet.chain);
+      const idx = trackedWallets.findIndex(w => w.address === wallet.address);
+      if (idx >= 0 && result) {
+        Object.assign(trackedWallets[idx], {
+          winRate: result.winRate, total: result.total,
+          wins: result.wins, losses: result.losses, lastRefresh: Date.now(),
+        });
+      }
+    } catch(e) { console.warn(wallet.address, e.message); }
+    await delay(600); // be nice to APIs
+  }
+
+  saveWallets();
+  renderLeaderboard();
+  if (btn) { btn.disabled = false; btn.textContent = 'Refresh Rates'; }
+  toast('Win rates updated');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 30-SECOND POLLING
+// ═══════════════════════════════════════════════════════════════════════════
+function startPolling() {
+  if (pollTimer) return;
+  if (!trackedWallets.length) return;
+  if (!bitqueryKey && !moralisKey) return;
+  pollTimer = setInterval(pollTick, 30000);
+  updatePollStatus();
+}
+
+function stopPolling() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  updatePollStatus();
+}
+
+async function pollTick() {
+  const active = trackedWallets.filter(w => w.address);
+  if (!active.length) { stopPolling(); return; }
+
+  const wallet = active[pollIdx % active.length];
+  pollIdx++;
+  await checkNewBuys(wallet);
+}
+
+async function checkNewBuys(wallet) {
+  let trades = null;
+
+  // Prefer Moralis for EVM (lighter on Bitquery quota)
+  if (wallet.chain !== 'solana' && moralisKey) {
+    trades = await moralisLatestSwaps(wallet.address, wallet.chain);
+    if (trades?.length) {
+      // Convert Moralis format
+      trades = trades.map(s => ({
+        sym:   s.tokenOut?.symbol  || '???',
+        addr:  s.tokenOut?.address || '',
+        price: s.tokenOut?.usdAmount || null,
+        txId:  s.transactionHash,
+      }));
+    }
+  }
+
+  // Fallback to Bitquery
+  if (!trades && bitqueryKey) {
+    const raw = await fetchLatestBuys(wallet);
+    if (raw?.length) {
+      trades = raw.map(t => ({
+        sym:   t.baseCurrency?.symbol  || '???',
+        addr:  t.baseCurrency?.address || '',
+        price: t.quotePrice,
+        txId:  t.transaction?.signature || t.transaction?.hash,
+      }));
+    }
+  }
+
+  if (!trades?.length) return;
+
+  const latestId = trades[0]?.txId;
+  if (!latestId || latestId === wallet.lastTxId) return;
+
+  // Find truly new trades
+  const isFirstPoll = !wallet.lastTxId;
+  const newTrades = isFirstPoll
+    ? [] // first poll: just record the baseline, no alerts
+    : trades.filter(t => t.txId && t.txId !== wallet.lastTxId);
+
+  // Update stored last tx
+  const idx = trackedWallets.findIndex(w => w.address === wallet.address);
+  if (idx >= 0) { trackedWallets[idx].lastTxId = latestId; saveWallets(); }
+
+  if (isFirstPoll || !newTrades.length) return;
+
+  for (const t of newTrades.slice(0,3)) {
+    // Skip stablecoin-to-stablecoin trades
+    const stables = ['USDT','USDC','DAI','BUSD','TUSD','USDP','FRAX'];
+    if (stables.includes(t.sym?.toUpperCase())) continue;
+
+    addAlert({
+      walletAddress: wallet.address,
+      chain: wallet.chain,
+      tokenSymbol: t.sym,
+      tokenAddress: t.addr,
+      txId: t.txId,
+      priceUsd: t.price,
+      timestamp: Date.now(),
+    });
+  }
+}
+
+function updatePollStatus() {
+  const dot    = document.getElementById('pollDot');
+  const status = document.getElementById('pollStatus');
+  if (!dot || !status) return;
+
+  const hasWallets = trackedWallets.length > 0;
+  const hasKeys    = !!(bitqueryKey || moralisKey);
+  const active     = hasWallets && hasKeys && !!pollTimer;
+
+  dot.classList.toggle('off', !active);
+  if (!hasWallets) {
+    status.textContent = 'Polling inactive — add wallets to start tracking';
+  } else if (!hasKeys) {
+    status.textContent = 'Add Bitquery or Moralis API key to enable polling';
+  } else if (active) {
+    status.textContent = `Polling ${trackedWallets.length} wallet${trackedWallets.length!==1?'s':''} every 30 seconds`;
+  } else {
+    status.textContent = 'Polling paused';
+  }
+
+  // Auto-start/stop based on conditions
+  if (hasWallets && hasKeys && !pollTimer) startPolling();
+  else if ((!hasWallets || !hasKeys) && pollTimer) stopPolling();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ALERTS
+// ═══════════════════════════════════════════════════════════════════════════
+function addAlert(alert) {
+  alertsList.unshift({ ...alert, id: Date.now() + Math.random() });
+  alertsList = alertsList.slice(0, 50);
+  saveAlerts();
+  newAlertCount++;
+  updateBadge();
+  if (activeView === 'wallets') renderAlerts();
+  else toast(`🔔 ${shortAddr(alert.walletAddress)} bought ${alert.tokenSymbol}`);
+}
+
+function clearAlerts() {
+  alertsList = []; saveAlerts();
+  newAlertCount = 0; updateBadge();
+  renderAlerts();
+}
+
+function updateBadge() {
+  const b = document.getElementById('walletBadge');
+  if (!b) return;
+  if (newAlertCount > 0) { b.style.display = 'inline'; b.textContent = newAlertCount > 9 ? '9+' : String(newAlertCount); }
+  else b.style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════════════════════════════════════════
+function switchView(view) {
+  activeView = view;
+  document.getElementById('trendingView').classList.toggle('hide', view !== 'trending');
+  document.getElementById('walletsView').classList.toggle('show', view === 'wallets');
+  document.querySelectorAll('.main-tab').forEach(b => b.classList.toggle('on', b.dataset.view === view));
+
+  if (view === 'wallets') {
+    newAlertCount = 0; updateBadge();
+    renderLeaderboard();
+    renderAlerts();
+    updatePollStatus();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: LEADERBOARD
+// ═══════════════════════════════════════════════════════════════════════════
+function wrCls(wr) {
+  if (wr === null || wr === undefined) return 'wr-none';
+  if (wr >= 70) return 'wr-great';
+  if (wr >= 50) return 'wr-good';
+  return 'wr-low';
+}
+function rankCls(i) { return ['rank-gold','rank-silver','rank-bronze'][i] || ''; }
+
+function renderLeaderboard() {
+  const el = document.getElementById('leaderboard');
+  if (!el) return;
+
+  if (!trackedWallets.length) {
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">◎</div>
+        <div class="empty-title">No wallets tracked</div>
+        <div class="empty-desc">Click a trending token, then tap Track<br>next to any early buyer — or paste an address below.</div>
+      </div>`;
+    return;
+  }
+
+  const sorted = [...trackedWallets].sort((a,b) => {
+    if (a.winRate === null && b.winRate === null) return 0;
+    if (a.winRate === null) return 1;
+    if (b.winRate === null) return -1;
+    return b.winRate - a.winRate;
+  });
+
+  const rows = sorted.map((w, i) => {
+    const c   = cc(w.chain);
+    const wr  = w.winRate !== null && w.winRate !== undefined ? `${w.winRate}%` : '—';
+    const wrc = wrCls(w.winRate);
+    const tr  = w.total !== null ? w.total : '—';
+    const wl  = w.wins  !== null ? `${w.wins}W / ${w.losses}L` : '—';
+    const dimRow = w.winRate !== null && w.winRate < 50 ? ' style="opacity:.55"' : '';
+    return `
+      <tr class="lb-row"${dimRow}>
+        <td class="rank-num ${rankCls(i)}">#${i+1}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:7px">
+            <span class="badge ${c.cls}">${c.lbl}</span>
+            <span class="wallet-addr-cell" onclick="copyAddr('${esc(w.address)}')" title="${esc(w.address)}">${shortAddr(w.address)}</span>
+          </div>
+        </td>
+        <td><span class="wr-badge ${wrc}">${wr}</span></td>
+        <td style="color:var(--t2);font-variant-numeric:tabular-nums">${tr}</td>
+        <td style="color:var(--t3);font-size:12px">${wl}</td>
+        <td class="r">
+          <button class="btn-sec danger" onclick="untrackWallet('${esc(w.address)}')">✕</button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Wallet</th><th>Win Rate</th><th>Trades</th><th>W / L</th><th class="r"></th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="margin-top:10px;font-size:11px;color:var(--t3)">
+      Win rate based on last 30 days of buys vs current prices (≥10% gain = win, ≥10% loss = loss). Low win-rate rows dimmed.
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: ALERTS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderAlerts() {
+  const el = document.getElementById('alertsList');
+  if (!el) return;
+
+  if (!alertsList.length) {
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🔔</div>
+        <div class="empty-title">No alerts yet</div>
+        <div class="empty-desc">Alerts fire when tracked wallets make new buys.<br>Polled every 30 seconds while tab is open.</div>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = alertsList.map((a, i) => {
+    const c   = cc(a.chain);
+    const txUrl = (a.txId && c.txEx) ? c.txEx + a.txId : null;
+    return `
+      <div class="alert-card${i===0?' fresh':''}">
+        <div class="alert-icon">🔔</div>
+        <div class="alert-body">
+          <div class="alert-title">
+            ${esc(shortAddr(a.walletAddress))} bought
+            <span style="color:var(--green);font-weight:700">${esc(a.tokenSymbol)}</span>
+            ${a.priceUsd ? `<span style="color:var(--t3);font-weight:400">@ ${fmtPrice(a.priceUsd)}</span>` : ''}
+          </div>
+          <div class="alert-sub">
+            <span class="badge ${c.cls}" style="font-size:9px">${c.lbl}</span>
+            ${txUrl ? `<a href="${esc(txUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:none">View Tx ↗</a>` : ''}
+          </div>
+        </div>
+        <div class="alert-time">${timeAgo(a.timestamp)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EARLY BUYERS (in token side panel)
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadEarlyBuyers() {
+  if (!selected) return;
+  const el = document.getElementById('earlyBuyersContent');
+  if (!el) return;
+
+  el.innerHTML = `<div class="inline-load"><div class="mini-spin"></div>Fetching first buyers from Bitquery…</div>`;
+
+  let buyers;
+  try {
+    buyers = await fetchEarlyBuyers(selected);
+  } catch(e) {
+    el.innerHTML = `<div style="font-size:12px;color:var(--red);padding:4px 0">Bitquery error: ${esc(e.message)}</div>`;
+    return;
+  }
+
+  if (!buyers.length) {
+    el.innerHTML = `<div style="font-size:12px;color:var(--t3);padding:4px 0">No early buyer data found in the last 30 days.</div>`;
+    return;
+  }
+
+  // Show buyers immediately, then compute win rates progressively
+  renderBuyerRows(el, buyers, null);
+
+  // Compute win rates one by one and update
+  for (let i = 0; i < Math.min(buyers.length, 5); i++) {
+    const b = buyers[i];
+    try {
+      const wr = await computeWinRate(b.address, b.chain);
+      buyers[i].wr = wr;
+      renderBuyerRows(el, buyers, i);
+    } catch {}
+    await delay(400);
+  }
+}
+
+function renderBuyerRows(el, buyers, computedUpTo) {
+  el.innerHTML = buyers.map((b, i) => {
+    const computed  = computedUpTo !== null && i <= computedUpTo;
+    const wr        = b.wr;
+    const wrText    = !computed ? '…' : wr?.winRate !== null && wr?.winRate !== undefined ? `${wr.winRate}%` : '—';
+    const wrColor   = !computed ? 'var(--t3)' : wr?.winRate >= 70 ? 'var(--green)' : wr?.winRate >= 50 ? '#eab308' : wr?.winRate !== null ? 'var(--red)' : 'var(--t3)';
+    const tracked   = isTracked(b.address);
+    const wrParam   = wr?.winRate !== null && wr?.winRate !== undefined ? wr.winRate : 'null';
+    return `
+      <div class="buyer-row">
+        <span class="buyer-rank">${i+1}</span>
+        <span class="buyer-addr" title="${esc(b.address)}">${b.address.slice(0,10)}…${b.address.slice(-6)}</span>
+        <span class="buyer-wr" style="color:${wrColor}">${wrText}</span>
+        <button class="buyer-btn${tracked?' on':''}"
+          onclick="toggleTrackBuyer('${esc(b.address)}','${esc(b.chain)}',${wrParam})">
+          ${tracked ? '✓ Tracked' : '+ Track'}
+        </button>
+      </div>`;
+  }).join('');
+}
+
+async function toggleTrackBuyer(address, chainId, wr) {
+  if (isTracked(address)) {
+    untrackWallet(address);
+  } else {
+    await trackWallet(address, chainId, wr === null || wr === 'null' ? null : wr);
+  }
+  // Refresh button states in the early buyers list
+  const el = document.getElementById('earlyBuyersContent');
+  if (el) {
+    el.querySelectorAll('.buyer-btn').forEach(btn => {
+      const row  = btn.closest('.buyer-row');
+      const addr = row?.querySelector('.buyer-addr')?.title || '';
+      const on   = isTracked(addr);
+      btn.className = 'buyer-btn' + (on ? ' on' : '');
+      btn.textContent = on ? '✓ Tracked' : '+ Track';
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MANUAL WALLET ADD
+// ═══════════════════════════════════════════════════════════════════════════
+async function addWalletManual() {
+  const inp  = document.getElementById('addWalletInp');
+  const addr = inp.value.trim();
+  if (!addr) return;
+
+  const detectedChain = detectChain(addr);
+  if (!detectedChain) { toast('Invalid address — must be 0x… (EVM) or base58 (Solana)'); return; }
+
+  inp.value = '';
+  await trackWallet(addr, detectedChain, null);
+}
+
+// Enter key support for add wallet input
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('addWalletInp');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') addWalletManual(); });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
 updateGrokUI();
+updateBadge();
+updatePollStatus();
 fetchData();
 startCountdown();
+
+// Refresh alert timestamps every minute
+setInterval(() => { if (activeView === 'wallets' && alertsList.length) renderAlerts(); }, 60000);
 </script>
 </body>
 </html>
