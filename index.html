@@ -867,7 +867,10 @@
       <!-- Config bar -->
       <div class="pt-config">
         <label>Trade size $<input type="number" id="cfgTradeSize" min="1" max="10000" step="1" value="100" /></label>
-        <label>TP %<input type="number" id="cfgTakeProfit" min="1" max="1000" step="1" value="50" /></label>
+        <label style="flex-direction:column;align-items:flex-start;gap:2px">
+          <span style="font-size:11px;color:var(--t2)">Exit strategy</span>
+          <span style="font-size:11px;color:var(--t3)">2x→25% · 4x→25% · 8x→25% · 16x→25%</span>
+        </label>
         <label>SL %<input type="number" id="cfgStopLoss" min="1" max="100" step="1" value="30" /></label>
         <label>Max positions<input type="number" id="cfgMaxPos" min="1" max="20" step="1" value="5" /></label>
         <label>Daily loss limit $<input type="number" id="cfgDailyLimit" min="1" max="100000" step="1" value="500" /></label>
@@ -1443,11 +1446,11 @@ async function saveSettings() {
   updatePollStatus();
   closeSettings();
 
-  // Sync Bitquery key to backend so the automated scanner can use it
-  if (ptServerOnline && bitqueryKey) {
+  // Sync API keys to backend so the automated scanner can use them
+  if (ptServerOnline && (bitqueryKey || moralisKey)) {
     try {
-      await ptFetch('/api/config', { method: 'POST', body: JSON.stringify({ bitqueryKey }) });
-    } catch (e) { console.warn('Could not sync bitqueryKey to backend:', e.message); }
+      await ptFetch('/api/config', { method: 'POST', body: JSON.stringify({ bitqueryKey, moralisKey }) });
+    } catch (e) { console.warn('Could not sync keys to backend:', e.message); }
   }
 
   const keys = [grokKey && 'Grok', bitqueryKey && 'Bitquery', moralisKey && 'Moralis'].filter(Boolean);
@@ -2365,7 +2368,7 @@ function actIcon(type, detail) {
     startup:        '🚀', scan_start: '🔍', scan_tokens: '📊',
     scan_done:      '✅', token_check: '→',  buyers_found: '👥',
     wallet_tracked: '🟢', score_low:  '⚪',  skip:        '⏭',
-    trade_open:     '◆',  trade_close: null, info: 'ℹ',
+    trade_open:     '◆',  trade_close: null, partial_sell: '📈', info: 'ℹ',
     warn:           '⚠',  error:      '🔴',
   };
   if (type === 'trade_close' && detail) {
@@ -2389,10 +2392,11 @@ async function ptCheckServer() {
     await ptFetch('/api/health');
     if (!ptServerOnline) {
       ptServerOnline = true;
-      // On first connect, push any stored bitquery key to backend
+      // On first connect, push stored API keys to backend
       const bk = localStorage.getItem('cs_bitquery');
-      if (bk) {
-        ptFetch('/api/config', { method: 'POST', body: JSON.stringify({ bitqueryKey: bk }) })
+      const mk = localStorage.getItem('cs_moralis');
+      if (bk || mk) {
+        ptFetch('/api/config', { method: 'POST', body: JSON.stringify({ bitqueryKey: bk || '', moralisKey: mk || '' }) })
           .catch(() => {});
       }
     }
@@ -2467,13 +2471,14 @@ function ptRenderActivity(entries) {
   el.innerHTML = entries.map(e => {
     let extraCls = '';
     if (e.type === 'trade_close') extraCls = isWin(e) ? ' win' : ' loss';
+    if (e.type === 'partial_sell') extraCls = ' win';
 
     let detail = '';
     if (e.type === 'wallet_tracked' && e.detail?.address) {
       detail = `<div class="act-detail">${e.detail.address}</div>`;
     } else if (e.type === 'trade_open' && e.detail?.walletAddress) {
       detail = `<div class="act-detail">wallet: ${shortToken(e.detail.walletAddress)}${e.detail.walletWinRate != null ? ' · ' + e.detail.walletWinRate + '% wr' : ''}</div>`;
-    } else if (e.type === 'trade_close' && e.detail?.walletAddress) {
+    } else if ((e.type === 'trade_close' || e.type === 'partial_sell') && e.detail?.walletAddress) {
       detail = `<div class="act-detail">wallet: ${shortToken(e.detail.walletAddress)}${e.detail.walletWinRate != null ? ' · ' + e.detail.walletWinRate + '% wr' : ''}</div>`;
     }
 
@@ -2509,7 +2514,6 @@ function ptRenderStats(s) {
 function ptRenderConfig(cfg) {
   const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
   set('cfgTradeSize',  cfg.tradeSize);
-  set('cfgTakeProfit', cfg.takeProfitPct);
   set('cfgStopLoss',   cfg.stopLossPct);
   set('cfgMaxPos',     cfg.maxOpenPositions);
   set('cfgDailyLimit', cfg.dailyLossLimit);
@@ -2527,7 +2531,12 @@ function ptRenderOpen(positions) {
     </div>`;
     return;
   }
-  const rows = positions.map(t => `
+  const rows = positions.map(t => {
+    const tranchesSold = t.tranchesSold ?? 0;
+    const trancheLabel = tranchesSold > 0
+      ? `<span style="color:var(--green)">${tranchesSold}/4 sold</span>`
+      : '<span style="color:var(--t3)">0/4</span>';
+    return `
     <tr class="pt-row">
       <td>
         <strong>${esc(t.symbol)}</strong>
@@ -2540,6 +2549,7 @@ function ptRenderOpen(positions) {
       <td>$${parseFloat(t.entryPrice).toPrecision(5)}</td>
       <td>$${parseFloat(t.currentPrice || t.entryPrice).toPrecision(5)}</td>
       <td class="${pnlCls(t.pnl)}">${fmtPnl(t.pnl)}${fmtPct(t.pnlPct)}</td>
+      <td>${trancheLabel}</td>
       <td>$${parseFloat(t.amount).toFixed(2)}</td>
       <td>${fmtDate(t.openedAt)}</td>
       <td class="r">${statusBadge(t)}</td>
@@ -2547,11 +2557,12 @@ function ptRenderOpen(positions) {
         <button class="btn-sec danger" style="font-size:11px;padding:3px 8px"
           onclick="ptClosePosition('${esc(t.id)}')">Close</button>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
   el.innerHTML = `<table class="pt-table">
     <thead><tr>
       <th>Token</th><th>Triggered by</th><th>Entry</th><th>Current</th>
-      <th>P&amp;L</th><th>Size</th><th>Opened</th><th class="r">Status</th><th class="r"></th>
+      <th>P&amp;L</th><th>Tranches</th><th>Size</th><th>Opened</th><th class="r">Status</th><th class="r"></th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
@@ -2569,7 +2580,12 @@ function ptRenderClosed(closed) {
     </div>`;
     return;
   }
-  const rows = [...closed].reverse().map(t => `
+  const rows = [...closed].reverse().map(t => {
+    const tranchesSold = t.tranchesSold ?? 0;
+    const trancheLabel = tranchesSold > 0
+      ? `<span style="color:var(--green)">${tranchesSold}/4</span>`
+      : (t.closeReason === 'stop_loss' ? '<span style="color:var(--red)">SL</span>' : '—');
+    return `
     <tr class="pt-row">
       <td>
         <strong>${esc(t.symbol)}</strong>
@@ -2582,15 +2598,17 @@ function ptRenderClosed(closed) {
       <td>$${parseFloat(t.entryPrice).toPrecision(5)}</td>
       <td>$${parseFloat(t.currentPrice || t.entryPrice).toPrecision(5)}</td>
       <td class="${pnlCls(t.pnl)}">${fmtPnl(t.pnl)}${fmtPct(t.pnlPct)}</td>
+      <td>${trancheLabel}</td>
       <td>$${parseFloat(t.amount).toFixed(2)}</td>
       <td>${fmtDate(t.openedAt)}</td>
       <td>${fmtDate(t.closedAt)}</td>
       <td class="r">${statusBadge(t)}</td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
   el.innerHTML = `<table class="pt-table">
     <thead><tr>
       <th>Token</th><th>Triggered by</th><th>Entry</th><th>Exit</th>
-      <th>P&amp;L</th><th>Size</th><th>Opened</th><th>Closed</th><th class="r">Result</th>
+      <th>P&amp;L</th><th>Tranches</th><th>Size</th><th>Opened</th><th>Closed</th><th class="r">Result</th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
@@ -2608,7 +2626,6 @@ async function ptClosePosition(id) {
 async function ptSaveConfig() {
   const cfg = {
     tradeSize:        parseInt(document.getElementById('cfgTradeSize').value)  || 100,
-    takeProfitPct:    parseInt(document.getElementById('cfgTakeProfit').value) || 50,
     stopLossPct:      parseInt(document.getElementById('cfgStopLoss').value)   || 30,
     maxOpenPositions: parseInt(document.getElementById('cfgMaxPos').value)     || 5,
     dailyLossLimit:   parseInt(document.getElementById('cfgDailyLimit').value) || 500,

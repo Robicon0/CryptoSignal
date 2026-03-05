@@ -216,7 +216,8 @@ async function runScan(loadConfig) {
 
         let score;
         try {
-          score = await scoreWallet(buyer.address, bitqueryKey, MIN_SCORED_TRADES);
+          const moralisKey = cfg.moralisKey || null;
+          score = await scoreWallet(buyer.address, bitqueryKey, MIN_SCORED_TRADES, moralisKey);
           walletsScored++;
         } catch (err) {
           console.warn(`[Scanner] Score error ${buyer.address.slice(0, 8)}: ${err.message}`);

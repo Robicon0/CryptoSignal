@@ -18,13 +18,21 @@ const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
 
 const DEFAULT_CONFIG = {
   tradeSize:        100,
-  takeProfitPct:    50,
   stopLossPct:      30,
   maxOpenPositions: 5,
   dailyLossLimit:   500,
   minLiquidityUSD:  5000,
   bitqueryKey:      '',   // synced from frontend Settings
+  moralisKey:       '',   // synced from frontend Settings
 };
+
+// Scaled exit tranches: sell 25% of original tokens at each level
+const SCALE_EXITS = [
+  { tranche: 1, pctGain: 100  },  // 2x
+  { tranche: 2, pctGain: 300  },  // 4x
+  { tranche: 3, pctGain: 700  },  // 8x
+  { tranche: 4, pctGain: 1500 },  // 16x
+];
 
 // ─────────────────────────────────────────────
 // Data helpers
@@ -87,27 +95,31 @@ function openPosition(signal) {
     return null;
   }
 
+  const totalTokens = signal.price > 0 ? cfg.tradeSize / signal.price : 0;
   const trade = {
-    id:            `trade_${Date.now()}`,
-    tokenAddress:  signal.tokenAddress,
-    symbol:        signal.symbol || signal.tokenAddress.slice(0, 8),
-    chain:         signal.chain || 'solana',
-    walletAddress: signal.walletAddress,
-    walletWinRate: signal.walletWinRate ?? null,
-    walletWins:    signal.walletWins    ?? null,
-    walletLosses:  signal.walletLosses  ?? null,
-    entryPrice:    signal.price,
-    currentPrice:  signal.price,
-    amount:        cfg.tradeSize,
-    tokens:        signal.price > 0 ? cfg.tradeSize / signal.price : 0,
-    pnl:           0,
-    pnlPct:        0,
-    openedAt:      new Date().toISOString(),
-    closedAt:      null,
-    closeReason:   null,
-    status:        'open',
-    takeProfitPct: cfg.takeProfitPct,
-    stopLossPct:   cfg.stopLossPct,
+    id:               `trade_${Date.now()}`,
+    tokenAddress:     signal.tokenAddress,
+    symbol:           signal.symbol || signal.tokenAddress.slice(0, 8),
+    chain:            signal.chain || 'solana',
+    walletAddress:    signal.walletAddress,
+    walletWinRate:    signal.walletWinRate ?? null,
+    walletWins:       signal.walletWins    ?? null,
+    walletLosses:     signal.walletLosses  ?? null,
+    entryPrice:       signal.price,
+    currentPrice:     signal.price,
+    amount:           cfg.tradeSize,
+    tokens:           totalTokens,
+    remainingTokens:  totalTokens,
+    tranchesSold:     0,
+    realizedPnl:      0,
+    partialSells:     [],
+    pnl:              0,
+    pnlPct:           0,
+    openedAt:         new Date().toISOString(),
+    closedAt:         null,
+    closeReason:      null,
+    status:           'open',
+    stopLossPct:      cfg.stopLossPct,
   };
 
   trades.open.push(trade);
@@ -139,35 +151,94 @@ function updatePositions(priceMap) {
     if (cur === undefined || cur <= 0) continue;
 
     t.currentPrice = cur;
-    t.pnl          = (cur - t.entryPrice) * t.tokens;
-    t.pnlPct       = ((cur - t.entryPrice) / t.entryPrice) * 100;
+    const pnlPct   = ((cur - t.entryPrice) / t.entryPrice) * 100;
+    t.pnlPct       = pnlPct;
+
+    // Migrate old trades that lack scaled-exit fields
+    if (t.remainingTokens === undefined) t.remainingTokens = t.tokens;
+    if (t.tranchesSold    === undefined) t.tranchesSold    = 0;
+    if (t.realizedPnl     === undefined) t.realizedPnl     = 0;
+    if (t.partialSells    === undefined) t.partialSells    = [];
+
     changed = true;
 
-    let closeReason = null;
-    if (t.pnlPct >=  t.takeProfitPct) closeReason = 'take_profit';
-    if (t.pnlPct <= -t.stopLossPct)   closeReason = 'stop_loss';
+    // ── Stop loss: close entire remaining position ──
+    const slPct = t.stopLossPct ?? 30;
+    if (pnlPct <= -slPct) {
+      const slPnl = (cur - t.entryPrice) * t.remainingTokens;
+      t.realizedPnl  += slPnl;
+      t.pnl           = parseFloat((t.realizedPnl).toFixed(2));
+      t.closedAt      = new Date().toISOString();
+      t.closeReason   = 'stop_loss';
+      t.status        = 'closed';
+      trades.closed.push(t);
+      trades.open.splice(i, 1);
 
-    if (closeReason) {
+      const totalSign = t.pnl >= 0 ? '+' : '';
+      const msg = `🔴 STOP LOSS: ${t.symbol} closed @ $${Number(cur).toPrecision(5)} | Total P&L ${totalSign}$${t.pnl.toFixed(2)} (${pnlPct.toFixed(1)}%)`;
+      console.log(`[PaperTrade] ${msg}`);
+      appendActivity('trade_close', msg, {
+        tradeId: t.id, symbol: t.symbol, closeReason: 'stop_loss',
+        pnl: t.pnl, pnlPct: parseFloat(pnlPct.toFixed(1)),
+        entryPrice: t.entryPrice, exitPrice: cur,
+        walletAddress: t.walletAddress, walletWinRate: t.walletWinRate,
+      });
+      continue;
+    }
+
+    // ── Scaled exits: check each unsold tranche ──
+    const trancheTokens = t.tokens / 4; // 25% of original tokens per tranche
+    for (const exit of SCALE_EXITS) {
+      if (t.tranchesSold >= exit.tranche) continue;       // already sold
+      if (pnlPct < exit.pctGain)           continue;      // not reached yet
+      if (t.remainingTokens <= 0)          break;
+
+      // Sell this tranche
+      const sellTokens = Math.min(trancheTokens, t.remainingTokens);
+      const sellPnl    = (cur - t.entryPrice) * sellTokens;
+      t.remainingTokens -= sellTokens;
+      t.tranchesSold    = exit.tranche;
+      t.realizedPnl    += sellPnl;
+
+      const partial = {
+        tranche:   exit.tranche,
+        pctGain:   exit.pctGain,
+        sellPrice: cur,
+        sellPnl:   parseFloat(sellPnl.toFixed(2)),
+        soldAt:    new Date().toISOString(),
+      };
+      t.partialSells.push(partial);
+
+      const multiple = (1 + exit.pctGain / 100).toFixed(0);
+      const msg = `📈 PARTIAL SELL T${exit.tranche}/4: ${t.symbol} @ $${Number(cur).toPrecision(5)} (${multiple}x) | +$${sellPnl.toFixed(2)} — ${t.tranchesSold}/4 tranches sold`;
+      console.log(`[PaperTrade] ${msg}`);
+      appendActivity('partial_sell', msg, {
+        tradeId: t.id, symbol: t.symbol,
+        tranche: exit.tranche, pctGain: exit.pctGain,
+        sellPrice: cur, sellPnl: partial.sellPnl,
+        walletAddress: t.walletAddress, walletWinRate: t.walletWinRate,
+      });
+    }
+
+    // Update unrealized P&L on remaining tokens
+    const unrealized = (cur - t.entryPrice) * t.remainingTokens;
+    t.pnl = parseFloat((t.realizedPnl + unrealized).toFixed(2));
+
+    // If all 4 tranches sold, close the position
+    if (t.tranchesSold >= 4 || t.remainingTokens <= 0) {
       t.closedAt    = new Date().toISOString();
-      t.closeReason = closeReason;
+      t.closeReason = 'take_profit';
       t.status      = 'closed';
       trades.closed.push(t);
       trades.open.splice(i, 1);
 
-      const sign   = t.pnl >= 0 ? '+' : '';
-      const label  = closeReason === 'take_profit' ? '✅ TAKE PROFIT' : '🔴 STOP LOSS';
-      const msg    = `${label}: ${t.symbol} closed @ $${Number(cur).toPrecision(5)} | P&L ${sign}$${t.pnl.toFixed(2)} (${sign}${t.pnlPct.toFixed(1)}%)`;
+      const totalSign = t.pnl >= 0 ? '+' : '';
+      const msg = `✅ FULL EXIT: ${t.symbol} all 4 tranches sold | Total P&L ${totalSign}$${t.pnl.toFixed(2)}`;
       console.log(`[PaperTrade] ${msg}`);
       appendActivity('trade_close', msg, {
-        tradeId:      t.id,
-        symbol:       t.symbol,
-        closeReason,
-        pnl:          parseFloat(t.pnl.toFixed(2)),
-        pnlPct:       parseFloat(t.pnlPct.toFixed(1)),
-        entryPrice:   t.entryPrice,
-        exitPrice:    cur,
-        walletAddress: t.walletAddress,
-        walletWinRate: t.walletWinRate,
+        tradeId: t.id, symbol: t.symbol, closeReason: 'take_profit',
+        pnl: t.pnl, entryPrice: t.entryPrice, exitPrice: cur,
+        walletAddress: t.walletAddress, walletWinRate: t.walletWinRate,
       });
     }
   }
@@ -180,7 +251,14 @@ function closePosition(id, reason = 'manual') {
   const idx    = trades.open.findIndex(t => t.id === id);
   if (idx === -1) return null;
 
-  const t       = trades.open[idx];
+  const t = trades.open[idx];
+
+  // Add unrealized P&L on remaining tokens at current price
+  const remaining = t.remainingTokens ?? t.tokens;
+  const unrealized = (t.currentPrice - t.entryPrice) * remaining;
+  const realized   = t.realizedPnl ?? 0;
+  t.pnl = parseFloat((realized + unrealized).toFixed(2));
+
   t.closedAt    = new Date().toISOString();
   t.closeReason = reason;
   t.status      = 'closed';
@@ -189,9 +267,9 @@ function closePosition(id, reason = 'manual') {
   saveTrades(trades);
 
   appendActivity('trade_close',
-    `MANUAL CLOSE: ${t.symbol} | P&L ${t.pnl >= 0 ? '+' : ''}$${(t.pnl || 0).toFixed(2)}`, {
+    `MANUAL CLOSE: ${t.symbol} | P&L ${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}`, {
       tradeId: t.id, symbol: t.symbol, closeReason: reason,
-      pnl: parseFloat((t.pnl || 0).toFixed(2)),
+      pnl: t.pnl,
     });
   return t;
 }
