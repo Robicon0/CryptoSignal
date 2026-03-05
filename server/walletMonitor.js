@@ -55,13 +55,18 @@ function saveSeen(seen) {
 // Public API
 function getTrackedWallets() { return loadWallets(); }
 
-function addTrackedWallet(address, chain = 'solana') {
+function addTrackedWallet(address, chain = 'solana', winRate = null, wins = null, losses = null) {
   const wallets = loadWallets();
   if (wallets.some(w => w.address === address)) return wallets.find(w => w.address === address);
-  const wallet = { address, chain, addedAt: new Date().toISOString() };
+  const wallet = {
+    address, chain,
+    addedAt:     new Date().toISOString(),
+    autoTracked: winRate !== null,
+    winRate, wins, losses,
+  };
   wallets.push(wallet);
   saveWallets(wallets);
-  console.log(`[Monitor] Tracking wallet: ${address} (${chain})`);
+  console.log(`[Monitor] Tracking wallet: ${address} (${chain})${winRate !== null ? ` wr=${winRate}%` : ''}`);
   return wallet;
 }
 
@@ -139,6 +144,9 @@ async function pollWallets() {
             price:         tokenData.price,
             walletAddress: wallet.address,
             chain:         wallet.chain,
+            walletWinRate: wallet.winRate  ?? null,
+            walletWins:    wallet.wins     ?? null,
+            walletLosses:  wallet.losses   ?? null,
           });
         }
 

@@ -540,6 +540,54 @@
     .paper-view { display: none; }
     .paper-view.show { display: block; }
 
+    /* Pipeline flow */
+    .pipeline {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+      padding: 14px 16px; margin-bottom: 14px;
+      background: var(--bg0); border-radius: 10px;
+    }
+    .pl-step {
+      display: flex; flex-direction: column; align-items: center;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px;
+      font-size: 11px; font-weight: 600; color: var(--t2);
+      text-align: center; min-width: 90px; line-height: 1.4;
+    }
+    .pl-step.active { border-color: var(--accent); color: #b09ffa; }
+    .pl-step-icon { font-size: 16px; margin-bottom: 3px; }
+    .pl-arrow { color: var(--t3); font-size: 16px; flex-shrink: 0; }
+    .pl-scanner-stats {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      padding: 10px 0 2px; font-size: 12px; color: var(--t3);
+    }
+    .pl-scanner-stats span { color: var(--t2); font-weight: 600; }
+
+    /* Activity log */
+    .activity-log { display: flex; flex-direction: column; gap: 5px; max-height: 420px; overflow-y: auto; }
+    .act-entry {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 10px; border-radius: 8px;
+      border-left: 3px solid transparent;
+      background: var(--bg0); font-size: 12px;
+      animation: fadeSlide .25s ease;
+    }
+    .act-entry.act-wallet_tracked { border-color: var(--green); background: rgba(34,197,94,.05); }
+    .act-entry.act-trade_open     { border-color: var(--accent); background: rgba(124,58,237,.05); }
+    .act-entry.act-trade_close.win  { border-color: var(--green); background: rgba(34,197,94,.04); }
+    .act-entry.act-trade_close.loss { border-color: var(--red);   background: rgba(239,68,68,.04); }
+    .act-entry.act-error          { border-color: var(--red); }
+    .act-entry.act-warn           { border-color: #eab308; }
+    .act-entry.act-scan_start,
+    .act-entry.act-scan_done      { border-color: var(--border-hi); }
+    .act-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .act-body { flex: 1; min-width: 0; }
+    .act-msg  { color: var(--t1); line-height: 1.5; word-break: break-word; }
+    .act-time { font-size: 10px; color: var(--t3); margin-top: 2px; white-space: nowrap; }
+    .act-detail {
+      font-size: 11px; color: var(--t3); margin-top: 3px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
     /* Stats strip */
     .pt-stats {
       display: grid;
@@ -745,7 +793,7 @@
       </div>
 
       <!-- Stats strip -->
-      <div class="pt-stats" id="ptStats">
+      <div class="pt-stats">
         <div class="pt-stat">
           <div class="pt-stat-lbl">Total P&amp;L</div>
           <div class="pt-stat-val" id="ptTotalPnl">—</div>
@@ -772,8 +820,52 @@
         </div>
       </div>
 
+      <!-- Automated Pipeline status -->
+      <div class="section-card" style="margin-bottom:14px">
+        <div class="section-hdr">
+          <div class="section-title">◈ Automated Pipeline
+            <span class="section-sub" id="ptScannerRunning"></span>
+          </div>
+          <div class="section-actions">
+            <button class="btn-sec" onclick="ptRefresh()">↻ Refresh</button>
+          </div>
+        </div>
+
+        <!-- Pipeline flow -->
+        <div class="pipeline">
+          <div class="pl-step">
+            <div class="pl-step-icon">◎</div>DexScreener<br>Trending SOL
+          </div>
+          <div class="pl-arrow">→</div>
+          <div class="pl-step">
+            <div class="pl-step-icon">◈</div>Bitquery<br>Early Buyers
+          </div>
+          <div class="pl-arrow">→</div>
+          <div class="pl-step">
+            <div class="pl-step-icon">◆</div>Win Rate<br>Scoring
+          </div>
+          <div class="pl-arrow">→</div>
+          <div class="pl-step">
+            <div class="pl-step-icon">✓</div>Auto-Track<br>≥50% WR
+          </div>
+          <div class="pl-arrow">→</div>
+          <div class="pl-step">
+            <div class="pl-step-icon">$</div>Paper Trade<br>New Buys
+          </div>
+        </div>
+
+        <!-- Scan stats -->
+        <div class="pl-scanner-stats" id="ptScanStats">
+          <div>Last scan: <span id="ptLastScan">—</span></div>
+          <div>Next scan: <span id="ptNextScan">—</span></div>
+          <div>Tokens scanned: <span id="ptTokensScanned">—</span></div>
+          <div>Wallets scored: <span id="ptWalletsScored">—</span></div>
+          <div>Wallets tracked: <span id="ptWalletsTracked">—</span></div>
+        </div>
+      </div>
+
       <!-- Config bar -->
-      <div class="pt-config" id="ptConfig">
+      <div class="pt-config">
         <label>Trade size $<input type="number" id="cfgTradeSize" min="1" max="10000" step="1" value="100" /></label>
         <label>TP %<input type="number" id="cfgTakeProfit" min="1" max="1000" step="1" value="50" /></label>
         <label>SL %<input type="number" id="cfgStopLoss" min="1" max="100" step="1" value="30" /></label>
@@ -789,15 +881,28 @@
       <div class="section-card" style="margin-bottom:14px">
         <div class="section-hdr">
           <div class="section-title">◆ Open Positions</div>
-          <div class="section-actions">
-            <button class="btn-sec" onclick="ptRefresh()">↻ Refresh</button>
-          </div>
         </div>
         <div id="ptOpenPositions">
           <div class="empty">
             <div class="empty-icon">◆</div>
             <div class="empty-title">No open positions</div>
-            <div class="empty-desc">Positions open automatically when tracked wallets buy tokens on Solana.<br>Add wallets in the Smart Wallets tab to start.</div>
+            <div class="empty-desc">The pipeline will auto-open positions when a tracked wallet buys a token.<br>Add your Bitquery API key in Settings to start.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity log -->
+      <div class="section-card" style="margin-bottom:14px">
+        <div class="section-hdr">
+          <div class="section-title">◈ Pipeline Activity Log</div>
+          <div class="section-actions">
+            <span style="font-size:11px;color:var(--t3)" id="ptActivityCount"></span>
+          </div>
+        </div>
+        <div class="activity-log" id="ptActivityLog">
+          <div class="empty" style="padding:20px 0">
+            <div class="empty-title">No activity yet</div>
+            <div class="empty-desc">The log will fill as the pipeline runs.<br>Add your Bitquery API key in Settings.</div>
           </div>
         </div>
       </div>
@@ -1327,7 +1432,7 @@ function closeSettings() {
   document.getElementById('settingsBtn').classList.remove('active');
 }
 function overlayClick(e) { if (e.target === e.currentTarget) closeSettings(); }
-function saveSettings() {
+async function saveSettings() {
   grokKey      = document.getElementById('grokInput').value.trim();
   bitqueryKey  = document.getElementById('bitqueryInput').value.trim();
   moralisKey   = document.getElementById('moralisInput').value.trim();
@@ -1337,6 +1442,14 @@ function saveSettings() {
   updateGrokUI();
   updatePollStatus();
   closeSettings();
+
+  // Sync Bitquery key to backend so the automated scanner can use it
+  if (ptServerOnline && bitqueryKey) {
+    try {
+      await ptFetch('/api/config', { method: 'POST', body: JSON.stringify({ bitqueryKey }) });
+    } catch (e) { console.warn('Could not sync bitqueryKey to backend:', e.message); }
+  }
+
   const keys = [grokKey && 'Grok', bitqueryKey && 'Bitquery', moralisKey && 'Moralis'].filter(Boolean);
   toast(keys.length ? `${keys.join(', ')} enabled!` : 'Settings saved.');
 }
@@ -2185,30 +2298,29 @@ startCountdown();
 setInterval(() => { if (activeView === 'wallets' && alertsList.length) renderAlerts(); }, 60000);
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PHASE 3 — PAPER TRADING
+// PHASE 3 — PAPER TRADING + AUTOMATED PIPELINE
 // ═══════════════════════════════════════════════════════════════════════════
 
 const PT_API = 'http://localhost:3001';
 let ptServerOnline = false;
-let ptPollTimer    = null;
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 function fmtPnl(val) {
   if (val === null || val === undefined || isNaN(val)) return '—';
-  const n = parseFloat(val);
+  const n    = parseFloat(val);
   const sign = n >= 0 ? '+' : '';
   return sign + '$' + Math.abs(n).toFixed(2);
 }
 function fmtPct(val) {
   if (val === null || val === undefined || isNaN(val)) return '';
-  const n = parseFloat(val);
+  const n    = parseFloat(val);
   const sign = n >= 0 ? '+' : '';
   return ` (${sign}${n.toFixed(1)}%)`;
 }
 function pnlCls(val) {
   const n = parseFloat(val);
-  if (n > 0)  return 'pnl-pos';
-  if (n < 0)  return 'pnl-neg';
+  if (n > 0) return 'pnl-pos';
+  if (n < 0) return 'pnl-neg';
   return 'pnl-flat';
 }
 function fmtDate(iso) {
@@ -2216,20 +2328,58 @@ function fmtDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
+function fmtRelTime(iso) {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  const s = Math.floor(diff / 1000);
+  if (s < 60)  return `${s}s ago`;
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+  return fmtDate(iso);
+}
+function fmtRelFuture(iso) {
+  if (!iso) return '—';
+  const diff = new Date(iso).getTime() - Date.now();
+  if (diff <= 0) return 'now';
+  const s = Math.floor(diff / 1000);
+  if (s < 60)  return `${s}s`;
+  return `${Math.floor(s/60)}m ${s%60}s`;
+}
 function shortToken(addr) {
   if (!addr) return '—';
   return addr.length > 12 ? addr.slice(0, 6) + '…' + addr.slice(-4) : addr;
 }
-function statusBadge(trade) {
-  if (trade.status === 'open')    return '<span class="status-open">OPEN</span>';
-  if (trade.closeReason === 'take_profit') return '<span class="status-tp">TAKE PROFIT</span>';
-  if (trade.closeReason === 'stop_loss')   return '<span class="status-sl">STOP LOSS</span>';
+function wrBadge(wr) {
+  if (wr === null || wr === undefined) return '';
+  const cls = wr >= 70 ? 'wr-great' : wr >= 50 ? 'wr-good' : 'wr-low';
+  return `<span class="wr-badge ${cls}" style="font-size:10px;padding:1px 5px">${wr}% wr</span>`;
+}
+function statusBadge(t) {
+  if (t.status === 'open')                    return '<span class="status-open">OPEN</span>';
+  if (t.closeReason === 'take_profit')        return '<span class="status-tp">TAKE PROFIT</span>';
+  if (t.closeReason === 'stop_loss')          return '<span class="status-sl">STOP LOSS</span>';
   return '<span class="status-manual">CLOSED</span>';
 }
+function actIcon(type, detail) {
+  const icons = {
+    startup:        '🚀', scan_start: '🔍', scan_tokens: '📊',
+    scan_done:      '✅', token_check: '→',  buyers_found: '👥',
+    wallet_tracked: '🟢', score_low:  '⚪',  skip:        '⏭',
+    trade_open:     '◆',  trade_close: null, info: 'ℹ',
+    warn:           '⚠',  error:      '🔴',
+  };
+  if (type === 'trade_close' && detail) {
+    return detail.pnl >= 0 ? '✅' : '🔴';
+  }
+  return icons[type] || '·';
+}
 
-// ── API calls ─────────────────────────────────────────────────────────────
+// ── API ───────────────────────────────────────────────────────────────────
 async function ptFetch(path, opts) {
-  const res = await fetch(PT_API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(opts?.headers) } });
+  const res = await fetch(PT_API + path, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...(opts?.headers) },
+  });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json();
 }
@@ -2237,37 +2387,108 @@ async function ptFetch(path, opts) {
 async function ptCheckServer() {
   try {
     await ptFetch('/api/health');
-    ptServerOnline = true;
+    if (!ptServerOnline) {
+      ptServerOnline = true;
+      // On first connect, push any stored bitquery key to backend
+      const bk = localStorage.getItem('cs_bitquery');
+      if (bk) {
+        ptFetch('/api/config', { method: 'POST', body: JSON.stringify({ bitqueryKey: bk }) })
+          .catch(() => {});
+      }
+    }
     document.getElementById('ptServerDot').classList.remove('off');
-    document.getElementById('ptServerStatus').textContent = 'Trading server online — polling every 15s';
+    document.getElementById('ptServerStatus').textContent =
+      'Automated pipeline running — scans every 5 min, monitors wallets every 15s';
   } catch {
     ptServerOnline = false;
     document.getElementById('ptServerDot').classList.add('off');
-    document.getElementById('ptServerStatus').textContent = 'Server offline — run: cd server && npm install && npm start';
+    document.getElementById('ptServerStatus').textContent =
+      'Server offline — run: cd server && npm install && npm start';
   }
 }
 
-// ── Refresh (poll stats + trades) ─────────────────────────────────────────
+// ── Full refresh ──────────────────────────────────────────────────────────
 async function ptRefresh() {
   await ptCheckServer();
   if (!ptServerOnline) return;
-
   try {
-    const [trades, stats, cfg] = await Promise.all([
+    const [trades, stats, cfg, scannerStatus, activity] = await Promise.all([
       ptFetch('/api/trades'),
       ptFetch('/api/stats'),
       ptFetch('/api/config'),
+      ptFetch('/api/scanner/status'),
+      ptFetch('/api/activity?limit=100'),
     ]);
     ptRenderStats(stats);
     ptRenderConfig(cfg);
-    ptRenderOpen(trades.open || []);
+    ptRenderScanner(scannerStatus);
+    ptRenderActivity(activity);
+    ptRenderOpen(trades.open   || []);
     ptRenderClosed(trades.closed || []);
   } catch (err) {
     console.error('[PaperTrade] Refresh error:', err);
   }
 }
 
-// ── Render stats ──────────────────────────────────────────────────────────
+// ── Scanner status ────────────────────────────────────────────────────────
+function ptRenderScanner(s) {
+  const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  const running = document.getElementById('ptScannerRunning');
+  if (running) {
+    running.textContent = s.running ? ' — scanning now…' : '';
+    running.style.color = s.running ? 'var(--accent)' : '';
+  }
+  setText('ptLastScan',       s.lastScanAt    ? fmtRelTime(s.lastScanAt)   : 'not yet');
+  setText('ptNextScan',       s.nextScanAt    ? fmtRelFuture(s.nextScanAt) : '—');
+  setText('ptTokensScanned',  s.tokensScanned ?? 0);
+  setText('ptWalletsScored',  s.walletsScored ?? 0);
+  setText('ptWalletsTracked', s.walletsTracked ?? 0);
+}
+
+// ── Activity log ──────────────────────────────────────────────────────────
+function ptRenderActivity(entries) {
+  const el = document.getElementById('ptActivityLog');
+  if (!el) return;
+
+  const cnt = document.getElementById('ptActivityCount');
+  if (cnt) cnt.textContent = entries.length ? `${entries.length} entries` : '';
+
+  if (!entries.length) {
+    el.innerHTML = `<div class="empty" style="padding:20px 0">
+      <div class="empty-title">No activity yet</div>
+      <div class="empty-desc">The log will fill as the pipeline runs.<br>Add your Bitquery API key in Settings.</div>
+    </div>`;
+    return;
+  }
+
+  const isWin = e => e.type === 'trade_close' && e.detail?.pnl >= 0;
+  const isLoss= e => e.type === 'trade_close' && e.detail?.pnl < 0;
+
+  el.innerHTML = entries.map(e => {
+    let extraCls = '';
+    if (e.type === 'trade_close') extraCls = isWin(e) ? ' win' : ' loss';
+
+    let detail = '';
+    if (e.type === 'wallet_tracked' && e.detail?.address) {
+      detail = `<div class="act-detail">${e.detail.address}</div>`;
+    } else if (e.type === 'trade_open' && e.detail?.walletAddress) {
+      detail = `<div class="act-detail">wallet: ${shortToken(e.detail.walletAddress)}${e.detail.walletWinRate != null ? ' · ' + e.detail.walletWinRate + '% wr' : ''}</div>`;
+    } else if (e.type === 'trade_close' && e.detail?.walletAddress) {
+      detail = `<div class="act-detail">wallet: ${shortToken(e.detail.walletAddress)}${e.detail.walletWinRate != null ? ' · ' + e.detail.walletWinRate + '% wr' : ''}</div>`;
+    }
+
+    return `<div class="act-entry act-${esc(e.type)}${extraCls}">
+      <div class="act-icon">${actIcon(e.type, e.detail)}</div>
+      <div class="act-body">
+        <div class="act-msg">${esc(e.message)}</div>
+        ${detail}
+        <div class="act-time">${fmtRelTime(e.timestamp)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────
 function ptRenderStats(s) {
   const set = (id, val, cls) => {
     const el = document.getElementById(id);
@@ -2275,18 +2496,18 @@ function ptRenderStats(s) {
     el.textContent = val;
     el.className = 'pt-stat-val' + (cls ? ' ' + cls : '');
   };
-
-  set('ptTotalPnl',   fmtPnl(s.totalPnl),   pnlCls(s.totalPnl));
-  set('ptOpenPnl',    fmtPnl(s.openPnl),    pnlCls(s.openPnl));
-  set('ptDailyPnl',   fmtPnl(s.dailyPnl),   pnlCls(s.dailyPnl));
-  set('ptWinRate',    s.closedTrades ? s.winRate + '%' : '—', s.winRate >= 50 ? 'pos' : (s.closedTrades ? 'neg' : ''));
+  set('ptTotalPnl',   fmtPnl(s.totalPnl),  pnlCls(s.totalPnl));
+  set('ptOpenPnl',    fmtPnl(s.openPnl),   pnlCls(s.openPnl));
+  set('ptDailyPnl',   fmtPnl(s.dailyPnl),  pnlCls(s.dailyPnl));
+  set('ptWinRate',    s.closedTrades ? s.winRate + '%' : '—',
+      s.winRate >= 50 ? 'pos' : (s.closedTrades ? 'neg' : ''));
   set('ptOpenCount',  s.openPositions  ?? '—');
   set('ptClosedCount',s.closedTrades   ?? '—');
 }
 
-// ── Render config ─────────────────────────────────────────────────────────
+// ── Config ────────────────────────────────────────────────────────────────
 function ptRenderConfig(cfg) {
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
   set('cfgTradeSize',  cfg.tradeSize);
   set('cfgTakeProfit', cfg.takeProfitPct);
   set('cfgStopLoss',   cfg.stopLossPct);
@@ -2294,62 +2515,70 @@ function ptRenderConfig(cfg) {
   set('cfgDailyLimit', cfg.dailyLossLimit);
 }
 
-// ── Render open positions ─────────────────────────────────────────────────
+// ── Open positions ────────────────────────────────────────────────────────
 function ptRenderOpen(positions) {
   const el = document.getElementById('ptOpenPositions');
   if (!el) return;
-
   if (!positions.length) {
-    el.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">◆</div>
-        <div class="empty-title">No open positions</div>
-        <div class="empty-desc">Positions open automatically when tracked wallets buy tokens on Solana.<br>Add wallets in the Smart Wallets tab to start.</div>
-      </div>`;
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">◆</div>
+      <div class="empty-title">No open positions</div>
+      <div class="empty-desc">The pipeline will auto-open positions when a tracked wallet buys a token.<br>Add your Bitquery API key in Settings to start.</div>
+    </div>`;
     return;
   }
-
   const rows = positions.map(t => `
     <tr class="pt-row">
-      <td><strong>${esc(t.symbol)}</strong><br><span style="font-size:11px;color:var(--t3);font-family:monospace">${shortToken(t.tokenAddress)}</span></td>
+      <td>
+        <strong>${esc(t.symbol)}</strong>
+        <div style="font-size:11px;color:var(--t3);font-family:monospace">${shortToken(t.tokenAddress)}</div>
+      </td>
+      <td>
+        <div style="font-size:11px;color:var(--t3)">${shortToken(t.walletAddress)}</div>
+        ${wrBadge(t.walletWinRate)}
+      </td>
       <td>$${parseFloat(t.entryPrice).toPrecision(5)}</td>
       <td>$${parseFloat(t.currentPrice || t.entryPrice).toPrecision(5)}</td>
       <td class="${pnlCls(t.pnl)}">${fmtPnl(t.pnl)}${fmtPct(t.pnlPct)}</td>
       <td>$${parseFloat(t.amount).toFixed(2)}</td>
       <td>${fmtDate(t.openedAt)}</td>
       <td class="r">${statusBadge(t)}</td>
-      <td class="r"><button class="btn-sec danger" style="font-size:11px;padding:3px 8px" onclick="ptClosePosition('${esc(t.id)}')">Close</button></td>
+      <td class="r">
+        <button class="btn-sec danger" style="font-size:11px;padding:3px 8px"
+          onclick="ptClosePosition('${esc(t.id)}')">Close</button>
+      </td>
     </tr>`).join('');
-
-  el.innerHTML = `
-    <table class="pt-table">
-      <thead><tr>
-        <th>Token</th><th>Entry</th><th>Current</th><th>P&amp;L</th><th>Size</th><th>Opened</th><th class="r">Status</th><th class="r"></th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  el.innerHTML = `<table class="pt-table">
+    <thead><tr>
+      <th>Token</th><th>Triggered by</th><th>Entry</th><th>Current</th>
+      <th>P&amp;L</th><th>Size</th><th>Opened</th><th class="r">Status</th><th class="r"></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
 }
 
-// ── Render closed trades ──────────────────────────────────────────────────
+// ── Closed trades ─────────────────────────────────────────────────────────
 function ptRenderClosed(closed) {
   const el = document.getElementById('ptClosedTrades');
   if (!el) return;
-
   if (!closed.length) {
-    el.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">◈</div>
-        <div class="empty-title">No closed trades yet</div>
-        <div class="empty-desc">Trades close when take-profit or stop-loss is hit,<br>or when you close them manually.</div>
-      </div>`;
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">◈</div>
+      <div class="empty-title">No closed trades yet</div>
+      <div class="empty-desc">Trades close when take-profit or stop-loss is hit,<br>or when you close them manually.</div>
+    </div>`;
     return;
   }
-
-  // Show newest first
-  const sorted = [...closed].reverse();
-  const rows = sorted.map(t => `
+  const rows = [...closed].reverse().map(t => `
     <tr class="pt-row">
-      <td><strong>${esc(t.symbol)}</strong><br><span style="font-size:11px;color:var(--t3);font-family:monospace">${shortToken(t.tokenAddress)}</span></td>
+      <td>
+        <strong>${esc(t.symbol)}</strong>
+        <div style="font-size:11px;color:var(--t3);font-family:monospace">${shortToken(t.tokenAddress)}</div>
+      </td>
+      <td>
+        <div style="font-size:11px;color:var(--t3)">${shortToken(t.walletAddress)}</div>
+        ${wrBadge(t.walletWinRate)}
+      </td>
       <td>$${parseFloat(t.entryPrice).toPrecision(5)}</td>
       <td>$${parseFloat(t.currentPrice || t.entryPrice).toPrecision(5)}</td>
       <td class="${pnlCls(t.pnl)}">${fmtPnl(t.pnl)}${fmtPct(t.pnlPct)}</td>
@@ -2358,14 +2587,13 @@ function ptRenderClosed(closed) {
       <td>${fmtDate(t.closedAt)}</td>
       <td class="r">${statusBadge(t)}</td>
     </tr>`).join('');
-
-  el.innerHTML = `
-    <table class="pt-table">
-      <thead><tr>
-        <th>Token</th><th>Entry</th><th>Exit</th><th>P&amp;L</th><th>Size</th><th>Opened</th><th>Closed</th><th class="r">Result</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  el.innerHTML = `<table class="pt-table">
+    <thead><tr>
+      <th>Token</th><th>Triggered by</th><th>Entry</th><th>Exit</th>
+      <th>P&amp;L</th><th>Size</th><th>Opened</th><th>Closed</th><th class="r">Result</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────
@@ -2374,9 +2602,7 @@ async function ptClosePosition(id) {
     await ptFetch(`/api/trades/${id}/close`, { method: 'POST' });
     toast('Position closed');
     ptRefresh();
-  } catch (err) {
-    toast('Error closing position: ' + err.message);
-  }
+  } catch (err) { toast('Error: ' + err.message); }
 }
 
 async function ptSaveConfig() {
@@ -2390,9 +2616,7 @@ async function ptSaveConfig() {
   try {
     await ptFetch('/api/config', { method: 'POST', body: JSON.stringify(cfg) });
     toast('Config saved');
-  } catch (err) {
-    toast('Error saving config: ' + err.message);
-  }
+  } catch (err) { toast('Error: ' + err.message); }
 }
 
 async function ptResetTrades() {
@@ -2401,9 +2625,7 @@ async function ptResetTrades() {
     await ptFetch('/api/trades/reset', { method: 'POST' });
     toast('All trades reset');
     ptRefresh();
-  } catch (err) {
-    toast('Error resetting: ' + err.message);
-  }
+  } catch (err) { toast('Error: ' + err.message); }
 }
 
 // ── Auto-poll every 15s when paper view is active ─────────────────────────
