@@ -2304,7 +2304,10 @@ setInterval(() => { if (activeView === 'wallets' && alertsList.length) renderAle
 // PHASE 3 — PAPER TRADING + AUTOMATED PIPELINE
 // ═══════════════════════════════════════════════════════════════════════════
 
-const PT_API = 'http://localhost:3001';
+// Auto-detect backend URL: same origin when deployed on Railway, localhost:3001 locally
+const PT_API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:3001'
+  : '';
 let ptServerOnline = false;
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -2392,12 +2395,23 @@ async function ptCheckServer() {
     await ptFetch('/api/health');
     if (!ptServerOnline) {
       ptServerOnline = true;
-      // On first connect, push stored API keys to backend
+
+      // On first connect, push locally-stored API keys to backend
       const bk = localStorage.getItem('cs_bitquery');
       const mk = localStorage.getItem('cs_moralis');
       if (bk || mk) {
         ptFetch('/api/config', { method: 'POST', body: JSON.stringify({ bitqueryKey: bk || '', moralisKey: mk || '' }) })
           .catch(() => {});
+      }
+
+      // When deployed, load Grok key from server env if user hasn't set one locally
+      if (!localStorage.getItem('cs_grok')) {
+        ptFetch('/api/env-keys').then(data => {
+          if (data.grokKey && !grokKey) {
+            grokKey = data.grokKey;
+            updateGrokUI();
+          }
+        }).catch(() => {});
       }
     }
     document.getElementById('ptServerDot').classList.remove('off');

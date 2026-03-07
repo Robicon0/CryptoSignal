@@ -309,6 +309,12 @@ app.use(express.static(path.join(__dirname, '..')));
 // ── Health ──────────────────────────────────
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
+// ── Env-provided public keys (Grok) ─────────
+// Only exposes keys that are safe for the frontend — never bitquery/moralis.
+app.get('/api/env-keys', (_req, res) => {
+  res.json({ grokKey: process.env.GROK_API_KEY || '' });
+});
+
 // ── Config ──────────────────────────────────
 app.get('/api/config', (_req, res) => {
   const cfg = loadConfig();
@@ -367,7 +373,26 @@ app.get('/api/activity',         (req, res)  => res.json(getActivity(parseInt(re
 
 // ── Start server ─────────────────────────────
 app.listen(PORT, () => {
-  console.log(`[Server] CryptoSignal backend running on http://localhost:${PORT}`);
+  console.log(`[Server] CryptoSignal backend running on port ${PORT}`);
+
+  // Seed API keys from environment variables (Railway / production)
+  // These override any blank values in config.json but don't overwrite
+  // keys already set by the user via the Settings panel.
+  const envKeys = {
+    bitqueryKey: process.env.BITQUERY_API_KEY || '',
+    moralisKey:  process.env.MORALIS_API_KEY  || '',
+  };
+  if (envKeys.bitqueryKey || envKeys.moralisKey) {
+    const cfg = loadConfig();
+    let changed = false;
+    if (envKeys.bitqueryKey && !cfg.bitqueryKey) { cfg.bitqueryKey = envKeys.bitqueryKey; changed = true; }
+    if (envKeys.moralisKey  && !cfg.moralisKey)  { cfg.moralisKey  = envKeys.moralisKey;  changed = true; }
+    if (changed) {
+      saveConfig(cfg);
+      console.log('[Server] API keys loaded from environment variables');
+    }
+  }
+
   startMonitor({ openPosition, updatePositions });
   startScanner(loadConfig);
 });
