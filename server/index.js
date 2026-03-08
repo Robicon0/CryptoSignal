@@ -318,10 +318,11 @@ app.get('/api/env-keys', (_req, res) => {
 // ── Config ──────────────────────────────────
 app.get('/api/config', (_req, res) => {
   const cfg = loadConfig();
-  // Never expose the bitquery key to the frontend in plaintext responses
   const safe = { ...cfg };
   safe.bitqueryKeySet = !!safe.bitqueryKey;
+  safe.moralisKeySet  = !!safe.moralisKey;
   delete safe.bitqueryKey;
+  delete safe.moralisKey;
   res.json(safe);
 });
 
@@ -331,7 +332,9 @@ app.post('/api/config', (req, res) => {
   saveConfig(cfg);
   const safe = { ...cfg };
   safe.bitqueryKeySet = !!safe.bitqueryKey;
+  safe.moralisKeySet  = !!safe.moralisKey;
   delete safe.bitqueryKey;
+  delete safe.moralisKey;
   res.json(safe);
 });
 
@@ -375,23 +378,29 @@ app.get('/api/activity',         (req, res)  => res.json(getActivity(parseInt(re
 app.listen(PORT, () => {
   console.log(`[Server] CryptoSignal backend running on port ${PORT}`);
 
-  // Seed API keys from environment variables (Railway / production)
-  // These override any blank values in config.json but don't overwrite
-  // keys already set by the user via the Settings panel.
-  const envKeys = {
-    bitqueryKey: process.env.BITQUERY_API_KEY || '',
-    moralisKey:  process.env.MORALIS_API_KEY  || '',
-  };
-  if (envKeys.bitqueryKey || envKeys.moralisKey) {
-    const cfg = loadConfig();
-    let changed = false;
-    if (envKeys.bitqueryKey && !cfg.bitqueryKey) { cfg.bitqueryKey = envKeys.bitqueryKey; changed = true; }
-    if (envKeys.moralisKey  && !cfg.moralisKey)  { cfg.moralisKey  = envKeys.moralisKey;  changed = true; }
-    if (changed) {
-      saveConfig(cfg);
-      console.log('[Server] API keys loaded from environment variables');
-    }
+  // Always apply environment variable keys — env vars win over config.json.
+  // This ensures Railway deployments always have fresh keys, even if a stale
+  // config.json was somehow persisted across deploys.
+  const bqEnv  = process.env.BITQUERY_API_KEY || '';
+  const moEnv  = process.env.MORALIS_API_KEY  || '';
+  const cfg    = loadConfig();
+  let changed  = false;
+
+  if (bqEnv && cfg.bitqueryKey !== bqEnv) { cfg.bitqueryKey = bqEnv; changed = true; }
+  if (moEnv && cfg.moralisKey  !== moEnv) { cfg.moralisKey  = moEnv; changed = true; }
+  if (changed) {
+    saveConfig(cfg);
+    console.log('[Server] API keys updated from environment variables');
   }
+
+  // Log current key status so Railway logs make it obvious what's active
+  const active = [
+    cfg.bitqueryKey ? 'Bitquery ✓' : 'Bitquery ✗ (set BITQUERY_API_KEY)',
+    cfg.moralisKey  ? 'Moralis ✓'  : 'Moralis ✗  (set MORALIS_API_KEY)',
+    process.env.GROK_API_KEY ? 'Grok ✓' : 'Grok ✗    (set GROK_API_KEY)',
+  ];
+  console.log('[Server] API key status:');
+  active.forEach(s => console.log(`  ${s}`));
 
   startMonitor({ openPosition, updatePositions });
   startScanner(loadConfig);

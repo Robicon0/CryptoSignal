@@ -2309,6 +2309,7 @@ const PT_API = (window.location.hostname === 'localhost' || window.location.host
   ? 'http://localhost:3001'
   : '';
 let ptServerOnline = false;
+let ptConfig = {}; // last fetched config from server (includes bitqueryKeySet, moralisKeySet)
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 function fmtPnl(val) {
@@ -2415,8 +2416,16 @@ async function ptCheckServer() {
       }
     }
     document.getElementById('ptServerDot').classList.remove('off');
+    // Show which scoring engines are active
+    const activeKeys = [
+      ptConfig.bitqueryKeySet && 'Bitquery',
+      ptConfig.moralisKeySet  && 'Moralis',
+    ].filter(Boolean);
+    const keyStatus = activeKeys.length
+      ? `(${activeKeys.join(' + ')} active — RPC fallback always available)`
+      : '(no API keys set — using RPC fallback only)';
     document.getElementById('ptServerStatus').textContent =
-      'Automated pipeline running — scans every 5 min, monitors wallets every 15s';
+      `Automated pipeline running ${keyStatus} — scans every 5 min, monitors wallets every 15s`;
   } catch {
     ptServerOnline = false;
     document.getElementById('ptServerDot').classList.add('off');
@@ -2437,6 +2446,7 @@ async function ptRefresh() {
       ptFetch('/api/scanner/status'),
       ptFetch('/api/activity?limit=100'),
     ]);
+    ptConfig = cfg;
     ptRenderStats(stats);
     ptRenderConfig(cfg);
     ptRenderScanner(scannerStatus);
@@ -2472,9 +2482,13 @@ function ptRenderActivity(entries) {
   if (cnt) cnt.textContent = entries.length ? `${entries.length} entries` : '';
 
   if (!entries.length) {
+    const hasKey = ptConfig.bitqueryKeySet || ptConfig.moralisKeySet;
+    const desc = hasKey
+      ? 'The pipeline is initializing — activity will appear after the first scan (within 20s of server start).'
+      : 'The log will fill as the pipeline runs. Add a Bitquery or Moralis API key to start.';
     el.innerHTML = `<div class="empty" style="padding:20px 0">
       <div class="empty-title">No activity yet</div>
-      <div class="empty-desc">The log will fill as the pipeline runs.<br>Add your Bitquery API key in Settings.</div>
+      <div class="empty-desc">${desc}</div>
     </div>`;
     return;
   }
@@ -2538,10 +2552,14 @@ function ptRenderOpen(positions) {
   const el = document.getElementById('ptOpenPositions');
   if (!el) return;
   if (!positions.length) {
+    const hasKey = ptConfig.bitqueryKeySet || ptConfig.moralisKeySet;
+    const desc = hasKey
+      ? 'The pipeline is running — positions will open automatically when a tracked wallet buys a token.'
+      : 'Add your Bitquery or Moralis API key in Settings (or set the env vars on Railway) to start the automated pipeline.';
     el.innerHTML = `<div class="empty">
       <div class="empty-icon">◆</div>
       <div class="empty-title">No open positions</div>
-      <div class="empty-desc">The pipeline will auto-open positions when a tracked wallet buys a token.<br>Add your Bitquery API key in Settings to start.</div>
+      <div class="empty-desc">${desc}</div>
     </div>`;
     return;
   }

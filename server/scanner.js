@@ -4,7 +4,7 @@ const fs    = require('fs');
 const path  = require('path');
 const fetch = require('node-fetch');
 
-const { fetchEarlyBuyers, scoreWallet } = require('./bitquery');
+const { fetchEarlyBuyers, scoreWallet, Bq402Error } = require('./bitquery');
 const { addTrackedWallet, getTrackedWallets } = require('./walletMonitor');
 
 // ─────────────────────────────────────────────
@@ -149,16 +149,19 @@ async function runScan(loadConfig) {
 
   const cfg         = loadConfig();
   const bitqueryKey = cfg.bitqueryKey;
+  const moralisKey  = cfg.moralisKey || null;
 
-  if (!bitqueryKey) {
-    appendActivity('warn', 'Scanner idle — add Bitquery API key in Settings to enable automated trading');
+  if (!bitqueryKey && !moralisKey) {
+    appendActivity('warn', 'Scanner idle — add Bitquery or Moralis API key in Settings (or set env vars on Railway) to enable automated trading');
     return;
   }
 
   status.running = true;
   status.scansRun++;
   const t0 = Date.now();
-  appendActivity('scan_start', `Automated scan #${status.scansRun} started`);
+
+  const keyInfo = [bitqueryKey && 'Bitquery', moralisKey && 'Moralis'].filter(Boolean).join(' + ');
+  appendActivity('scan_start', `Automated scan #${status.scansRun} started (keys: ${keyInfo})`);
 
   try {
     // 1. Fetch trending Solana tokens
@@ -188,20 +191,26 @@ async function runScan(loadConfig) {
           address: token.address, symbol: token.symbol, liquidityUsd: token.liquidityUsd,
         });
 
-      // Fetch early buyers
+      // Fetch early buyers — fetchEarlyBuyers now chains Bitquery → Moralis → RPC automatically
       let buyers;
       try {
-        buyers = await fetchEarlyBuyers(token.address, bitqueryKey, MAX_BUYERS_PER_TOKEN);
+        buyers = await fetchEarlyBuyers(token.address, bitqueryKey, MAX_BUYERS_PER_TOKEN, moralisKey);
       } catch (err) {
-        appendActivity('error', `Bitquery error for ${token.symbol}: ${err.message}`);
+        appendActivity('error', `Failed to fetch buyers for ${token.symbol}: ${err.message}`);
         markScanned(token.address);
         await delay(REQ_DELAY_MS);
         continue;
       }
 
+      if (!buyers.length) {
+        appendActivity('skip', `${token.symbol}: no buyers found (all strategies returned empty)`);
+        markScanned(token.address);
+        continue;
+      }
+
       const newBuyers = buyers.filter(b => !trackedSet.has(b.address));
       if (!newBuyers.length) {
-        appendActivity('skip', `${token.symbol}: no new buyers to score`);
+        appendActivity('skip', `${token.symbol}: no new buyers to score (all already tracked)`);
         markScanned(token.address);
         continue;
       }
@@ -210,25 +219,28 @@ async function runScan(loadConfig) {
         symbol: token.symbol, count: newBuyers.length,
       });
 
-      // Score each buyer
+      // Score each buyer — scoreWallet chains Bitquery → Moralis → RPC automatically
       for (const buyer of newBuyers) {
         await delay(REQ_DELAY_MS);
 
         let score;
         try {
-          const moralisKey = cfg.moralisKey || null;
           score = await scoreWallet(buyer.address, bitqueryKey, MIN_SCORED_TRADES, moralisKey);
           walletsScored++;
+          console.log(`[Scanner] Scored ${buyer.address.slice(0, 8)}: ${score.winRate ?? 'null'}% wr (${score.total} trades, via ${score.via || 'unknown'})`);
         } catch (err) {
+          appendActivity('error', `Score failed ${buyer.address.slice(0, 8)}: ${err.message}`);
           console.warn(`[Scanner] Score error ${buyer.address.slice(0, 8)}: ${err.message}`);
           continue;
         }
 
         const short = buyer.address.slice(0, 8) + '…';
 
+        const via = score.via ? ` [via ${score.via}]` : '';
+
         if (score.winRate === null) {
           appendActivity('score_low',
-            `${short}: insufficient data (${score.total} trades, need ${MIN_SCORED_TRADES}+)`, {
+            `${short}: insufficient data (${score.total} trades, need ${MIN_SCORED_TRADES}+)${via}`, {
               address: buyer.address, total: score.total,
             });
           continue;
@@ -236,7 +248,7 @@ async function runScan(loadConfig) {
 
         if (score.winRate < MIN_WIN_RATE) {
           appendActivity('score_low',
-            `${short}: ${score.winRate}% win rate — below ${MIN_WIN_RATE}% threshold`, {
+            `${short}: ${score.winRate}% win rate — below ${MIN_WIN_RATE}% threshold${via}`, {
               address: buyer.address, winRate: score.winRate, total: score.total,
             });
           continue;
@@ -244,7 +256,7 @@ async function runScan(loadConfig) {
 
         // ✅ Auto-track!
         appendActivity('wallet_tracked',
-          `AUTO-TRACKED ${short} — ${score.winRate}% win rate (${score.wins}W / ${score.losses}L) — found buying ${token.symbol}`, {
+          `AUTO-TRACKED ${short} — ${score.winRate}% win rate (${score.wins}W / ${score.losses}L) — found buying ${token.symbol}${via}`, {
             address: buyer.address, winRate: score.winRate,
             wins: score.wins, losses: score.losses, total: score.total,
             foundBuying: token.symbol, foundBuyingAddress: token.address,
