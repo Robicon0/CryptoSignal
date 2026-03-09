@@ -163,30 +163,50 @@ async function fetchEarlyBuyersMoralis(tokenAddress, moralisKey, limit = 20) {
 
 // ─────────────────────────────────────────────
 // STRATEGY 3 — Solana RPC: fetch early buyers of a token
-// Uses the token's top Raydium/Orca pool from DexScreener, then
-// reads recent transaction signers from the Solana public RPC.
+// KEY INSIGHT: call getSignaturesForAddress on the POOL/PAIR address
+// (from DexScreener), NOT the token mint address. The pool is a writable
+// account in every swap, so its signature list = swap transactions.
+// Using token mint only works for pump.fun tokens by coincidence.
+// Public RPC prunes ~80% of older txs — fetch 100 sigs, check 50.
 // ─────────────────────────────────────────────
-async function fetchEarlyBuyersRPC(tokenAddress, limit = 20) {
+async function fetchEarlyBuyersRPC(tokenAddress, limit = 20, pairAddress = null) {
   const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-  console.log(`[Bitquery→RPC] Fetching early buyers for ${tokenAddress.slice(0, 8)} via Solana RPC`);
+
+  // Resolve pair address from DexScreener if not supplied by caller
+  if (!pairAddress) {
+    try {
+      const { fetchTokenData } = require('./priceFetcher');
+      const td = await fetchTokenData(tokenAddress);
+      pairAddress = td?.pairAddress || null;
+    } catch (e) {
+      console.warn(`[RPC] DexScreener pair lookup failed for ${tokenAddress.slice(0, 8)}: ${e.message}`);
+    }
+  }
+
+  // Pool address for swap txs; fall back to token mint (works for pump.fun)
+  const searchAddress = pairAddress || tokenAddress;
+  const addrType      = pairAddress ? 'pair' : 'mint(pump.fun)';
+  console.log(`[RPC] Fetching buyers for ${tokenAddress.slice(0, 8)} via ${addrType} ${searchAddress.slice(0, 8)}`);
 
   try {
-    // Get recent signatures for transactions involving this token mint
+    // Ask for 100 sigs — public RPC prunes ~80%, so we need many to find enough
     const sigResp = await fetch(RPC_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         jsonrpc: '2.0', id: 1, method: 'getSignaturesForAddress',
-        params: [tokenAddress, { limit: 50 }],
+        params: [searchAddress, { limit: 100 }],
       }),
-      timeout: 10000,
+      timeout: 12000,
     });
-    if (!sigResp.ok) return [];
-    const { result: sigs } = await sigResp.json();
-    if (!sigs?.length) return [];
+    if (!sigResp.ok) { console.warn(`[RPC] getSignaturesForAddress HTTP ${sigResp.status}`); return []; }
+    const sigData = await sigResp.json();
+    const sigs = sigData?.result || [];
+    console.log(`[RPC] ${sigs.length} sigs for ${addrType} ${searchAddress.slice(0, 8)}`);
+    if (!sigs.length) return [];
 
-    // Fetch tx details to find signers (buyers)
-    const txPromises = sigs.slice(0, Math.min(limit * 2, 30)).map(s =>
+    // Fetch up to 50 tx details in parallel (more = better odds of non-null results)
+    const txPromises = sigs.slice(0, 50).map(s =>
       fetch(RPC_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -199,22 +219,25 @@ async function fetchEarlyBuyersRPC(tokenAddress, limit = 20) {
     );
 
     const txResults = await Promise.allSettled(txPromises);
-    const seen   = new Set();
-    const buyers = [];
+    const seen    = new Set();
+    const buyers  = [];
+    let nullCount = 0;
 
     for (const result of txResults) {
-      if (result.status !== 'fulfilled' || !result.value?.result) continue;
+      if (result.status !== 'fulfilled' || !result.value?.result) { nullCount++; continue; }
       const tx = result.value.result;
-      // The fee payer (index 0 signer) initiated the transaction
+
+      // Fee payer (account index 0) initiated the swap = the buyer
       const signer = tx.transaction?.message?.accountKeys?.[0]?.pubkey;
       if (!signer || seen.has(signer) || QUOTE_MINTS.has(signer)) continue;
 
-      // Confirm this wallet received the token (it's a buy, not a sell)
+      // Confirm the fee payer's ATA balance INCREASED for this token (buy not sell)
       const postBalances = tx.meta?.postTokenBalances || [];
       const preBalances  = tx.meta?.preTokenBalances  || [];
       const receivedToken = postBalances.some(post => {
-        if (post.mint !== tokenAddress || post.owner !== signer) return false;
-        const pre = preBalances.find(p => p.accountIndex === post.accountIndex);
+        if (post.mint !== tokenAddress) return false;
+        if (post.owner !== signer) return false;
+        const pre     = preBalances.find(p => p.accountIndex === post.accountIndex);
         const preAmt  = parseFloat(pre?.uiTokenAmount?.uiAmount  || 0);
         const postAmt = parseFloat(post.uiTokenAmount?.uiAmount || 0);
         return postAmt > preAmt;
@@ -226,24 +249,26 @@ async function fetchEarlyBuyersRPC(tokenAddress, limit = 20) {
         address:       signer,
         firstBuyTime:  tx.blockTime ? new Date(tx.blockTime * 1000).toISOString() : null,
         firstBuyPrice: null,
-        txId:          sigs.find(s => true)?.signature,
+        txId:          sigs[0]?.signature,
       });
 
       if (buyers.length >= limit) break;
     }
 
-    console.log(`[Bitquery→RPC] Found ${buyers.length} buyers for ${tokenAddress.slice(0, 8)}`);
+    console.log(`[RPC] ${buyers.length} buyers found for ${tokenAddress.slice(0, 8)} (${nullCount}/${txResults.length} txs null/pruned)`);
     return buyers;
   } catch (err) {
-    console.error(`[Bitquery→RPC] Error: ${err.message}`);
+    console.error(`[RPC] Error for ${tokenAddress.slice(0, 8)}: ${err.message}`);
     return [];
   }
 }
 
 // ─────────────────────────────────────────────
 // Public: fetchEarlyBuyers — chains all three strategies
+// pairAddress from scanner (DexScreener) is threaded through to RPC
+// so we don't need a second DexScreener call inside fetchEarlyBuyersRPC
 // ─────────────────────────────────────────────
-async function fetchEarlyBuyers(tokenAddress, apiKey, limit = 20, moralisKey = null) {
+async function fetchEarlyBuyers(tokenAddress, apiKey, limit = 20, moralisKey = null, pairAddress = null) {
   // Strategy 1: Bitquery
   try {
     return await fetchEarlyBuyersBq(tokenAddress, apiKey, limit);
@@ -257,14 +282,14 @@ async function fetchEarlyBuyers(tokenAddress, apiKey, limit = 20, moralisKey = n
     try {
       const buyers = await fetchEarlyBuyersMoralis(tokenAddress, moralisKey, limit);
       if (buyers.length > 0) return buyers;
-      console.warn(`[Moralis] fetchEarlyBuyers returned 0 results — trying RPC`);
+      console.warn(`[Moralis] 0 results for ${tokenAddress.slice(0, 8)} — trying RPC`);
     } catch (err) {
-      console.warn(`[Moralis] fetchEarlyBuyers failed: ${err.message} — trying RPC`);
+      console.warn(`[Moralis] failed for ${tokenAddress.slice(0, 8)}: ${err.message} — trying RPC`);
     }
   }
 
-  // Strategy 3: Solana RPC (no API key needed)
-  return fetchEarlyBuyersRPC(tokenAddress, limit);
+  // Strategy 3: Solana RPC (no API key needed, pairAddress avoids extra DexScreener call)
+  return fetchEarlyBuyersRPC(tokenAddress, limit, pairAddress);
 }
 
 // ─────────────────────────────────────────────

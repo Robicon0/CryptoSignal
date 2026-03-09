@@ -120,6 +120,7 @@ async function fetchTrendingTokens() {
       liquidityUsd: liq,
       volume24h:   pair.volume?.h24 || 0,
       priceUsd:    parseFloat(pair.priceUsd || 0),
+      pairAddress: pair.pairAddress || '',   // pool/AMM address for RPC buyer lookup
     });
   }
 
@@ -194,7 +195,7 @@ async function runScan(loadConfig) {
       // Fetch early buyers — fetchEarlyBuyers now chains Bitquery → Moralis → RPC automatically
       let buyers;
       try {
-        buyers = await fetchEarlyBuyers(token.address, bitqueryKey, MAX_BUYERS_PER_TOKEN, moralisKey);
+        buyers = await fetchEarlyBuyers(token.address, bitqueryKey, MAX_BUYERS_PER_TOKEN, moralisKey, token.pairAddress || '');
       } catch (err) {
         appendActivity('error', `Failed to fetch buyers for ${token.symbol}: ${err.message}`);
         markScanned(token.address);
@@ -330,4 +331,4 @@ function stopScanner() {
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-module.exports = { startScanner, stopScanner, getStatus, getActivity, appendActivity };
+module.exports = { startScanner, stopScanner, getStatus, getActivity, appendActivity, fetchTrendingTokens };

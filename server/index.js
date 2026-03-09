@@ -370,6 +370,100 @@ app.delete('/api/wallets/:address', (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Test scan (debug endpoint) ───────────────
+app.get('/api/test-scan', async (req, res) => {
+  const fetch = require('node-fetch');
+  const { fetchTrendingTokens } = require('./scanner');
+  const { fetchEarlyBuyersBq, fetchEarlyBuyersMoralis, fetchEarlyBuyersRPC } = require('./bitquery');
+  const cfg = loadConfig();
+
+  const report = {
+    timestamp: new Date().toISOString(),
+    config: { bitqueryKeySet: !!cfg.bitqueryKey, moralisKeySet: !!cfg.moralisKey },
+    token: null,
+    strategies: {},
+  };
+
+  try {
+    let tokenAddress = req.query.token || null;
+    let pairAddress  = req.query.pair  || null;
+    let symbol       = tokenAddress ? tokenAddress.slice(0, 8) : null;
+
+    if (!tokenAddress) {
+      const tokens = await fetchTrendingTokens();
+      const top = tokens.find(t => t.liquidityUsd >= 50000) || tokens[0];
+      if (!top) return res.status(503).json({ error: 'No trending tokens found from DexScreener' });
+      tokenAddress = top.address;
+      pairAddress  = top.pairAddress || null;
+      symbol       = top.symbol;
+    }
+
+    report.token = { address: tokenAddress, symbol, pairAddress };
+
+    // Strategy 1: Bitquery
+    const t1 = Date.now();
+    try {
+      const buyers = await fetchEarlyBuyersBq(tokenAddress, cfg.bitqueryKey, 5);
+      report.strategies.bitquery = { status: 'ok', count: buyers.length, buyers: buyers.slice(0, 3), ms: Date.now() - t1 };
+    } catch (err) {
+      report.strategies.bitquery = { status: 'error', error: err.message, ms: Date.now() - t1 };
+    }
+
+    // Strategy 2: Moralis (raw response shown)
+    const t2 = Date.now();
+    if (cfg.moralisKey) {
+      try {
+        const url = `https://deep-index.moralis.io/api/v2.2/tokens/${tokenAddress}/swaps?chain=solana&order=ASC&limit=5`;
+        const r   = await fetch(url, { headers: { 'X-API-Key': cfg.moralisKey, Accept: 'application/json' }, timeout: 15000 });
+        const raw = await r.text();
+        let parsed; try { parsed = JSON.parse(raw); } catch { parsed = raw; }
+        const buyers = Array.isArray(parsed?.result)
+          ? parsed.result.map(s => ({ address: s.walletAddress || s.from, raw: s })).filter(b => b.address)
+          : [];
+        report.strategies.moralis = {
+          status: r.ok ? 'ok' : 'error', httpStatus: r.status,
+          count: buyers.length, buyers: buyers.slice(0, 3),
+          rawResultSample: Array.isArray(parsed?.result) ? parsed.result.slice(0, 2) : parsed,
+          ms: Date.now() - t2,
+        };
+      } catch (err) {
+        report.strategies.moralis = { status: 'error', error: err.message, ms: Date.now() - t2 };
+      }
+    } else {
+      report.strategies.moralis = { status: 'skipped', reason: 'no MORALIS_API_KEY' };
+    }
+
+    // Strategy 3: Solana RPC with pair address
+    const t3 = Date.now();
+    const RPC = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+    const searchAddr = pairAddress || tokenAddress;
+    report.strategies.rpc = { searchAddress: searchAddr, usingPairAddress: !!pairAddress };
+    try {
+      const sigR = await fetch(RPC, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getSignaturesForAddress', params: [searchAddr, { limit: 20 }] }),
+        timeout: 12000,
+      });
+      const sigD = await sigR.json();
+      const sigs = sigD?.result || [];
+      report.strategies.rpc.sigCount = sigs.length;
+      const buyers = await fetchEarlyBuyersRPC(tokenAddress, 5, pairAddress);
+      report.strategies.rpc.count   = buyers.length;
+      report.strategies.rpc.buyers  = buyers.slice(0, 3);
+      report.strategies.rpc.status  = 'ok';
+      report.strategies.rpc.ms      = Date.now() - t3;
+    } catch (err) {
+      report.strategies.rpc.status = 'error';
+      report.strategies.rpc.error  = err.message;
+      report.strategies.rpc.ms     = Date.now() - t3;
+    }
+
+    res.json(report);
+  } catch (err) {
+    res.status(500).json({ ...report, error: err.message });
+  }
+});
+
 // ── Scanner / Activity ───────────────────────
 app.get('/api/scanner/status',   (_req, res) => res.json(getScannerStatus()));
 app.get('/api/activity',         (req, res)  => res.json(getActivity(parseInt(req.query.limit) || 100)));
