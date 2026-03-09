@@ -5,7 +5,8 @@ const fs    = require('fs');
 const path  = require('path');
 
 const BQ_URL      = 'https://streaming.bitquery.io/graphql';
-const MORALIS_URL = 'https://deep-index.moralis.io/api/v2.2';
+// Solana-specific Moralis gateway (deep-index is EVM only)
+const MORALIS_SOL = 'https://solana-gateway.moralis.io';
 const DATA_DIR    = path.join(__dirname, 'data');
 const SCORE_FILE  = path.join(DATA_DIR, 'wallet_scores.json');
 const SCORE_TTL   = 24 * 60 * 60 * 1000; // 24h cache
@@ -136,8 +137,8 @@ async function fetchEarlyBuyersBq(tokenAddress, apiKey, limit = 20) {
 // STRATEGY 2 — Moralis: fetch early buyers of a token
 // ─────────────────────────────────────────────
 async function fetchEarlyBuyersMoralis(tokenAddress, moralisKey, limit = 20) {
-  // GET /tokens/{address}/swaps?chain=solana&order=ASC&limit=N
-  const url = `${MORALIS_URL}/tokens/${tokenAddress}/swaps?chain=solana&order=ASC&limit=${limit}`;
+  // Correct Solana endpoint: solana-gateway.moralis.io/token/mainnet/{address}/swaps
+  const url = `${MORALIS_SOL}/token/mainnet/${tokenAddress}/swaps?order=ASC&limit=${limit}`;
   console.log(`[Bitquery→Moralis] Fetching early buyers for ${tokenAddress.slice(0, 8)} via Moralis`);
 
   const data  = await moralisFetch(url, moralisKey);
@@ -170,41 +171,37 @@ async function fetchEarlyBuyersMoralis(tokenAddress, moralisKey, limit = 20) {
 // Public RPC prunes ~80% of older txs — fetch 100 sigs, check 50.
 // ─────────────────────────────────────────────
 async function fetchEarlyBuyersRPC(tokenAddress, limit = 20, pairAddress = null) {
+  // DexScreener's pairAddress is their internal ID, not always a real on-chain account.
+  // Try token mint first (works for pump.fun bonding curves), then pair address.
   const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
 
-  // Resolve pair address from DexScreener if not supplied by caller
-  if (!pairAddress) {
+  async function getSigs(addr) {
     try {
-      const { fetchTokenData } = require('./priceFetcher');
-      const td = await fetchTokenData(tokenAddress);
-      pairAddress = td?.pairAddress || null;
-    } catch (e) {
-      console.warn(`[RPC] DexScreener pair lookup failed for ${tokenAddress.slice(0, 8)}: ${e.message}`);
-    }
+      const r = await fetch(RPC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getSignaturesForAddress', params: [addr, { limit: 100 }] }),
+        timeout: 12000,
+      });
+      if (!r.ok) return [];
+      const d = await r.json();
+      return d?.result || [];
+    } catch { return []; }
   }
 
-  // Pool address for swap txs; fall back to token mint (works for pump.fun)
-  const searchAddress = pairAddress || tokenAddress;
-  const addrType      = pairAddress ? 'pair' : 'mint(pump.fun)';
-  console.log(`[RPC] Fetching buyers for ${tokenAddress.slice(0, 8)} via ${addrType} ${searchAddress.slice(0, 8)}`);
+  let sigs = await getSigs(tokenAddress);
+  let addrType = 'mint';
+
+  if (!sigs.length && pairAddress) {
+    console.log(`[RPC] 0 sigs via mint, trying pair address for ${tokenAddress.slice(0, 8)}`);
+    const pairSigs = await getSigs(pairAddress);
+    if (pairSigs.length) { sigs = pairSigs; addrType = 'pair'; }
+  }
+
+  console.log(`[RPC] ${sigs.length} sigs for ${tokenAddress.slice(0, 8)} via ${addrType}`);
+  if (!sigs.length) return [];
 
   try {
-    // Ask for 100 sigs — public RPC prunes ~80%, so we need many to find enough
-    const sigResp = await fetch(RPC_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0', id: 1, method: 'getSignaturesForAddress',
-        params: [searchAddress, { limit: 100 }],
-      }),
-      timeout: 12000,
-    });
-    if (!sigResp.ok) { console.warn(`[RPC] getSignaturesForAddress HTTP ${sigResp.status}`); return []; }
-    const sigData = await sigResp.json();
-    const sigs = sigData?.result || [];
-    console.log(`[RPC] ${sigs.length} sigs for ${addrType} ${searchAddress.slice(0, 8)}`);
-    if (!sigs.length) return [];
-
     // Fetch up to 50 tx details in parallel (more = better odds of non-null results)
     const txPromises = sigs.slice(0, 50).map(s =>
       fetch(RPC_URL, {
@@ -297,8 +294,8 @@ async function fetchEarlyBuyers(tokenAddress, apiKey, limit = 20, moralisKey = n
 // Fixed: correct URL (/wallets/{address}/swaps) and field names
 // ─────────────────────────────────────────────
 async function moralisScoreWallet(address, moralisKey, minTrades = 3) {
-  // Correct endpoint: /wallets/{address}/swaps (not /{address}/swaps)
-  const url = `${MORALIS_URL}/wallets/${address}/swaps?chain=solana&order=DESC&limit=100`;
+  // Correct Solana endpoint: solana-gateway.moralis.io/account/mainnet/{address}/swaps
+  const url = `${MORALIS_SOL}/account/mainnet/${address}/swaps?order=DESC&limit=100`;
   console.log(`[Moralis] Scoring wallet ${address.slice(0, 8)}`);
 
   const data  = await moralisFetch(url, moralisKey);
@@ -306,19 +303,19 @@ async function moralisScoreWallet(address, moralisKey, minTrades = 3) {
   console.log(`[Moralis] Got ${swaps.length} swaps for ${address.slice(0, 8)}`);
 
   // Build a map of token → buy prices
-  // Moralis field names (v2.2): tokenIn, tokenOut, usdAmountIn, usdAmountOut
+  // Solana gateway field names: tokenIn, tokenOut (with .address, .symbol, .amount, .amountUsd)
   const tokenMap = new Map();
   for (const swap of swaps) {
     // tokenOut = what was bought; tokenIn = what was spent (SOL/USDC)
-    const tokenOut = swap.tokenOut || swap.bought;
+    const tokenOut = swap.tokenOut;
     if (!tokenOut) continue;
 
-    const mint = tokenOut.address || tokenOut.mint || tokenOut.contractAddress;
+    const mint = tokenOut.address;
     if (!mint || QUOTE_MINTS.has(mint)) continue;
 
-    // Price per token in USD
-    const usdSpent  = parseFloat(swap.usdAmountIn  || swap.tokenIn?.usdAmount  || swap.usdValue || 0);
-    const tokAmount = parseFloat(tokenOut.amount || tokenOut.value || 1);
+    // Price per token in USD from Moralis Solana gateway
+    const usdSpent  = parseFloat(swap.tokenIn?.amountUsd  || swap.usdAmountIn || 0);
+    const tokAmount = parseFloat(tokenOut.amount || 1);
     const price     = tokAmount > 0 ? usdSpent / tokAmount : 0;
     if (price <= 0) continue;
 

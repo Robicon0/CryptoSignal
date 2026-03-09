@@ -413,7 +413,7 @@ app.get('/api/test-scan', async (req, res) => {
     const t2 = Date.now();
     if (cfg.moralisKey) {
       try {
-        const url = `https://deep-index.moralis.io/api/v2.2/tokens/${tokenAddress}/swaps?chain=solana&order=ASC&limit=5`;
+        const url = `https://solana-gateway.moralis.io/token/mainnet/${tokenAddress}/swaps?order=ASC&limit=5`;
         const r   = await fetch(url, { headers: { 'X-API-Key': cfg.moralisKey, Accept: 'application/json' }, timeout: 15000 });
         const raw = await r.text();
         let parsed; try { parsed = JSON.parse(raw); } catch { parsed = raw; }
