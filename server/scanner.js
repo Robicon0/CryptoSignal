@@ -13,7 +13,7 @@ const { addTrackedWallet, getTrackedWallets } = require('./walletMonitor');
 const SCAN_INTERVAL_MS   = 5 * 60 * 1000;  // 5 minutes
 const FIRST_SCAN_DELAY   = 20 * 1000;       // 20s after boot
 const MIN_WIN_RATE       = 50;
-const MIN_SCORED_TRADES  = 3;
+const MIN_SCORED_TRADES  = 1;  // require only 1 scored trade; wallets with none are tracked unscored
 const MIN_LIQUIDITY_USD  = 5000;
 const MAX_TOKENS_PER_SCAN = 10;             // respect Bitquery rate limits
 const MAX_BUYERS_PER_TOKEN = 5;             // score only first 5 buyers per token
@@ -240,10 +240,17 @@ async function runScan(loadConfig) {
         const via = score.via ? ` [via ${score.via}]` : '';
 
         if (score.winRate === null) {
-          appendActivity('score_low',
-            `${short}: insufficient data (${score.total} trades, need ${MIN_SCORED_TRADES}+)${via}`, {
-              address: buyer.address, total: score.total,
+          // No trading history to score — track anyway.
+          // Being an early buyer confirmed by Moralis/Bitquery IS the signal.
+          appendActivity('wallet_tracked',
+            `AUTO-TRACKED ${short} (unscored — ${score.total} prior trades) — early buyer of ${token.symbol}${via}`, {
+              address: buyer.address, winRate: null,
+              wins: score.wins, losses: score.losses, total: score.total,
+              foundBuying: token.symbol, foundBuyingAddress: token.address,
             });
+          addTrackedWallet(buyer.address, 'solana', null, score.wins, score.losses);
+          trackedSet.add(buyer.address);
+          walletsTracked++;
           continue;
         }
 
@@ -255,7 +262,7 @@ async function runScan(loadConfig) {
           continue;
         }
 
-        // ✅ Auto-track!
+        // ✅ Auto-track with confirmed win rate
         appendActivity('wallet_tracked',
           `AUTO-TRACKED ${short} — ${score.winRate}% win rate (${score.wins}W / ${score.losses}L) — found buying ${token.symbol}${via}`, {
             address: buyer.address, winRate: score.winRate,
