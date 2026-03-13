@@ -211,13 +211,13 @@ async function runScan(loadConfig) {
 
       const newBuyers = buyers.filter(b => !trackedSet.has(b.address));
       if (!newBuyers.length) {
-        appendActivity('skip', `${token.symbol}: no new buyers to score (all already tracked)`);
+        appendActivity('skip', `${token.symbol}: all ${buyers.length} buyers already tracked`);
         markScanned(token.address);
         continue;
       }
 
-      appendActivity('buyers_found', `${token.symbol}: ${newBuyers.length} buyers to score`, {
-        symbol: token.symbol, count: newBuyers.length,
+      appendActivity('buyers_found', `${token.symbol}: ${buyers.length} buyers found (${newBuyers.length} new to score)`, {
+        symbol: token.symbol, total: buyers.length, newCount: newBuyers.length,
       });
 
       // Score each buyer — scoreWallet chains Bitquery → Moralis → RPC automatically
