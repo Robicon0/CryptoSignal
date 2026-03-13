@@ -17,21 +17,21 @@ const TRADES_FILE = path.join(DATA_DIR, 'trades.json');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
 
 const DEFAULT_CONFIG = {
-  tradeSize:        100,
+  tradeSize:        25,
   stopLossPct:      30,
-  maxOpenPositions: 5,
+  maxOpenPositions: 10,
   dailyLossLimit:   500,
-  minLiquidityUSD:  5000,
+  minLiquidityUSD:  3000,
   bitqueryKey:      '',   // synced from frontend Settings
   moralisKey:       '',   // synced from frontend Settings
 };
 
 // Scaled exit tranches: sell 25% of original tokens at each level
 const SCALE_EXITS = [
-  { tranche: 1, pctGain: 100  },  // 2x
-  { tranche: 2, pctGain: 300  },  // 4x
-  { tranche: 3, pctGain: 700  },  // 8x
-  { tranche: 4, pctGain: 1500 },  // 16x
+  { tranche: 1, pctGain: 50   },  // 1.5x
+  { tranche: 2, pctGain: 100  },  // 2x
+  { tranche: 3, pctGain: 300  },  // 4x
+  { tranche: 4, pctGain: 700  },  // 8x
 ];
 
 // ─────────────────────────────────────────────

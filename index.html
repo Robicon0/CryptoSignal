@@ -866,13 +866,13 @@
 
       <!-- Config bar -->
       <div class="pt-config">
-        <label>Trade size $<input type="number" id="cfgTradeSize" min="1" max="10000" step="1" value="100" /></label>
+        <label>Trade size $<input type="number" id="cfgTradeSize" min="1" max="10000" step="1" value="25" /></label>
         <label style="flex-direction:column;align-items:flex-start;gap:2px">
           <span style="font-size:11px;color:var(--t2)">Exit strategy</span>
-          <span style="font-size:11px;color:var(--t3)">2x→25% · 4x→25% · 8x→25% · 16x→25%</span>
+          <span style="font-size:11px;color:var(--t3)">1.5x+25% · 2x+25% · 4x+25% · 8x+25%</span>
         </label>
         <label>SL %<input type="number" id="cfgStopLoss" min="1" max="100" step="1" value="30" /></label>
-        <label>Max positions<input type="number" id="cfgMaxPos" min="1" max="20" step="1" value="5" /></label>
+        <label>Max positions<input type="number" id="cfgMaxPos" min="1" max="20" step="1" value="10" /></label>
         <label>Daily loss limit $<input type="number" id="cfgDailyLimit" min="1" max="100000" step="1" value="500" /></label>
         <div class="pt-config-actions">
           <button class="btn-sec" onclick="ptSaveConfig()">Save Config</button>
@@ -2657,9 +2657,9 @@ async function ptClosePosition(id) {
 
 async function ptSaveConfig() {
   const cfg = {
-    tradeSize:        parseInt(document.getElementById('cfgTradeSize').value)  || 100,
+    tradeSize:        parseInt(document.getElementById('cfgTradeSize').value)  || 25,
     stopLossPct:      parseInt(document.getElementById('cfgStopLoss').value)   || 30,
-    maxOpenPositions: parseInt(document.getElementById('cfgMaxPos').value)     || 5,
+    maxOpenPositions: parseInt(document.getElementById('cfgMaxPos').value)     || 10,
     dailyLossLimit:   parseInt(document.getElementById('cfgDailyLimit').value) || 500,
   };
   try {
