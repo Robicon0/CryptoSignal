@@ -91,6 +91,8 @@ async function pollWallets() {
   const wallets = loadWallets();
   if (wallets.length === 0) return;
 
+  console.log(`[Monitor] Polling ${wallets.length} wallet(s)`);
+
   const seen = loadSeen();
   let seenChanged = false;
 
@@ -100,6 +102,7 @@ async function pollWallets() {
 
     try {
       const buys = await fetchWalletBuysViaRPC(wallet.address);
+      console.log(`[Monitor] ${wallet.address.slice(0, 8)}… → ${buys.length} recent buy(s) detected`);
 
       for (const buy of buys) {
         // Deduplicate by token + wallet + ~timestamp bucket (1-minute window)

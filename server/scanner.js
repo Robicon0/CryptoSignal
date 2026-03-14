@@ -17,7 +17,7 @@ const MIN_SCORED_TRADES  = 1;  // require only 1 scored trade; wallets with none
 const MIN_LIQUIDITY_USD  = 5000;
 const MAX_TOKENS_PER_SCAN = 10;             // respect Bitquery rate limits
 const MAX_BUYERS_PER_TOKEN = 5;             // score only first 5 buyers per token
-const TOKEN_SCAN_TTL_MS  = 6 * 60 * 60 * 1000; // skip token if scanned < 6h ago
+const TOKEN_SCAN_TTL_MS  = 1 * 60 * 60 * 1000; // skip token if scanned < 1h ago
 const REQ_DELAY_MS       = 1200;            // pause between Bitquery calls
 
 const DATA_DIR       = path.join(__dirname, 'data');
