@@ -1,0 +1,23 @@
+# CryptoSignal Progress Tracker
+
+## Completed
+- [x] Phase 1: Dashboard with DexScreener trending tokens
+- [x] Phase 2: Smart wallet tracking (Bitquery + Moralis)
+- [x] Phase 3: Paper trading backend deployed on Railway
+- [x] Automated pipeline: scan, score, track
+- [x] Moralis fallback for Bitquery 402 errors
+- [x] Fixed address type bug (mint vs pair address)
+- [x] Scaled exit strategy: 1.5x/2x/4x/8x at 25% each
+- [x] Config: $25 trades, max 10 positions, $3K min liquidity
+
+## In Progress
+- [ ] Fix token cache (reduce 6h to 1h)
+- [ ] Add wallet monitor logging
+- [ ] Debug why 0 paper trades with 80+ tracked wallets
+
+## Next Up
+- [ ] Morning scan dashboard (overnight summary)
+- [ ] Grok AI synthesis with prompt templates
+- [ ] Nansen/Arkham integration
+- [ ] Convergence detection system
+- [ ] Telegram alerts
