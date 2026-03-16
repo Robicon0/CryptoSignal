@@ -55,7 +55,7 @@ function getActivity(limit = 100) {
 }
 
 // ─────────────────────────────────────────────
-// Scanned-token cache (avoid re-scanning same token within 6h)
+// Scanned-token cache (avoid re-scanning same token within 1h)
 // ─────────────────────────────────────────────
 function loadScanned() {
   if (!fs.existsSync(SCANNED_FILE)) return {};

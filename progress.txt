@@ -11,8 +11,8 @@
 - [x] Config: $25 trades, max 10 positions, $3K min liquidity
 
 ## In Progress
-- [ ] Fix token cache (reduce 6h to 1h)
-- [ ] Add wallet monitor logging
+- [x] Fix token cache (reduce 6h to 1h)
+- [x] Add wallet monitor logging
 - [ ] Debug why 0 paper trades with 80+ tracked wallets
 
 ## Next Up
