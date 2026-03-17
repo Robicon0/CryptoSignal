@@ -464,6 +464,22 @@ app.get('/api/test-scan', async (req, res) => {
   }
 });
 
+// ── Test trade (smoke-test the paper trading engine) ─────────────────────────
+app.get('/api/test-trade', (_req, res) => {
+  const fakeTrade = openPosition({
+    tokenAddress:  'TEST' + Date.now(),
+    symbol:        'TEST',
+    price:         0.001,
+    walletAddress: 'TESTwallet00000000000000000000000000000000',
+    chain:         'solana',
+    walletWinRate: 75,
+    walletWins:    3,
+    walletLosses:  1,
+  });
+  if (!fakeTrade) return res.status(409).json({ ok: false, reason: 'openPosition returned null (max positions or daily limit?)' });
+  res.json({ ok: true, trade: fakeTrade });
+});
+
 // ── Scanner / Activity ───────────────────────
 app.get('/api/scanner/status',   (_req, res) => res.json(getScannerStatus()));
 app.get('/api/activity',         (req, res)  => res.json(getActivity(parseInt(req.query.limit) || 100)));

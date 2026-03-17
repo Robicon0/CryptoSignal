@@ -112,8 +112,13 @@ async function fetchWalletBuysViaRPC(walletAddress) {
     const sigData = await sigResp.json();
     const sigs = sigData?.result || [];
 
-    const cutoff = Date.now() - 15 * 1000; // last 15 seconds
+    // Look back 5 minutes — deduplication in seen_txs.json prevents replay.
+    // 15s was too tight: RPC blockTime lags behind wall clock, so virtually
+    // no transactions passed the filter and zero paper trades were triggered.
+    const cutoff = Date.now() - 5 * 60 * 1000; // last 5 minutes
     const recentSigs = sigs.filter(s => s.blockTime && s.blockTime * 1000 >= cutoff);
+
+    console.log(`[PriceFetcher] ${walletAddress.slice(0, 8)}: ${sigs.length} sigs total, ${recentSigs.length} within 5min window`);
 
     if (recentSigs.length === 0) return [];
 

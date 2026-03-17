@@ -13,7 +13,7 @@
 ## In Progress
 - [x] Fix token cache (reduce 6h to 1h)
 - [x] Add wallet monitor logging
-- [ ] Debug why 0 paper trades with 80+ tracked wallets
+- [x] Debug why 0 paper trades with 80+ tracked wallets
 
 ## Next Up
 - [ ] Morning scan dashboard (overnight summary)
