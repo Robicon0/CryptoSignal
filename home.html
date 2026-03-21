@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoSignal — Command Center</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg0: #06060a;
+      --bg1: #0d0d16;
+      --bg2: #13131f;
+      --bg3: #1a1a2c;
+      --bg4: #222238;
+      --border: rgba(120,120,220,.13);
+      --border-hi: rgba(124,58,237,.45);
+      --accent: #7c3aed;
+      --accent-dim: rgba(124,58,237,.14);
+      --t1: #f0f4ff;
+      --t2: #94a3b8;
+      --t3: #556070;
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,.1);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,.1);
+      --orange: #f97316;
+      --blue: #3b82f6;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg0);
+      color: var(--t1);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .hdr {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6,6,10,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 11px 22px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 19px; font-weight: 800; letter-spacing: -.5px;
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg,#7c3aed,#2563eb);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .logo-text {
+      background: linear-gradient(135deg,#a78bfa,#60a5fa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Top nav tabs ── */
+    .top-nav {
+      display: flex; gap: 4px; margin-left: auto;
+    }
+    .nav-tab {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; color: var(--t2);
+      transition: all .15s; border: 1px solid transparent;
+      background: none; text-decoration: none;
+    }
+    .nav-tab:hover { color: var(--t1); background: var(--bg3); border-color: var(--border); }
+    .nav-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .nav-tab.pill-outline {
+      border-color: var(--border); color: var(--t2);
+    }
+    .nav-tab.pill-outline:hover { border-color: var(--accent); color: var(--t1); }
+    .badge-new {
+      background: var(--green); color: #000;
+      border-radius: 4px; padding: 1px 5px;
+      font-size: 9px; font-weight: 800; letter-spacing: .3px;
+    }
+    .badge-soon {
+      background: var(--bg4); color: var(--t3);
+      border-radius: 4px; padding: 1px 5px;
+      font-size: 9px; font-weight: 700;
+    }
+
+    /* ── Page sections ── */
+    .section { display: none; padding: 24px 22px; max-width: 1200px; margin: 0 auto; }
+    .section.active { display: block; }
+
+    /* ── Section header ── */
+    .sec-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+    }
+    .sec-title {
+      font-size: 22px; font-weight: 800; letter-spacing: -.4px;
+    }
+    .sec-title span {
+      background: linear-gradient(135deg,#a78bfa,#60a5fa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .refresh-row {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .refresh-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 13px;
+      color: var(--t2); font-size: 13px; cursor: pointer;
+      transition: all .2s;
+    }
+    .refresh-btn:hover { border-color: var(--accent); color: var(--t1); }
+    .refresh-btn.loading { opacity: .6; pointer-events: none; }
+    .spin { display: inline-block; }
+    .spinning { animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .countdown-label {
+      font-size: 12px; color: var(--t3);
+    }
+    .countdown-label span { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+    /* ── Grid layouts ── */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    /* ── News card ── */
+    .news-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: border-color .18s, background .18s;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .news-card:hover { border-color: var(--border-hi); background: var(--bg3); }
+    .news-card-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .source-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: .4px;
+      padding: 2px 7px; border-radius: 5px;
+      text-transform: uppercase;
+    }
+    .source-coindesk     { background: rgba(247,147,26,.15); color: #f7931a; }
+    .source-cointelegraph{ background: rgba(37,99,235,.15);  color: #60a5fa; }
+    .source-theblock     { background: rgba(124,58,237,.15); color: #a78bfa; }
+    .source-decrypt      { background: rgba(34,197,94,.15);  color: #4ade80; }
+    .source-default      { background: var(--bg4);           color: var(--t2); }
+
+    .news-time { font-size: 11px; color: var(--t3); white-space: nowrap; }
+    .news-title {
+      font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--t1);
+      text-decoration: none;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .news-title:hover { color: #a78bfa; }
+    .news-desc {
+      font-size: 12px; color: var(--t2); line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ── Subsection label ── */
+    .subsec-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--t3);
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .subsec-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── Reddit list ── */
+    .reddit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .reddit-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 6px;
+      transition: border-color .18s, background .18s;
+    }
+    .reddit-card:hover { border-color: var(--border-hi); background: var(--bg3); }
+    .reddit-card-top {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sub-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 7px;
+      border-radius: 5px; letter-spacing: .3px;
+      background: rgba(249,115,22,.12); color: var(--orange);
+    }
+    .reddit-score {
+      margin-left: auto; font-size: 11px; color: var(--t3);
+    }
+    .reddit-score strong { color: var(--orange); }
+    .reddit-title {
+      font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--t1);
+      text-decoration: none;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .reddit-title:hover { color: #fb923c; }
+    .reddit-meta { font-size: 11px; color: var(--t3); }
+
+    /* ── Empty / Error states ── */
+    .state-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 40px 24px;
+      text-align: center; color: var(--t3); font-size: 14px;
+    }
+    .state-box .icon { font-size: 28px; margin-bottom: 10px; }
+    .state-box .msg { color: var(--t2); margin-bottom: 6px; }
+
+    /* ── Placeholder sections ── */
+    .placeholder-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px; margin-top: 12px;
+    }
+    .placeholder-card {
+      background: var(--bg2); border: 1px dashed var(--border);
+      border-radius: 14px; padding: 28px 20px;
+      text-align: center; display: flex; flex-direction: column;
+      align-items: center; gap: 10px;
+    }
+    .placeholder-icon { font-size: 32px; opacity: .5; }
+    .placeholder-title { font-size: 15px; font-weight: 700; color: var(--t2); }
+    .placeholder-desc  { font-size: 12px; color: var(--t3); line-height: 1.5; }
+    .coming-soon-chip {
+      background: var(--bg4); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 11px; color: var(--t3); font-weight: 600;
+    }
+
+    /* ── Skeleton loader ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 50%, var(--bg3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .skeleton-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    /* ── Source filter ── */
+    .filter-row {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .filter-chip {
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); color: var(--t2);
+      background: var(--bg2); transition: all .15s;
+    }
+    .filter-chip:hover { border-color: var(--accent); color: var(--t1); }
+    .filter-chip.on    { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hdr { padding: 10px 14px; gap: 8px; }
+      .section { padding: 16px 14px; }
+      .top-nav { gap: 2px; }
+      .nav-tab { padding: 5px 10px; font-size: 12px; }
+      .nav-tab .badge-new, .nav-tab .badge-soon { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="hdr">
+  <a class="logo" href="/">
+    <div class="logo-mark">⚡</div>
+    <span class="logo-text">CryptoSignal</span>
+  </a>
+
+  <nav class="top-nav">
+    <button class="nav-tab active" data-section="news" onclick="switchSection('news')">
+      📰 News &amp; Trends <span class="badge-new">LIVE</span>
+    </button>
+    <button class="nav-tab" data-section="yields" onclick="switchSection('yields')">
+      💰 Best Yields <span class="badge-soon">SOON</span>
+    </button>
+    <button class="nav-tab" data-section="macro" onclick="switchSection('macro')">
+      📊 Macro <span class="badge-soon">SOON</span>
+    </button>
+    <a class="nav-tab pill-outline" href="/dashboard">
+      🤖 Trading Dashboard
+    </a>
+  </nav>
+</header>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- NEWS & TRENDS SECTION                        -->
+<!-- ════════════════════════════════════════════ -->
+<section class="section active" id="sec-news">
+  <div class="sec-hdr">
+    <div>
+      <div class="sec-title">📰 <span>Crypto News</span> &amp; Trends</div>
+      <div style="font-size:13px;color:var(--t3);margin-top:4px;">Aggregated from CoinDesk · CoinTelegraph · The Block · Decrypt</div>
+    </div>
+    <div class="refresh-row">
+      <div class="countdown-label">Refreshes in <span id="news-countdown">15:00</span></div>
+      <button class="refresh-btn" id="refresh-news-btn" onclick="loadNews(true)">
+        <span class="spin" id="news-spin">↻</span> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Source filter chips -->
+  <div class="filter-row" id="source-filters">
+    <button class="filter-chip on" data-source="all"          onclick="setSourceFilter('all')">All</button>
+    <button class="filter-chip"    data-source="CoinDesk"     onclick="setSourceFilter('CoinDesk')">CoinDesk</button>
+    <button class="filter-chip"    data-source="CoinTelegraph" onclick="setSourceFilter('CoinTelegraph')">CoinTelegraph</button>
+    <button class="filter-chip"    data-source="The Block"    onclick="setSourceFilter('The Block')">The Block</button>
+    <button class="filter-chip"    data-source="Decrypt"      onclick="setSourceFilter('Decrypt')">Decrypt</button>
+  </div>
+
+  <!-- News grid -->
+  <div class="news-grid" id="news-grid">
+    <!-- skeleton placeholders while loading -->
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
+  </div>
+
+  <!-- Reddit section -->
+  <div class="subsec-label">🟠 Reddit Sentiment</div>
+  <div class="reddit-grid" id="reddit-grid">
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:40%"></div><div class="skeleton" style="height:32px"></div></div>
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:40%"></div><div class="skeleton" style="height:32px"></div></div>
+    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:40%"></div><div class="skeleton" style="height:32px"></div></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- BEST YIELDS SECTION (PLACEHOLDER)            -->
+<!-- ════════════════════════════════════════════ -->
+<section class="section" id="sec-yields">
+  <div class="sec-hdr">
+    <div>
+      <div class="sec-title">💰 <span>Best Yields</span></div>
+      <div style="font-size:13px;color:var(--t3);margin-top:4px;">DeFi APY/APR comparison · DeFiLlama · On-chain data</div>
+    </div>
+  </div>
+  <div class="placeholder-grid">
+    <div class="placeholder-card">
+      <div class="placeholder-icon">🏦</div>
+      <div class="placeholder-title">Stablecoins (USDC, USDT, DAI)</div>
+      <div class="placeholder-desc">Compare APY across Aave, Compound, Curve, and more DeFi platforms</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">◎</div>
+      <div class="placeholder-title">SOL Yields</div>
+      <div class="placeholder-desc">Liquid staking, lending, and LP yields on Solana</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">⟠</div>
+      <div class="placeholder-title">ETH Yields</div>
+      <div class="placeholder-desc">Lido, Rocket Pool, EigenLayer, and DeFi yields for ETH</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">₿</div>
+      <div class="placeholder-title">BTC Yields</div>
+      <div class="placeholder-desc">Wrapped BTC yields across lending and yield aggregator protocols</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">🌊</div>
+      <div class="placeholder-title">SUI Yields</div>
+      <div class="placeholder-desc">Native staking and DeFi yields on the SUI network</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">📊</div>
+      <div class="placeholder-title">Yield Leaderboard</div>
+      <div class="placeholder-desc">Top 20 highest-yield pools sorted by APY with TVL and risk filters</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- MACRO DASHBOARD SECTION (PLACEHOLDER)        -->
+<!-- ════════════════════════════════════════════ -->
+<section class="section" id="sec-macro">
+  <div class="sec-hdr">
+    <div>
+      <div class="sec-title">📊 <span>Macro Dashboard</span></div>
+      <div style="font-size:13px;color:var(--t3);margin-top:4px;">Fed rates · DXY · Fear &amp; Greed · BTC Dominance · M2</div>
+    </div>
+  </div>
+  <div class="placeholder-grid">
+    <div class="placeholder-card">
+      <div class="placeholder-icon">🏛️</div>
+      <div class="placeholder-title">Fed Interest Rate</div>
+      <div class="placeholder-desc">Current federal funds rate and next FOMC meeting date</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">💵</div>
+      <div class="placeholder-title">US Dollar Index (DXY)</div>
+      <div class="placeholder-desc">Real-time DXY with 30-day trend — inversely correlated to crypto</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">😱</div>
+      <div class="placeholder-title">Fear &amp; Greed Index</div>
+      <div class="placeholder-desc">Crypto market sentiment score from 0 (fear) to 100 (greed)</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">₿</div>
+      <div class="placeholder-title">BTC Dominance</div>
+      <div class="placeholder-desc">Bitcoin's share of total crypto market cap</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">🖨️</div>
+      <div class="placeholder-title">M2 Money Supply</div>
+      <div class="placeholder-desc">Global M2 liquidity — historically correlated with BTC price</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">🗓️</div>
+      <div class="placeholder-title">Economic Calendar</div>
+      <div class="placeholder-desc">Upcoming CPI, FOMC, GDP events that move crypto markets</div>
+      <div class="coming-soon-chip">Coming Soon</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ── Constants ──────────────────────────────────────────────────────────────
+  const API = '';   // same origin
+  const REFRESH_MS = 15 * 60 * 1000;
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let allArticles   = [];
+  let activeSource  = 'all';
+  let countdownSecs = REFRESH_MS / 1000;
+  let countdownInt  = null;
+  let refreshTimer  = null;
+
+  // ── Section switcher ───────────────────────────────────────────────────────
+  function switchSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab[data-section]').forEach(t => t.classList.remove('active'));
+    document.getElementById('sec-' + name).classList.add('active');
+    document.querySelector(`.nav-tab[data-section="${name}"]`).classList.add('active');
+  }
+
+  // ── Source filter ──────────────────────────────────────────────────────────
+  function setSourceFilter(source) {
+    activeSource = source;
+    document.querySelectorAll('.filter-chip').forEach(c => {
+      c.classList.toggle('on', c.dataset.source === source);
+    });
+    renderNews();
+  }
+
+  // ── Time formatting ────────────────────────────────────────────────────────
+  function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    const diff = Date.now() - d.getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1)  return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return `${Math.floor(h/24)}d ago`;
+  }
+
+  function fmtScore(n) {
+    return n >= 1000 ? (n/1000).toFixed(1) + 'k' : n;
+  }
+
+  // ── Source badge class ─────────────────────────────────────────────────────
+  function sourceCls(source) {
+    const map = {
+      'CoinDesk':      'source-coindesk',
+      'CoinTelegraph': 'source-cointelegraph',
+      'The Block':     'source-theblock',
+      'Decrypt':       'source-decrypt',
+    };
+    return map[source] || 'source-default';
+  }
+
+  // ── Render news cards ──────────────────────────────────────────────────────
+  function renderNews() {
+    const grid = document.getElementById('news-grid');
+    const filtered = activeSource === 'all'
+      ? allArticles
+      : allArticles.filter(a => a.source === activeSource);
+
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
+        <div class="icon">📭</div>
+        <div class="msg">No articles found for this source.</div>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.slice(0, 20).map(a => `
+      <div class="news-card">
+        <div class="news-card-top">
+          <span class="source-badge ${sourceCls(a.source)}">${a.source}</span>
+          <span class="news-time">${timeAgo(a.pubDate)}</span>
+        </div>
+        <a class="news-title" href="${escHtml(a.link)}" target="_blank" rel="noopener">${escHtml(a.title)}</a>
+        ${a.desc ? `<div class="news-desc">${escHtml(a.desc)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // ── Render reddit cards ────────────────────────────────────────────────────
+  function renderReddit(posts) {
+    const grid = document.getElementById('reddit-grid');
+    if (!posts || !posts.length) {
+      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
+        <div class="icon">🟠</div>
+        <div class="msg">Could not load Reddit posts.</div>
+      </div>`;
+      return;
+    }
+    grid.innerHTML = posts.slice(0, 12).map(p => `
+      <div class="reddit-card">
+        <div class="reddit-card-top">
+          <span class="sub-badge">r/${escHtml(p.subreddit)}</span>
+          <span class="reddit-score"><strong>${fmtScore(p.score)}</strong> pts · ${fmtScore(p.comments)} comments</span>
+        </div>
+        <a class="reddit-title" href="${escHtml(p.link)}" target="_blank" rel="noopener">${escHtml(p.title)}</a>
+        <div class="reddit-meta">${timeAgo(p.created)}</div>
+      </div>
+    `).join('');
+  }
+
+  // ── XSS-safe HTML escaping ─────────────────────────────────────────────────
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // ── Load news from API ─────────────────────────────────────────────────────
+  async function loadNews(force = false) {
+    const btn  = document.getElementById('refresh-news-btn');
+    const spin = document.getElementById('news-spin');
+    btn.classList.add('loading');
+    spin.classList.add('spinning');
+
+    try {
+      const [newsRes, redditRes] = await Promise.allSettled([
+        fetch(`${API}/api/news`).then(r => r.json()),
+        fetch(`${API}/api/reddit`).then(r => r.json()),
+      ]);
+
+      if (newsRes.status === 'fulfilled' && newsRes.value.ok) {
+        allArticles = newsRes.value.articles || [];
+        renderNews();
+      } else {
+        document.getElementById('news-grid').innerHTML = `
+          <div class="state-box" style="grid-column:1/-1">
+            <div class="icon">⚠️</div>
+            <div class="msg">Could not load news. The server may still be starting up.</div>
+            <div style="font-size:12px;color:var(--t3);margin-top:6px;">Try refreshing in a moment.</div>
+          </div>`;
+      }
+
+      if (redditRes.status === 'fulfilled' && redditRes.value.ok) {
+        renderReddit(redditRes.value.posts || []);
+      } else {
+        renderReddit([]);
+      }
+    } catch (err) {
+      document.getElementById('news-grid').innerHTML = `
+        <div class="state-box" style="grid-column:1/-1">
+          <div class="icon">🔌</div>
+          <div class="msg">Cannot reach the server. Is it running?</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:6px;">${escHtml(err.message)}</div>
+        </div>`;
+      renderReddit([]);
+    } finally {
+      btn.classList.remove('loading');
+      spin.classList.remove('spinning');
+      resetCountdown();
+    }
+  }
+
+  // ── Auto-refresh countdown ─────────────────────────────────────────────────
+  function resetCountdown() {
+    countdownSecs = REFRESH_MS / 1000;
+    clearInterval(countdownInt);
+    clearTimeout(refreshTimer);
+
+    countdownInt = setInterval(() => {
+      countdownSecs--;
+      if (countdownSecs <= 0) countdownSecs = 0;
+      const m = String(Math.floor(countdownSecs / 60)).padStart(2, '0');
+      const s = String(countdownSecs % 60).padStart(2, '0');
+      const el = document.getElementById('news-countdown');
+      if (el) el.textContent = `${m}:${s}`;
+    }, 1000);
+
+    refreshTimer = setTimeout(() => loadNews(true), REFRESH_MS);
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  loadNews();
+</script>
+</body>
+</html>

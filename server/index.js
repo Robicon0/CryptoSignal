@@ -299,11 +299,117 @@ function getStats() {
 }
 
 // ─────────────────────────────────────────────
+// RSS / News helpers
+// ─────────────────────────────────────────────
+const fetch = require('node-fetch');
+
+// Simple regex-based RSS item extractor — no extra dependencies needed
+function parseRssItems(xml, source) {
+  const items = [];
+  const itemRx = /<item[\s>]([\s\S]*?)<\/item>/gi;
+  let m;
+  while ((m = itemRx.exec(xml)) !== null) {
+    const block = m[1];
+    const title   = (/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/.exec(block) || /<title>([\s\S]*?)<\/title>/.exec(block) || [])[1] || '';
+    const link    = (/<link>([\s\S]*?)<\/link>/.exec(block) || /<link href="([^"]+)"/.exec(block) || [])[1] || '';
+    const pubDate = (/<pubDate>([\s\S]*?)<\/pubDate>/.exec(block) || [])[1] || '';
+    const desc    = (/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/.exec(block) || /<description>([\s\S]*?)<\/description>/.exec(block) || [])[1] || '';
+    if (title && link) {
+      items.push({
+        title:   title.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#39;/g,"'").replace(/&quot;/g,'"').trim(),
+        link:    link.trim(),
+        pubDate: pubDate.trim(),
+        source,
+        // Strip HTML tags from description, limit to 160 chars
+        desc:    desc.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim().slice(0,160),
+      });
+    }
+  }
+  return items;
+}
+
+const NEWS_FEEDS = [
+  { url: 'https://www.coindesk.com/arc/outboundfeeds/rss/',  source: 'CoinDesk'     },
+  { url: 'https://cointelegraph.com/rss',                    source: 'CoinTelegraph' },
+  { url: 'https://theblock.co/rss.xml',                      source: 'The Block'    },
+  { url: 'https://decrypt.co/feed',                          source: 'Decrypt'      },
+];
+
+let _newsCache   = null;
+let _newsCacheTs = 0;
+const NEWS_TTL   = 15 * 60 * 1000; // 15 minutes
+
+async function fetchAllNews() {
+  if (_newsCache && Date.now() - _newsCacheTs < NEWS_TTL) return _newsCache;
+
+  const results = await Promise.allSettled(
+    NEWS_FEEDS.map(async ({ url, source }) => {
+      const r = await fetch(url, { timeout: 10000, headers: { 'User-Agent': 'CryptoSignal/1.0' } });
+      const xml = await r.text();
+      return parseRssItems(xml, source);
+    })
+  );
+
+  const all = [];
+  results.forEach(r => { if (r.status === 'fulfilled') all.push(...r.value); });
+
+  // Sort by pubDate descending, newest first
+  all.sort((a, b) => {
+    const da = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+    const db = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+    return db - da;
+  });
+
+  _newsCache   = all.slice(0, 40);
+  _newsCacheTs = Date.now();
+  return _newsCache;
+}
+
+let _redditCache   = null;
+let _redditCacheTs = 0;
+
+async function fetchRedditPosts() {
+  if (_redditCache && Date.now() - _redditCacheTs < NEWS_TTL) return _redditCache;
+
+  const subs = ['CryptoCurrency', 'Bitcoin', 'solana'];
+  const results = await Promise.allSettled(
+    subs.map(async sub => {
+      const r = await fetch(
+        `https://www.reddit.com/r/${sub}/hot.json?limit=8`,
+        { timeout: 10000, headers: { 'User-Agent': 'CryptoSignal/1.0' } }
+      );
+      const json = await r.json();
+      return (json?.data?.children || []).map(c => ({
+        title:     c.data.title,
+        link:      `https://www.reddit.com${c.data.permalink}`,
+        score:     c.data.score,
+        comments:  c.data.num_comments,
+        subreddit: c.data.subreddit,
+        created:   c.data.created_utc * 1000,
+      }));
+    })
+  );
+
+  const all = [];
+  results.forEach(r => { if (r.status === 'fulfilled') all.push(...r.value); });
+  all.sort((a, b) => b.score - a.score);
+
+  _redditCache   = all.slice(0, 20);
+  _redditCacheTs = Date.now();
+  return _redditCache;
+}
+
+// ─────────────────────────────────────────────
 // Express app
 // ─────────────────────────────────────────────
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ── Page routing (must come before express.static) ───────────────────────────
+app.get('/', (_req, res) => res.sendFile(path.join(__dirname, '..', 'home.html')));
+app.get('/dashboard', (_req, res) => res.sendFile(path.join(__dirname, '..', 'index.html')));
+
 app.use(express.static(path.join(__dirname, '..')));
 
 // ── Health ──────────────────────────────────
@@ -478,6 +584,25 @@ app.get('/api/test-trade', (_req, res) => {
   });
   if (!fakeTrade) return res.status(409).json({ ok: false, reason: 'openPosition returned null (max positions or daily limit?)' });
   res.json({ ok: true, trade: fakeTrade });
+});
+
+// ── News & Reddit ────────────────────────────
+app.get('/api/news', async (_req, res) => {
+  try {
+    const articles = await fetchAllNews();
+    res.json({ ok: true, articles, cachedAt: _newsCacheTs });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get('/api/reddit', async (_req, res) => {
+  try {
+    const posts = await fetchRedditPosts();
+    res.json({ ok: true, posts, cachedAt: _redditCacheTs });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 // ── Scanner / Activity ───────────────────────
