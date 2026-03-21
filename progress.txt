@@ -21,3 +21,9 @@
 - [ ] Nansen/Arkham integration
 - [ ] Convergence detection system
 - [ ] Telegram alerts
+
+## Platform Expansion
+- [ ] New homepage with section navigation
+- [ ] Section 1: Crypto News & Trends (CoinDesk, CoinTelegraph, The Block, Decrypt, X/Twitter, Reddit)
+- [ ] Section 2: Best Yields (DeFiLlama — USDC, USDT, BTC, ETH, SOL, SUI)
+- [ ] Section 3: Macro Dashboard (Fed rates, DXY, BTC dominance, Fear & Greed, M2, Gold/BTC)

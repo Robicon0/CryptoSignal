@@ -31,6 +31,53 @@ Automated crypto paper-trading platform on Solana. Discovers trending tokens, fi
 - Telegram alerts for high-conviction setups
 - Transition from paper to live trading once validated
 
+## Platform Expansion — All-in-One Crypto Command Center
+
+The website is expanding from a trading bot into a complete daily crypto research platform. Same website, new homepage with sections. All existing features (trending tokens, smart wallets, paper trading) stay as they are.
+
+### New Homepage Layout
+A landing page with navigation to all sections:
+- Crypto News & Trends
+- Best Yields
+- Macro Dashboard
+- Trending Tokens (existing)
+- Smart Wallets (existing)
+- Paper Trading (existing)
+
+### Section 1: Crypto News & Trends (BUILD FIRST)
+- Aggregate crypto news from major sources (CoinDesk, CoinTelegraph, The Block, Decrypt)
+- Show trending crypto topics from X/Twitter
+- Reddit crypto sentiment (r/cryptocurrency, r/bitcoin, r/solana)
+- AI summary of top stories (when Grok is connected)
+- Auto-refresh every 15 minutes
+
+### Section 2: Best Yields (BUILD SECOND)
+- Compare APY/APR across DeFi platforms for:
+  - Stablecoins (USDC, USDT, DAI)
+  - BTC
+  - ETH
+  - SOL
+  - SUI
+- Sources: DeFiLlama API (free), on-chain yield data
+- Sort by highest yield, filter by chain and risk level
+- Show platform name, APY, TVL, chain
+
+### Section 3: Macro Dashboard (BUILD THIRD)
+- Federal Reserve interest rate decisions
+- US Dollar index (DXY)
+- Bitcoin dominance
+- Fear & Greed index
+- Key economic calendar events affecting crypto
+- Money supply data (M2)
+- Gold/BTC correlation
+
+### Build Rules
+- One section at a time
+- Each section = separate tab/page on the website
+- Use free APIs only (under $50/month budget)
+- Keep existing features untouched
+- Test each section before moving to next
+
 ## Tech Stack
 - Frontend: Single index.html with vanilla JS
 - Backend: Node.js + Express (server/ folder)
