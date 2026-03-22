@@ -27,9 +27,9 @@
 - [x] Section 1: Crypto News & Trends — RSS aggregation, Reddit hot posts, 15min auto-refresh
   - Upgraded: "What's Hot Right Now" banner (newest story), time-grouped sections (Last Hour / Last 6h / Last 24h / Older), category filter chips (Breaking/Bitcoin/DeFi/Altcoins/Regulation with counts), 3-col grid, Reddit subreddit filter tabs + upvote score bars
 - [x] "/dashboard" route serves existing trading dashboard (index.html)
-- [x] Token Research section — AI 5-pillar analysis (Grok) + token watchlist with live news sentiment
-  - AI search bar, quick-pick chips (BTC/ETH/SOL/SUI/LINK), structured report card (5 pillars + thesis + verdict)
-  - Watchlist persisted in localStorage, matches articles from RSS feeds, bullish/bearish/neutral sentiment tags
-  - Graceful fallback when no Grok key set
+- [x] Token Research section — redesigned into two separate panels
+  - Left: CoinGecko real data across 5 pillars (fundamentals, market, price, community, tokenomics) + Deep AI Analysis prompt box with Copy button
+  - Right: Morning Monitor watchlist — live price/24h change, news headlines, bullish/bearish/neutral sentiment, 15min auto-refresh
+  - Server: CoinGecko proxy routes (/api/coingecko/search, /coin/:id, /price) with 5min cache + /api/watchlist-news endpoint
 - [ ] Section 2: Best Yields (DeFiLlama — USDC, USDT, BTC, ETH, SOL, SUI)
 - [ ] Section 3: Macro Dashboard (Fed rates, DXY, BTC dominance, Fear & Greed, M2, Gold/BTC)

@@ -154,18 +154,14 @@
       display: block; margin-bottom: 8px;
     }
     .hot-title:hover { color: #c4b5fd; }
-    .hot-meta {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-    }
+    .hot-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .hot-desc {
       font-size: 13px; color: var(--t2); line-height: 1.5; margin-bottom: 10px;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
 
     /* ── Category filter chips ── */
-    .filter-row {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px;
-    }
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
     .filter-chip {
       padding: 5px 14px; border-radius: 20px;
       font-size: 12px; font-weight: 700; cursor: pointer;
@@ -183,52 +179,30 @@
 
     /* ── Time-group header ── */
     .time-group { margin-bottom: 28px; }
-    .time-group-hdr {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 12px;
-    }
-    .time-group-label {
-      font-size: 11px; font-weight: 800; letter-spacing: .8px;
-      text-transform: uppercase; white-space: nowrap;
-    }
+    .time-group-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .time-group-label { font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; white-space: nowrap; }
     .tg-hour  { color: var(--red);    }
     .tg-6h    { color: var(--orange); }
     .tg-24h   { color: var(--yellow); }
     .tg-older { color: var(--t3);     }
-    .time-group-line { flex: 1; height: 1px; background: var(--border); }
-    .time-group-count {
-      font-size: 11px; color: var(--t3); white-space: nowrap;
-    }
+    .time-group-line  { flex: 1; height: 1px; background: var(--border); }
+    .time-group-count { font-size: 11px; color: var(--t3); white-space: nowrap; }
 
     /* ── News 3-column grid ── */
-    .news-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
+    .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
     /* ── News card ── */
     .news-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 15px 16px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 15px 16px;
       transition: border-color .18s, background .18s, transform .15s;
-      display: flex; flex-direction: column; gap: 9px;
-      cursor: pointer;
+      display: flex; flex-direction: column; gap: 9px; cursor: pointer;
     }
-    .news-card:hover {
-      border-color: var(--border-hi);
-      background: var(--bg3);
-      transform: translateY(-1px);
-    }
-    .news-card-top {
-      display: flex; align-items: center; gap: 8px;
-    }
+    .news-card:hover { border-color: var(--border-hi); background: var(--bg3); transform: translateY(-1px); }
+    .news-card-top { display: flex; align-items: center; gap: 8px; }
     .source-badge {
       font-size: 10px; font-weight: 700; letter-spacing: .4px;
-      padding: 2px 7px; border-radius: 5px; text-transform: uppercase;
-      flex-shrink: 0;
+      padding: 2px 7px; border-radius: 5px; text-transform: uppercase; flex-shrink: 0;
     }
     .source-coindesk      { background: rgba(247,147,26,.15); color: #f7931a; }
     .source-cointelegraph { background: rgba(37,99,235,.15);  color: #60a5fa; }
@@ -236,21 +210,14 @@
     .source-decrypt       { background: rgba(34,197,94,.15);  color: #4ade80; }
     .source-default       { background: var(--bg4);           color: var(--t2); }
     .news-time { font-size: 11px; color: var(--t3); white-space: nowrap; margin-left: auto; }
-
-    .cat-badge {
-      font-size: 9px; font-weight: 800; letter-spacing: .4px;
-      padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
-      flex-shrink: 0;
-    }
+    .cat-badge { font-size: 9px; font-weight: 800; letter-spacing: .4px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; flex-shrink: 0; }
     .cat-defi       { background: rgba(34,197,94,.12);  color: #4ade80; }
     .cat-bitcoin    { background: rgba(247,147,26,.12); color: #fb923c; }
     .cat-altcoins   { background: rgba(37,99,235,.12);  color: #60a5fa; }
     .cat-regulation { background: rgba(239,68,68,.12);  color: #f87171; }
     .cat-breaking   { background: rgba(239,68,68,.18);  color: #fca5a5; }
-
     .news-title {
-      font-size: 15px; font-weight: 700; line-height: 1.4; color: var(--t1);
-      text-decoration: none;
+      font-size: 15px; font-weight: 700; line-height: 1.4; color: var(--t1); text-decoration: none;
       display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
     }
     .news-title:hover { color: #a78bfa; }
@@ -261,71 +228,35 @@
 
     /* ── Reddit section ── */
     .reddit-section { margin-top: 32px; }
-    .reddit-hdr {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
-    }
-    .reddit-hdr-label {
-      font-size: 11px; font-weight: 800; letter-spacing: .8px;
-      text-transform: uppercase; color: var(--orange);
-    }
-    .reddit-hdr-line { flex: 1; height: 1px; background: var(--border); }
-    .reddit-sub-tabs {
-      display: flex; gap: 4px;
-    }
+    .reddit-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .reddit-hdr-label { font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--orange); }
+    .reddit-hdr-line  { flex: 1; height: 1px; background: var(--border); }
+    .reddit-sub-tabs  { display: flex; gap: 4px; }
     .reddit-sub-tab {
-      padding: 3px 10px; border-radius: 6px;
-      font-size: 11px; font-weight: 700; cursor: pointer;
-      border: 1px solid var(--border); color: var(--t3);
-      background: var(--bg2); transition: all .15s;
+      padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
+      border: 1px solid var(--border); color: var(--t3); background: var(--bg2); transition: all .15s;
     }
     .reddit-sub-tab:hover { border-color: var(--orange); color: var(--orange); }
     .reddit-sub-tab.on { background: rgba(249,115,22,.15); border-color: var(--orange); color: var(--orange); }
-
-    .reddit-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
+    .reddit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .reddit-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 13px 14px;
-      display: flex; flex-direction: column; gap: 7px;
-      transition: border-color .18s, background .18s;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px;
+      display: flex; flex-direction: column; gap: 7px; transition: border-color .18s, background .18s;
     }
     .reddit-card:hover { border-color: rgba(249,115,22,.4); background: var(--bg3); }
-    .reddit-card-top { display: flex; align-items: center; gap: 8px; }
-    .reddit-rank {
-      font-size: 12px; font-weight: 800; color: var(--t3);
-      min-width: 18px;
-    }
-    .sub-badge {
-      font-size: 10px; font-weight: 700; padding: 2px 7px;
-      border-radius: 5px; letter-spacing: .3px;
-      background: rgba(249,115,22,.12); color: var(--orange);
-    }
-    .reddit-score-row {
-      display: flex; align-items: center; gap: 8px; margin-left: auto;
-    }
-    .upvote-count {
-      font-size: 11px; color: var(--orange); font-weight: 700;
-    }
-    .comment-count { font-size: 11px; color: var(--t3); }
+    .reddit-card-top  { display: flex; align-items: center; gap: 8px; }
+    .reddit-rank      { font-size: 12px; font-weight: 800; color: var(--t3); min-width: 18px; }
+    .sub-badge        { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; letter-spacing: .3px; background: rgba(249,115,22,.12); color: var(--orange); }
+    .reddit-score-row { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .upvote-count     { font-size: 11px; color: var(--orange); font-weight: 700; }
+    .comment-count    { font-size: 11px; color: var(--t3); }
     .reddit-title {
-      font-size: 13px; font-weight: 600; line-height: 1.45; color: var(--t1);
-      text-decoration: none;
+      font-size: 13px; font-weight: 600; line-height: 1.45; color: var(--t1); text-decoration: none;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     .reddit-title:hover { color: #fb923c; }
-    .reddit-bar-wrap {
-      height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden;
-    }
-    .reddit-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--orange), #fbbf24);
-      border-radius: 2px; transition: width .4s ease;
-    }
+    .reddit-bar-wrap { height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+    .reddit-bar { height: 100%; background: linear-gradient(90deg, var(--orange), #fbbf24); border-radius: 2px; transition: width .4s ease; }
     .reddit-meta { font-size: 11px; color: var(--t3); }
 
     /* ── Empty / Error states ── */
@@ -340,242 +271,256 @@
     /* ── Skeleton loader ── */
     .skeleton {
       background: linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 50%, var(--bg3) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 6px;
+      background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px;
     }
     @keyframes shimmer { to { background-position: -200% 0; } }
     .skeleton-card {
       background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 15px 16px;
-      display: flex; flex-direction: column; gap: 10px;
+      border-radius: 12px; padding: 15px 16px; display: flex; flex-direction: column; gap: 10px;
     }
 
     /* ── Placeholder sections ── */
-    .placeholder-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px; margin-top: 12px;
-    }
+    .placeholder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 12px; }
     .placeholder-card {
       background: var(--bg2); border: 1px dashed var(--border);
       border-radius: 14px; padding: 28px 20px;
-      text-align: center; display: flex; flex-direction: column;
-      align-items: center; gap: 10px;
+      text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
     }
     .placeholder-icon  { font-size: 32px; opacity: .5; }
     .placeholder-title { font-size: 15px; font-weight: 700; color: var(--t2); }
     .placeholder-desc  { font-size: 12px; color: var(--t3); line-height: 1.5; }
     .coming-soon-chip {
       background: var(--bg4); border: 1px solid var(--border);
-      border-radius: 20px; padding: 4px 12px;
-      font-size: 11px; color: var(--t3); font-weight: 600;
+      border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--t3); font-weight: 600;
     }
 
-    /* ── Token Research ── */
+    /* ═══════════════════════════════════════
+       TOKEN RESEARCH SECTION
+    ═══════════════════════════════════════ */
     .research-layout {
-      display: grid; grid-template-columns: 1fr 380px; gap: 22px; align-items: start;
+      display: grid; grid-template-columns: 1fr 360px; gap: 22px; align-items: start;
     }
-    .research-left, .research-right { display: flex; flex-direction: column; gap: 18px; }
+    .research-main    { display: flex; flex-direction: column; gap: 16px; }
+    .research-sidebar { display: flex; flex-direction: column; gap: 16px; }
 
-    /* Search box */
-    .research-search-wrap {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 20px;
+    /* Search card */
+    .search-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
     }
-    .research-search-wrap h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-    .research-search-wrap p  { font-size: 13px; color: var(--t2); margin-bottom: 16px; line-height: 1.5; }
-    .search-row {
-      display: flex; gap: 8px;
-    }
+    .search-card h2 { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .search-card p  { font-size: 13px; color: var(--t2); margin-bottom: 14px; line-height: 1.5; }
+    .search-row { display: flex; gap: 8px; }
     .search-input {
       flex: 1; background: var(--bg3); border: 1px solid var(--border);
-      border-radius: 9px; padding: 10px 14px;
-      font-size: 14px; color: var(--t1); outline: none;
+      border-radius: 9px; padding: 10px 14px; font-size: 14px; color: var(--t1); outline: none;
       transition: border-color .2s;
     }
     .search-input::placeholder { color: var(--t3); }
     .search-input:focus { border-color: var(--accent); }
     .search-btn {
-      padding: 10px 18px; border-radius: 9px;
-      background: var(--accent); color: #fff;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      border: none; transition: opacity .2s; white-space: nowrap;
-      display: flex; align-items: center; gap: 6px;
+      padding: 10px 18px; border-radius: 9px; background: var(--accent); color: #fff;
+      font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: opacity .2s;
+      white-space: nowrap; display: flex; align-items: center; gap: 6px;
     }
     .search-btn:hover   { opacity: .88; }
     .search-btn:disabled{ opacity: .5; cursor: not-allowed; }
-    .quick-chips {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px;
-    }
+    .quick-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
     .quick-chip {
-      padding: 4px 11px; border-radius: 16px;
-      font-size: 12px; font-weight: 600; cursor: pointer;
-      border: 1px solid var(--border); color: var(--t2);
-      background: var(--bg3); transition: all .15s;
+      padding: 4px 11px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); color: var(--t2); background: var(--bg3); transition: all .15s;
     }
     .quick-chip:hover { border-color: var(--accent); color: var(--t1); }
 
-    /* Grok credits banner */
-    .grok-notice {
-      background: linear-gradient(135deg, rgba(234,179,8,.08), rgba(249,115,22,.06));
-      border: 1px solid rgba(234,179,8,.3);
-      border-radius: 12px; padding: 14px 16px;
-      display: flex; align-items: flex-start; gap: 10px;
+    /* Token header bar */
+    .token-header {
+      background: linear-gradient(135deg, rgba(124,58,237,.1), rgba(37,99,235,.06));
+      border: 1px solid rgba(124,58,237,.3); border-radius: 14px; padding: 18px 20px;
     }
-    .grok-notice-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-    .grok-notice-text { font-size: 13px; color: var(--t2); line-height: 1.55; }
-    .grok-notice-text strong { color: var(--yellow); }
+    .token-header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .token-name-big   { font-size: 22px; font-weight: 900; letter-spacing: -.4px; }
+    .token-symbol     { font-size: 13px; font-weight: 700; color: var(--t3); background: var(--bg4); padding: 2px 8px; border-radius: 5px; }
+    .token-rank       { font-size: 12px; color: var(--t2); background: var(--bg4); border: 1px solid var(--border); padding: 2px 8px; border-radius: 5px; }
+    .token-cats       { display: flex; gap: 5px; flex-wrap: wrap; }
+    .token-cat-badge  { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; background: var(--accent-dim); color: #a78bfa; border: 1px solid rgba(124,58,237,.2); }
+    .token-price-row  { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .token-price      { font-size: 28px; font-weight: 900; letter-spacing: -.5px; }
+    .change-pill      { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .change-up   { background: rgba(34,197,94,.15);  color: #4ade80; }
+    .change-down { background: rgba(239,68,68,.15);  color: #f87171; }
+    .change-flat { background: var(--bg4); color: var(--t3); }
 
-    /* AI report card */
-    .report-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 22px;
-      display: flex; flex-direction: column; gap: 0;
+    /* Pillar cards grid */
+    .pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pillar-full { grid-column: 1 / -1; }
+    .pillar-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
     }
-    .report-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 18px; flex-wrap: wrap; gap: 8px;
+    .pillar-hdr {
+      display: flex; align-items: center; gap: 8px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
-    .report-token-name {
-      font-size: 20px; font-weight: 900; letter-spacing: -.3px;
+    .pillar-num {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: var(--accent-dim); border: 1px solid rgba(124,58,237,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 900; color: #a78bfa; flex-shrink: 0;
     }
-    .report-token-name span {
-      background: linear-gradient(135deg,#a78bfa,#60a5fa);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .report-meta { font-size: 12px; color: var(--t3); }
-    .report-verdict {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 4px 12px; border-radius: 20px;
-      font-size: 12px; font-weight: 700;
-    }
-    .verdict-strong   { background: rgba(34,197,94,.15);  color: #4ade80;  border: 1px solid rgba(34,197,94,.3); }
-    .verdict-moderate { background: rgba(234,179,8,.12);  color: #fbbf24;  border: 1px solid rgba(234,179,8,.3); }
-    .verdict-weak     { background: rgba(239,68,68,.12);  color: #f87171;  border: 1px solid rgba(239,68,68,.3); }
-    .verdict-unknown  { background: var(--bg4); color: var(--t2); border: 1px solid var(--border); }
+    .pillar-title { font-size: 12px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--t2); }
+    .pillar-subtitle { font-size: 11px; color: var(--t3); margin-left: auto; }
 
-    .pillar-block { padding: 14px 0; border-bottom: 1px solid var(--border); }
-    .pillar-block:last-child { border-bottom: none; padding-bottom: 0; }
-    .pillar-label {
-      font-size: 10px; font-weight: 800; letter-spacing: .7px;
-      text-transform: uppercase; color: var(--accent);
-      margin-bottom: 7px;
-    }
-    .pillar-content {
-      font-size: 14px; color: var(--t2); line-height: 1.7;
-      white-space: pre-wrap; word-break: break-word;
-    }
-    .pillar-content strong { color: var(--t1); }
+    /* Stat rows */
+    .stat-table { display: flex; flex-direction: column; gap: 7px; }
+    .stat-row   { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .stat-label { font-size: 12px; color: var(--t3); white-space: nowrap; flex-shrink: 0; }
+    .stat-val   { font-size: 13px; font-weight: 700; color: var(--t1); text-align: right; }
+    .stat-up    { color: #4ade80; }
+    .stat-down  { color: #f87171; }
+    .stat-dim   { color: var(--t2); font-weight: 400; }
+    .stat-na    { color: var(--t3); font-style: italic; font-weight: 400; font-size: 12px; }
+    .pillar-desc { font-size: 12px; color: var(--t2); line-height: 1.6; }
 
-    .thesis-block {
-      margin-top: 14px; padding: 14px 16px;
-      background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(37,99,235,.05));
-      border: 1px solid rgba(124,58,237,.2); border-radius: 10px;
+    /* Deep AI Analysis box */
+    .prompt-box {
+      background: linear-gradient(135deg, rgba(234,179,8,.06), rgba(249,115,22,.04));
+      border: 1px solid rgba(234,179,8,.25); border-radius: 14px; padding: 18px;
     }
-    .thesis-label { font-size: 10px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: #a78bfa; margin-bottom: 6px; }
-    .thesis-text  { font-size: 14px; color: var(--t1); line-height: 1.6; }
-
-    .report-loading {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 14px; padding: 40px 0; text-align: center;
-    }
-    .report-loading-spinner {
-      width: 36px; height: 36px; border-radius: 50%;
-      border: 3px solid var(--bg4);
-      border-top-color: var(--accent);
-      animation: spin .8s linear infinite;
-    }
-    .report-loading p { font-size: 13px; color: var(--t2); }
-
-    /* Watchlist panel */
-    .watchlist-panel {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 18px;
-    }
-    .watchlist-panel h3 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
-    .watchlist-panel p  { font-size: 12px; color: var(--t3); margin-bottom: 14px; }
-    .watchlist-add-row  { display: flex; gap: 7px; margin-bottom: 16px; }
-    .watchlist-input {
-      flex: 1; background: var(--bg3); border: 1px solid var(--border);
-      border-radius: 8px; padding: 8px 12px;
-      font-size: 13px; color: var(--t1); outline: none;
+    .prompt-box-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+    .prompt-box-title { font-size: 14px; font-weight: 800; color: var(--yellow); }
+    .prompt-box-hint  { font-size: 12px; color: var(--t3); }
+    .prompt-textarea {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px; color: var(--t2);
+      font-family: inherit; font-size: 12px; line-height: 1.6;
+      resize: vertical; min-height: 160px; outline: none;
       transition: border-color .2s;
     }
-    .watchlist-input::placeholder { color: var(--t3); }
-    .watchlist-input:focus { border-color: var(--accent); }
-    .watchlist-add-btn {
-      padding: 8px 14px; border-radius: 8px;
-      background: var(--accent); color: #fff;
-      font-size: 13px; font-weight: 700; cursor: pointer;
-      border: none; transition: opacity .2s; white-space: nowrap;
+    .prompt-textarea:focus { border-color: rgba(234,179,8,.4); }
+    .copy-btn {
+      margin-top: 10px; padding: 9px 16px; border-radius: 8px;
+      background: rgba(234,179,8,.12); border: 1px solid rgba(234,179,8,.3);
+      color: var(--yellow); font-size: 13px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; transition: all .2s;
     }
-    .watchlist-add-btn:hover { opacity: .85; }
+    .copy-btn:hover { background: rgba(234,179,8,.2); }
+    .copy-btn.copied { background: var(--green-dim); border-color: var(--green); color: var(--green); }
 
-    .watchlist-empty {
-      text-align: center; padding: 24px 12px;
-      font-size: 13px; color: var(--t3);
+    /* Loading state */
+    .research-loading {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; padding: 40px 0; text-align: center;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px;
     }
-    .watchlist-empty span { display: block; font-size: 24px; margin-bottom: 8px; }
+    .research-spinner {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 3px solid var(--bg4); border-top-color: var(--accent);
+      animation: spin .8s linear infinite;
+    }
+    .research-loading p { font-size: 13px; color: var(--t2); }
 
-    .wl-token {
-      border: 1px solid var(--border); border-radius: 10px;
-      margin-bottom: 10px; overflow: hidden;
+    /* ═══════════════════════════════════════
+       WATCHLIST (Morning Monitor sidebar)
+    ═══════════════════════════════════════ */
+    .wl-panel {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden;
     }
-    .wl-token:last-child { margin-bottom: 0; }
+    .wl-panel-hdr {
+      background: var(--bg3); border-bottom: 1px solid var(--border);
+      padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .wl-panel-title { font-size: 14px; font-weight: 800; }
+    .wl-refresh-label { font-size: 11px; color: var(--t3); display: flex; align-items: center; gap: 5px; }
+    .wl-live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 5px var(--green);
+      animation: blink 2s ease infinite;
+    }
+    .wl-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .wl-add-row { display: flex; gap: 7px; }
+    .wl-input {
+      flex: 1; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--t1);
+      outline: none; transition: border-color .2s;
+    }
+    .wl-input::placeholder { color: var(--t3); }
+    .wl-input:focus { border-color: var(--accent); }
+    .wl-add-btn {
+      padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff;
+      font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .wl-add-btn:hover { opacity: .85; }
+    .wl-empty { text-align: center; padding: 28px 12px; font-size: 13px; color: var(--t3); }
+    .wl-empty span { display: block; font-size: 26px; margin-bottom: 8px; }
+
+    .wl-token-card {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    }
     .wl-token-hdr {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 12px; background: var(--bg3);
-      cursor: pointer; user-select: none;
+      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+      background: var(--bg4); border-bottom: 1px solid var(--border);
     }
-    .wl-token-name { font-size: 13px; font-weight: 800; flex: 1; }
-    .wl-token-count {
-      font-size: 11px; color: var(--t3);
-    }
-    .wl-remove-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--t3); font-size: 14px; padding: 2px 4px;
-      transition: color .15s; line-height: 1;
-    }
+    .wl-token-name   { font-size: 13px; font-weight: 800; flex: 1; }
+    .wl-token-symbol { font-size: 10px; color: var(--t3); background: var(--bg3); padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+    .wl-remove-btn   { background: none; border: none; cursor: pointer; color: var(--t3); font-size: 13px; padding: 2px 4px; transition: color .15s; line-height: 1; }
     .wl-remove-btn:hover { color: var(--red); }
-    .wl-headlines { padding: 8px 12px; display: flex; flex-direction: column; gap: 7px; }
-    .wl-headline {
-      display: flex; align-items: flex-start; gap: 8px;
+
+    .wl-price-row {
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
     }
+    .wl-price     { font-size: 16px; font-weight: 800; flex: 1; }
+    .wl-change    { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+    .wl-change-up   { background: rgba(34,197,94,.15);  color: #4ade80; }
+    .wl-change-down { background: rgba(239,68,68,.15);  color: #f87171; }
+    .wl-price-loading { font-size: 12px; color: var(--t3); font-style: italic; }
+
+    .wl-headlines { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .wl-headline  { display: flex; align-items: flex-start; gap: 7px; }
     .wl-sentiment {
-      font-size: 9px; font-weight: 800; letter-spacing: .4px;
-      padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+      font-size: 9px; font-weight: 800; letter-spacing: .3px;
+      padding: 2px 5px; border-radius: 4px; text-transform: uppercase;
       flex-shrink: 0; margin-top: 2px;
     }
     .wl-bullish { background: rgba(34,197,94,.15); color: #4ade80; }
     .wl-bearish { background: rgba(239,68,68,.15);  color: #f87171; }
     .wl-neutral { background: var(--bg4); color: var(--t3); }
     .wl-headline-link {
-      font-size: 12px; color: var(--t2); line-height: 1.45; text-decoration: none;
+      font-size: 12px; color: var(--t2); line-height: 1.4; text-decoration: none;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     .wl-headline-link:hover { color: var(--t1); }
-    .wl-no-news {
-      font-size: 12px; color: var(--t3); padding: 4px 0 6px;
-      text-align: center;
+    .wl-no-news { font-size: 12px; color: var(--t3); padding: 6px 0; text-align: center; }
+
+    .wl-summary { padding: 6px 12px 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .wl-sum-chip {
+      font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
     }
-    .wl-checked { font-size: 11px; color: var(--t3); padding: 4px 12px 10px; }
+    .wl-sum-bull { background: rgba(34,197,94,.1);  color: #4ade80; }
+    .wl-sum-bear { background: rgba(239,68,68,.1);  color: #f87171; }
+    .wl-sum-neu  { background: var(--bg4); color: var(--t3); }
+    .wl-checked  { font-size: 10px; color: var(--t3); padding: 0 12px 8px; }
 
     /* ── Responsive ── */
     @media (max-width: 1024px) {
-      .news-grid        { grid-template-columns: repeat(2, 1fr); }
-      .reddit-grid      { grid-template-columns: repeat(2, 1fr); }
-      .research-layout  { grid-template-columns: 1fr; }
+      .news-grid       { grid-template-columns: repeat(2, 1fr); }
+      .reddit-grid     { grid-template-columns: repeat(2, 1fr); }
+      .research-layout { grid-template-columns: 1fr; }
+      .research-sidebar{ order: -1; }
     }
     @media (max-width: 640px) {
-      .hdr         { padding: 10px 14px; gap: 8px; }
-      .section     { padding: 16px 14px; }
-      .top-nav     { gap: 2px; }
-      .nav-tab     { padding: 5px 10px; font-size: 12px; }
+      .hdr       { padding: 10px 14px; gap: 8px; }
+      .section   { padding: 16px 14px; }
+      .top-nav   { gap: 2px; }
+      .nav-tab   { padding: 5px 10px; font-size: 12px; }
       .nav-tab .badge-new, .nav-tab .badge-soon { display: none; }
       .news-grid   { grid-template-columns: 1fr; }
       .reddit-grid { grid-template-columns: 1fr; }
       .hot-title   { font-size: 16px; }
+      .pillar-grid { grid-template-columns: 1fr; }
+      .token-price { font-size: 22px; }
     }
   </style>
 </head>
@@ -592,7 +537,7 @@
       📰 News &amp; Trends <span class="badge-new">LIVE</span>
     </button>
     <button class="nav-tab" data-section="research" onclick="switchSection('research')">
-      🔬 Token Research <span class="badge-new">NEW</span>
+      🔬 Token Research
     </button>
     <button class="nav-tab" data-section="yields" onclick="switchSection('yields')">
       💰 Best Yields <span class="badge-soon">SOON</span>
@@ -611,7 +556,6 @@
 <!-- ════════════════════════════════════════════ -->
 <section class="section active" id="sec-news">
 
-  <!-- Top row: title + refresh -->
   <div class="sec-hdr">
     <div>
       <div class="sec-title">📰 <span>Crypto News</span> &amp; Trends</div>
@@ -635,7 +579,6 @@
       <span id="hot-time"   class="news-time"></span>
     </div>
   </div>
-  <!-- Banner skeleton -->
   <div id="hot-skeleton" class="hot-banner">
     <div class="skeleton" style="height:12px;width:130px;margin-bottom:12px"></div>
     <div class="skeleton" style="height:22px;margin-bottom:8px"></div>
@@ -658,7 +601,6 @@
 
   <!-- Time-grouped news container -->
   <div id="news-container">
-    <!-- skeleton grid -->
     <div class="time-group">
       <div class="news-grid">
         <div class="skeleton-card"><div class="skeleton" style="height:12px;width:55%"></div><div class="skeleton" style="height:48px"></div><div class="skeleton" style="height:16px;width:75%"></div></div>
@@ -677,7 +619,7 @@
       <div class="reddit-hdr-label">🟠 Trending on Reddit</div>
       <div class="reddit-hdr-line"></div>
       <div class="reddit-sub-tabs" id="reddit-sub-tabs">
-        <button class="reddit-sub-tab on" data-sub="all"           onclick="setRedditSub('all')">All</button>
+        <button class="reddit-sub-tab on" data-sub="all"            onclick="setRedditSub('all')">All</button>
         <button class="reddit-sub-tab"    data-sub="CryptoCurrency" onclick="setRedditSub('CryptoCurrency')">r/Crypto</button>
         <button class="reddit-sub-tab"    data-sub="Bitcoin"        onclick="setRedditSub('Bitcoin')">r/Bitcoin</button>
         <button class="reddit-sub-tab"    data-sub="solana"         onclick="setRedditSub('solana')">r/Solana</button>
@@ -699,64 +641,63 @@
   <div class="sec-hdr">
     <div>
       <div class="sec-title">🔬 <span>Token Research</span></div>
-      <div style="font-size:13px;color:var(--t3);margin-top:4px;">AI-powered 5-pillar deep dive · Watchlist with live news sentiment</div>
+      <div style="font-size:13px;color:var(--t3);margin-top:4px;">Real-time CoinGecko data · 5-pillar analysis · Morning watchlist monitor</div>
     </div>
   </div>
 
   <div class="research-layout">
 
-    <!-- ── LEFT: AI Research ── -->
-    <div class="research-left">
+    <!-- ═══ LEFT: Token Research (one-time deep dive) ═══ -->
+    <div class="research-main">
 
-      <!-- Search box -->
-      <div class="research-search-wrap">
-        <h2>🤖 AI Token Analysis</h2>
-        <p>Enter any crypto token to get a 5-pillar deep-dive: fundamentals, narrative, chart context, team, and tokenomics — powered by Grok.</p>
+      <!-- Search card -->
+      <div class="search-card">
+        <h2>📊 Token Deep Dive</h2>
+        <p>Fetch live market data for any token, organized across 5 research pillars. Copy the AI prompt below to get a full written analysis.</p>
         <div class="search-row">
-          <input  id="research-input" class="search-input" type="text"
-                  placeholder="e.g. Solana, Ethereum, PEPE…"
-                  onkeydown="if(event.key==='Enter') runResearch()" />
+          <input id="research-input" class="search-input" type="text"
+                 placeholder="e.g. Solana, Ethereum, Pepe…"
+                 onkeydown="if(event.key==='Enter') runResearch()" />
           <button id="research-btn" class="search-btn" onclick="runResearch()">
             <span id="research-spin" class="spin">🔍</span> Analyze
           </button>
         </div>
         <div class="quick-chips">
           <span style="font-size:11px;color:var(--t3);align-self:center;margin-right:2px;">Quick:</span>
-          <button class="quick-chip" onclick="quickResearch('Bitcoin')">Bitcoin</button>
-          <button class="quick-chip" onclick="quickResearch('Ethereum')">Ethereum</button>
-          <button class="quick-chip" onclick="quickResearch('Solana')">Solana</button>
-          <button class="quick-chip" onclick="quickResearch('Sui')">SUI</button>
-          <button class="quick-chip" onclick="quickResearch('Chainlink')">Chainlink</button>
+          <button class="quick-chip" onclick="quickResearch('bitcoin')">Bitcoin</button>
+          <button class="quick-chip" onclick="quickResearch('ethereum')">Ethereum</button>
+          <button class="quick-chip" onclick="quickResearch('solana')">Solana</button>
+          <button class="quick-chip" onclick="quickResearch('sui')">SUI</button>
+          <button class="quick-chip" onclick="quickResearch('chainlink')">Chainlink</button>
+          <button class="quick-chip" onclick="quickResearch('pepe')">PEPE</button>
         </div>
       </div>
 
-      <!-- Grok credits notice (shown when no key) -->
-      <div class="grok-notice" id="grok-notice" style="display:none">
-        <div class="grok-notice-icon">⚡</div>
-        <div class="grok-notice-text">
-          <strong>Grok API key required.</strong> Add your key as the <code style="background:var(--bg4);padding:1px 5px;border-radius:4px;font-size:12px">GROK_API_KEY</code>
-          environment variable on Railway, then redeploy. Once set, all 5-pillar analyses will run automatically.
-        </div>
-      </div>
-
-      <!-- Report output area -->
+      <!-- Research output (pillar cards + prompt) -->
       <div id="research-output"></div>
 
     </div>
 
-    <!-- ── RIGHT: Watchlist ── -->
-    <div class="research-right">
-      <div class="watchlist-panel">
-        <h3>📌 Token Watchlist</h3>
-        <p>Track tokens and see matching news headlines with sentiment tags.</p>
-        <div class="watchlist-add-row">
-          <input  id="wl-input" class="watchlist-input" type="text"
-                  placeholder="Token name…"
-                  onkeydown="if(event.key==='Enter') addToWatchlist()" />
-          <button class="watchlist-add-btn" onclick="addToWatchlist()">+ Add</button>
+    <!-- ═══ RIGHT: Morning Monitor Watchlist ═══ -->
+    <div class="research-sidebar">
+      <div class="wl-panel">
+        <div class="wl-panel-hdr">
+          <div class="wl-panel-title">📊 Morning Monitor</div>
+          <div class="wl-refresh-label">
+            <span class="wl-live-dot"></span> Auto-refresh 15 min
+          </div>
         </div>
-        <div id="watchlist-container">
-          <div class="watchlist-empty"><span>📋</span>No tokens yet. Add one above.</div>
+        <div class="wl-body">
+          <p style="font-size:12px;color:var(--t3);margin-bottom:4px;">Track tokens 24/7 — price, overnight moves, and news sentiment.</p>
+          <div class="wl-add-row">
+            <input id="wl-input" class="wl-input" type="text"
+                   placeholder="Add token (e.g. BTC, Solana)…"
+                   onkeydown="if(event.key==='Enter') addToWatchlist()" />
+            <button class="wl-add-btn" onclick="addToWatchlist()">+ Add</button>
+          </div>
+          <div id="watchlist-container">
+            <div class="wl-empty"><span>📋</span>No tokens yet.<br>Add one above.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -810,13 +751,13 @@
   const REFRESH_MS = 15 * 60 * 1000;
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let allArticles    = [];
-  let allRedditPosts = [];
-  let activeCat      = 'all';
+  let allArticles     = [];
+  let allRedditPosts  = [];
+  let activeCat       = 'all';
   let activeRedditSub = 'all';
-  let countdownSecs  = REFRESH_MS / 1000;
-  let countdownInt   = null;
-  let refreshTimer   = null;
+  let countdownSecs   = REFRESH_MS / 1000;
+  let countdownInt    = null;
+  let refreshTimer    = null;
 
   // ── Category keyword maps ──────────────────────────────────────────────────
   const CAT_KEYWORDS = {
@@ -833,8 +774,7 @@
   };
 
   function categorise(article) {
-    const text = (article.title + ' ' + article.desc).toLowerCase();
-    // Check breaking first (recent articles count as breaking too)
+    const text  = (article.title + ' ' + article.desc).toLowerCase();
     const ageMs = Date.now() - (article.pubDate ? new Date(article.pubDate).getTime() : 0);
     if (ageMs < 60 * 60 * 1000) return 'breaking';
     for (const [cat, kws] of Object.entries(CAT_KEYWORDS)) {
@@ -903,20 +843,11 @@
   }
 
   function catCls(cat) {
-    const map = {
-      breaking:   'cat-breaking',
-      bitcoin:    'cat-bitcoin',
-      defi:       'cat-defi',
-      altcoins:   'cat-altcoins',
-      regulation: 'cat-regulation',
-    };
+    const map = { breaking:'cat-breaking', bitcoin:'cat-bitcoin', defi:'cat-defi', altcoins:'cat-altcoins', regulation:'cat-regulation' };
     return map[cat] || '';
   }
   function catLabel(cat) {
-    const map = {
-      breaking: 'Breaking', bitcoin: 'BTC', defi: 'DeFi',
-      altcoins: 'Altcoins', regulation: 'Regulation',
-    };
+    const map = { breaking:'Breaking', bitcoin:'BTC', defi:'DeFi', altcoins:'Altcoins', regulation:'Regulation' };
     return map[cat] || '';
   }
 
@@ -932,96 +863,67 @@
   function renderHotBanner(articles) {
     const skeleton = document.getElementById('hot-skeleton');
     const banner   = document.getElementById('hot-banner');
-
-    // Pick the most recent article that has a parseable date
-    const sorted = [...articles].filter(a => a.pubDate && !isNaN(new Date(a.pubDate)))
+    const sorted   = [...articles].filter(a => a.pubDate && !isNaN(new Date(a.pubDate)))
       .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
     if (!sorted.length) { skeleton.style.display = 'none'; return; }
-
     const top = sorted[0];
     skeleton.style.display = 'none';
     banner.style.display   = 'block';
-
     document.getElementById('hot-title').textContent = top.title;
     document.getElementById('hot-title').href        = top.link;
     document.getElementById('hot-desc').textContent  = top.desc || '';
     const srcEl = document.getElementById('hot-source');
-    srcEl.textContent  = top.source;
-    srcEl.className    = `source-badge ${sourceCls(top.source)}`;
-    document.getElementById('hot-time').textContent  = timeAgo(top.pubDate);
+    srcEl.textContent = top.source;
+    srcEl.className   = `source-badge ${sourceCls(top.source)}`;
+    document.getElementById('hot-time').textContent = timeAgo(top.pubDate);
   }
 
   // ── Update chip counts ─────────────────────────────────────────────────────
   function updateChipCounts(articles) {
-    const counts = { all: articles.length, breaking: 0, bitcoin: 0, defi: 0, altcoins: 0, regulation: 0 };
-    articles.forEach(a => {
-      const c = a._cat;
-      if (counts[c] !== undefined) counts[c]++;
-    });
-    for (const [key, val] of Object.entries(counts)) {
-      const el = document.getElementById(`cnt-${key}`);
-      if (el) el.textContent = val;
+    const counts = { all: articles.length, breaking:0, bitcoin:0, defi:0, altcoins:0, regulation:0 };
+    articles.forEach(a => { if (counts[a._cat] !== undefined) counts[a._cat]++; });
+    for (const [k, v] of Object.entries(counts)) {
+      const el = document.getElementById(`cnt-${k}`);
+      if (el) el.textContent = v;
     }
   }
 
   // ── Render time-grouped news ───────────────────────────────────────────────
   function renderNewsContainer() {
     const container = document.getElementById('news-container');
-
-    const filtered = activeCat === 'all'
-      ? allArticles
-      : allArticles.filter(a => a._cat === activeCat);
-
+    const filtered  = activeCat === 'all' ? allArticles : allArticles.filter(a => a._cat === activeCat);
     if (!filtered.length) {
-      container.innerHTML = `<div class="state-box">
-        <div class="icon">📭</div>
-        <div class="msg">No ${activeCat === 'all' ? '' : activeCat + ' '}articles found.</div>
-      </div>`;
+      container.innerHTML = `<div class="state-box"><div class="icon">📭</div><div class="msg">No articles found.</div></div>`;
       return;
     }
-
-    const now = Date.now();
     const groups = [
-      { key: 'hour',  label: 'Last Hour',     cls: 'tg-hour',  min: 0,         max: 60 * 60 * 1000 },
-      { key: '6h',    label: 'Last 6 Hours',   cls: 'tg-6h',    min: 60*60*1000, max: 6*60*60*1000 },
-      { key: '24h',   label: 'Last 24 Hours',  cls: 'tg-24h',   min: 6*60*60*1000, max: 24*60*60*1000 },
-      { key: 'older', label: 'Older',          cls: 'tg-older', min: 24*60*60*1000, max: Infinity },
+      { label:'Last Hour',    cls:'tg-hour',  min:0,              max:60*60*1000        },
+      { label:'Last 6 Hours', cls:'tg-6h',    min:60*60*1000,     max:6*60*60*1000      },
+      { label:'Last 24 Hours',cls:'tg-24h',   min:6*60*60*1000,   max:24*60*60*1000     },
+      { label:'Older',        cls:'tg-older', min:24*60*60*1000,  max:Infinity          },
     ];
-
     let html = '';
     for (const g of groups) {
-      const items = filtered.filter(a => {
-        const age = ageMs(a.pubDate);
-        return age >= g.min && age < g.max;
-      });
+      const items = filtered.filter(a => { const age = ageMs(a.pubDate); return age >= g.min && age < g.max; });
       if (!items.length) continue;
-
       html += `<div class="time-group">
         <div class="time-group-hdr">
           <span class="time-group-label ${g.cls}">${g.label}</span>
           <span class="time-group-line"></span>
-          <span class="time-group-count">${items.length} article${items.length !== 1 ? 's' : ''}</span>
+          <span class="time-group-count">${items.length} article${items.length!==1?'s':''}</span>
         </div>
-        <div class="news-grid">
-          ${items.map(a => newsCardHtml(a)).join('')}
-        </div>
+        <div class="news-grid">${items.map(newsCardHtml).join('')}</div>
       </div>`;
     }
-
-    container.innerHTML = html || `<div class="state-box">
-      <div class="icon">📭</div>
-      <div class="msg">No articles in the last 24 hours for this filter.</div>
-    </div>`;
+    container.innerHTML = html || `<div class="state-box"><div class="icon">📭</div><div class="msg">No articles in the last 24 hours.</div></div>`;
   }
 
   function newsCardHtml(a) {
-    const catCl = catCls(a._cat);
-    const catLbl = catLabel(a._cat);
+    const ccl = catCls(a._cat), clbl = catLabel(a._cat);
     return `<div class="news-card" onclick="window.open('${esc(a.link)}','_blank','noopener')">
       <div class="news-card-top">
         <span class="source-badge ${sourceCls(a.source)}">${esc(a.source)}</span>
-        ${catCl ? `<span class="cat-badge ${catCl}">${catLbl}</span>` : ''}
+        ${ccl ? `<span class="cat-badge ${ccl}">${clbl}</span>` : ''}
         <span class="news-time">${timeAgo(a.pubDate)}</span>
       </div>
       <a class="news-title" href="${esc(a.link)}" target="_blank" rel="noopener"
@@ -1032,25 +934,17 @@
 
   // ── Render Reddit ──────────────────────────────────────────────────────────
   function renderReddit() {
-    const grid = document.getElementById('reddit-grid');
-    const posts = activeRedditSub === 'all'
-      ? allRedditPosts
-      : allRedditPosts.filter(p => p.subreddit === activeRedditSub);
-
+    const grid  = document.getElementById('reddit-grid');
+    const posts = activeRedditSub === 'all' ? allRedditPosts : allRedditPosts.filter(p => p.subreddit === activeRedditSub);
     if (!posts.length) {
-      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
-        <div class="icon">🟠</div>
-        <div class="msg">No posts available.</div>
-      </div>`;
+      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1"><div class="icon">🟠</div><div class="msg">No posts available.</div></div>`;
       return;
     }
-
     const maxScore = posts[0]?.score || 1;
-
     grid.innerHTML = posts.slice(0, 12).map((p, i) => `
       <div class="reddit-card">
         <div class="reddit-card-top">
-          <span class="reddit-rank">#${i + 1}</span>
+          <span class="reddit-rank">#${i+1}</span>
           <span class="sub-badge">r/${esc(p.subreddit)}</span>
           <div class="reddit-score-row">
             <span class="upvote-count">▲ ${fmtScore(p.score)}</span>
@@ -1058,27 +952,22 @@
           </div>
         </div>
         <a class="reddit-title" href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.title)}</a>
-        <div class="reddit-bar-wrap">
-          <div class="reddit-bar" style="width:${Math.round((p.score / maxScore) * 100)}%"></div>
-        </div>
+        <div class="reddit-bar-wrap"><div class="reddit-bar" style="width:${Math.round((p.score/maxScore)*100)}%"></div></div>
         <div class="reddit-meta">${timeAgo(p.created)}</div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  // ── Load data from API ─────────────────────────────────────────────────────
+  // ── Load news from API ─────────────────────────────────────────────────────
   async function loadNews(force = false) {
     const btn  = document.getElementById('refresh-news-btn');
     const spin = document.getElementById('news-spin');
     btn.classList.add('loading');
     spin.classList.add('spinning');
-
     try {
       const [newsRes, redditRes] = await Promise.allSettled([
         fetch(`${API}/api/news`).then(r => r.json()),
         fetch(`${API}/api/reddit`).then(r => r.json()),
       ]);
-
       if (newsRes.status === 'fulfilled' && newsRes.value.ok) {
         allArticles = (newsRes.value.articles || []).map(a => ({ ...a, _cat: categorise(a) }));
         updateChipCounts(allArticles);
@@ -1086,34 +975,21 @@
         renderNewsContainer();
       } else {
         document.getElementById('hot-skeleton').style.display = 'none';
-        document.getElementById('news-container').innerHTML = `
-          <div class="state-box">
-            <div class="icon">⚠️</div>
-            <div class="msg">Could not load news. Server may still be starting up.</div>
-            <div style="font-size:12px;color:var(--t3);margin-top:6px;">Try refreshing in a moment.</div>
-          </div>`;
+        document.getElementById('news-container').innerHTML = `<div class="state-box"><div class="icon">⚠️</div><div class="msg">Could not load news. Server may still be starting.</div></div>`;
       }
-
       if (redditRes.status === 'fulfilled' && redditRes.value.ok) {
         allRedditPosts = redditRes.value.posts || [];
-        renderReddit();
-      } else {
         renderReddit();
       }
     } catch (err) {
       document.getElementById('hot-skeleton').style.display = 'none';
-      document.getElementById('news-container').innerHTML = `
-        <div class="state-box">
-          <div class="icon">🔌</div>
-          <div class="msg">Cannot reach the server. Is it running?</div>
-          <div style="font-size:12px;color:var(--t3);margin-top:6px;">${esc(err.message)}</div>
-        </div>`;
-      renderReddit();
+      document.getElementById('news-container').innerHTML = `<div class="state-box"><div class="icon">🔌</div><div class="msg">Cannot reach server. Is it running?</div><div style="font-size:12px;color:var(--t3);margin-top:6px;">${esc(err.message)}</div></div>`;
     } finally {
       btn.classList.remove('loading');
       spin.classList.remove('spinning');
       resetCountdown();
-      renderWatchlist();
+      renderWatchlist();          // refresh watchlist news headlines
+      refreshWatchlistPrices();   // refresh prices
     }
   }
 
@@ -1122,199 +998,287 @@
     countdownSecs = REFRESH_MS / 1000;
     clearInterval(countdownInt);
     clearTimeout(refreshTimer);
-
     countdownInt = setInterval(() => {
       countdownSecs = Math.max(0, countdownSecs - 1);
-      const m  = String(Math.floor(countdownSecs / 60)).padStart(2, '0');
-      const s  = String(countdownSecs % 60).padStart(2, '0');
+      const m = String(Math.floor(countdownSecs/60)).padStart(2,'0');
+      const s = String(countdownSecs%60).padStart(2,'0');
       const el = document.getElementById('news-countdown');
       if (el) el.textContent = `${m}:${s}`;
     }, 1000);
-
     refreshTimer = setTimeout(() => loadNews(true), REFRESH_MS);
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // TOKEN RESEARCH — AI analysis
+  // NUMBER FORMATTERS
   // ══════════════════════════════════════════════════════════════════════════
+  function fmtUSD(n) {
+    if (n === null || n === undefined) return 'N/A';
+    if (n >= 1e12) return '$' + (n/1e12).toFixed(2) + 'T';
+    if (n >= 1e9)  return '$' + (n/1e9).toFixed(2)  + 'B';
+    if (n >= 1e6)  return '$' + (n/1e6).toFixed(2)  + 'M';
+    if (n >= 1e3)  return '$' + (n/1e3).toFixed(1)  + 'K';
+    if (n >= 1)    return '$' + Number(n).toFixed(2);
+    if (n >= 0.01) return '$' + Number(n).toFixed(4);
+    return '$' + Number(n).toFixed(8);
+  }
+  function fmtNum(n) {
+    if (n === null || n === undefined) return 'N/A';
+    if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+    return String(Math.round(n));
+  }
+  function fmtPct(n) {
+    if (n === null || n === undefined) return 'N/A';
+    return (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
+  }
+  function pctCls(n) {
+    if (n === null || n === undefined) return 'stat-na';
+    return n >= 0 ? 'stat-up' : 'stat-down';
+  }
+  function sr(label, val, cls) {
+    return `<div class="stat-row"><span class="stat-label">${label}</span><span class="stat-val ${cls||''}">${val}</span></div>`;
+  }
 
-  const GROK_MODEL  = 'grok-3-latest';
-  const GROK_PROMPT = (token) => `Do a deep research analysis on ${token} as a potential long-term crypto investment.
-
-PILLAR 1 — THE BASICS: What does this project do? What problem does it solve? Does it have active development?
-
-PILLAR 2 — NARRATIVES: What market narrative does it sit in (DeFi, L1, AI, RWA)? Is that narrative gaining or losing attention? Leader or follower?
-
-PILLAR 3 — CHART & VOLATILITY: How volatile vs Bitcoin? Macro price trend over 1-2 years? Key support/resistance levels?
-
-PILLAR 4 — TEAM & COMMUNITY: Who built it? Track record? Active community or hype? Notable backers?
-
-PILLAR 5 — TOKENOMICS: Fixed/inflationary/deflationary supply? Circulating vs total? VC allocations? Upcoming unlocks?
-
-INVESTOR THESIS: One-two sentence thesis. Three things that would break confidence.
-
-VERDICT: Strong, moderate, or weak candidate for long-term hold, and why.
-
-Format your response as structured sections using the exact headers: PILLAR 1, PILLAR 2, PILLAR 3, PILLAR 4, PILLAR 5, INVESTOR THESIS, VERDICT.`;
-
-  function quickResearch(token) {
-    document.getElementById('research-input').value = token;
+  // ══════════════════════════════════════════════════════════════════════════
+  // TOKEN RESEARCH — CoinGecko data
+  // ══════════════════════════════════════════════════════════════════════════
+  function quickResearch(id) {
+    document.getElementById('research-input').value = id;
     runResearch();
   }
 
   async function runResearch() {
     const input = document.getElementById('research-input');
-    const token = input.value.trim();
-    if (!token) { input.focus(); return; }
+    const query = input.value.trim();
+    if (!query) { input.focus(); return; }
 
     const btn    = document.getElementById('research-btn');
-    const spin   = document.getElementById('research-spin');
+    const rspin  = document.getElementById('research-spin');
     const output = document.getElementById('research-output');
-    const notice = document.getElementById('grok-notice');
-
     btn.disabled = true;
-    spin.classList.add('spinning');
-    notice.style.display = 'none';
+    rspin.classList.add('spinning');
 
-    output.innerHTML = `<div class="report-card">
-      <div class="report-loading">
-        <div class="report-loading-spinner"></div>
-        <p>Analyzing <strong>${esc(token)}</strong> across 5 pillars…<br>
-        <span style="font-size:11px;color:var(--t3);">This takes 15–30 seconds</span></p>
-      </div>
+    output.innerHTML = `<div class="research-loading">
+      <div class="research-spinner"></div>
+      <p>Fetching data for <strong>${esc(query)}</strong>…</p>
     </div>`;
 
     try {
-      // Fetch Grok key from server (env var)
-      const envRes  = await fetch('/api/env-keys').then(r => r.json());
-      const grokKey = envRes.grokKey || '';
-
-      if (!grokKey) {
-        notice.style.display = 'flex';
-        output.innerHTML = '';
+      // Step 1: resolve to CoinGecko ID
+      const srchRes = await fetch(`/api/coingecko/search?query=${encodeURIComponent(query)}`).then(r => r.json());
+      if (!srchRes.ok || !srchRes.data?.coins?.length) {
+        output.innerHTML = `<div class="state-box"><div class="icon">🔎</div><div class="msg">Token not found: "${esc(query)}"</div><div style="font-size:12px;color:var(--t3);margin-top:6px;">Try the full name, e.g. "Solana" instead of "SOL".</div></div>`;
         return;
       }
+      const coin = srchRes.data.coins[0];
 
-      const resp = await fetch('https://api.x.ai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${grokKey}`,
-        },
-        body: JSON.stringify({
-          model: GROK_MODEL,
-          messages: [{ role: 'user', content: GROK_PROMPT(token) }],
-          temperature: 0.7,
-        }),
-      });
+      // Step 2: fetch full coin data
+      const coinRes = await fetch(`/api/coingecko/coin/${coin.id}`).then(r => r.json());
+      if (!coinRes.ok) throw new Error(coinRes.error || 'CoinGecko fetch failed');
 
-      if (!resp.ok) {
-        const errText = await resp.text();
-        throw new Error(`Grok API error ${resp.status}: ${errText.slice(0, 200)}`);
-      }
-
-      const data    = await resp.json();
-      const rawText = data.choices?.[0]?.message?.content || '';
-      renderReport(token, rawText);
-
+      renderResearchData(coinRes.data);
     } catch (err) {
-      output.innerHTML = `<div class="report-card">
-        <div class="state-box" style="border:none;padding:24px 0">
-          <div class="icon">⚠️</div>
-          <div class="msg">${esc(err.message)}</div>
-        </div>
-      </div>`;
+      output.innerHTML = `<div class="state-box"><div class="icon">⚠️</div><div class="msg">${esc(err.message)}</div></div>`;
     } finally {
       btn.disabled = false;
-      spin.classList.remove('spinning');
-      spin.textContent = '🔍';
+      rspin.classList.remove('spinning');
+      rspin.textContent = '🔍';
     }
   }
 
-  function renderReport(token, rawText) {
-    // Parse sections from the response
-    const sections = {
-      'PILLAR 1': '', 'PILLAR 2': '', 'PILLAR 3': '',
-      'PILLAR 4': '', 'PILLAR 5': '', 'INVESTOR THESIS': '', 'VERDICT': '',
-    };
-    const keys  = Object.keys(sections);
-    const regex = new RegExp(
-      keys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'gi'
-    );
-    let lastKey = null;
-    let lastIdx = 0;
-    const matches = [...rawText.matchAll(new RegExp(
-      `(${keys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi'
-    ))];
-    for (let i = 0; i < matches.length; i++) {
-      const m    = matches[i];
-      const key  = keys.find(k => k.toLowerCase() === m[0].toLowerCase());
-      const next = matches[i + 1];
-      const chunk = rawText.slice(m.index + m[0].length, next ? next.index : undefined);
-      if (key) sections[key] = chunk.replace(/^[\s:—\-]+/, '').trim();
-    }
+  function renderResearchData(d) {
+    const md  = d.market_data || {};
+    const cd  = d.community_data || {};
+    const dev = d.developer_data || {};
+    const price  = md.current_price?.usd;
+    const ch24   = md.price_change_percentage_24h;
+    const ch7    = md.price_change_percentage_7d_in_currency?.usd;
+    const ch30   = md.price_change_percentage_30d_in_currency?.usd;
+    const ch1y   = md.price_change_percentage_1y_in_currency?.usd;
+    const mcap   = md.market_cap?.usd;
+    const fdv    = md.fully_diluted_valuation?.usd;
+    const vol    = md.total_volume?.usd;
+    const circ   = md.circulating_supply;
+    const total  = md.total_supply;
+    const maxS   = md.max_supply;
+    const ath    = md.ath?.usd;
+    const athChg = md.ath_change_percentage?.usd;
+    const atl    = md.atl?.usd;
+    const atlChg = md.atl_change_percentage?.usd;
+    const cats   = (d.categories || []).filter(Boolean).slice(0, 4);
+    const desc   = (d.description?.en || '').replace(/<[^>]+>/g, '').slice(0, 350);
+    const pctCirc = (circ && total) ? ((circ / total) * 100).toFixed(1) + '%' : 'N/A';
+    const volMcap = (vol && mcap)   ? ((vol  / mcap)  * 100).toFixed(2) + '%' : 'N/A';
 
-    // Determine verdict class
-    const verdictText = sections['VERDICT'].toLowerCase();
-    let verdictCls = 'verdict-unknown', verdictEmoji = '❓';
-    if (verdictText.includes('strong'))   { verdictCls = 'verdict-strong';   verdictEmoji = '✅'; }
-    if (verdictText.includes('moderate')) { verdictCls = 'verdict-moderate'; verdictEmoji = '🟡'; }
-    if (verdictText.includes('weak'))     { verdictCls = 'verdict-weak';     verdictEmoji = '🔴'; }
-
-    const pillarMeta = [
-      { key: 'PILLAR 1', icon: '📋', label: 'The Basics' },
-      { key: 'PILLAR 2', icon: '📣', label: 'Narratives' },
-      { key: 'PILLAR 3', icon: '📈', label: 'Chart & Volatility' },
-      { key: 'PILLAR 4', icon: '👥', label: 'Team & Community' },
-      { key: 'PILLAR 5', icon: '🔢', label: 'Tokenomics' },
-    ];
-
-    const pillarsHtml = pillarMeta.map(p => {
-      const content = sections[p.key] || '<em style="color:var(--t3)">No data extracted.</em>';
-      return `<div class="pillar-block">
-        <div class="pillar-label">${p.icon} ${p.key} — ${p.label}</div>
-        <div class="pillar-content">${esc(content)}</div>
-      </div>`;
-    }).join('');
-
-    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    document.getElementById('research-output').innerHTML = `
-      <div class="report-card">
-        <div class="report-header">
-          <div>
-            <div class="report-token-name"><span>${esc(token.toUpperCase())}</span> Research Report</div>
-            <div class="report-meta">Generated via Grok · ${now}</div>
-          </div>
-          <span class="report-verdict ${verdictCls}">${verdictEmoji} ${verdictText.includes('strong') ? 'Strong' : verdictText.includes('moderate') ? 'Moderate' : verdictText.includes('weak') ? 'Weak' : 'See verdict'}</span>
+    // Token header
+    const ch24cls = ch24 >= 0 ? 'change-up' : 'change-down';
+    const headerHtml = `
+      <div class="token-header">
+        <div class="token-header-top">
+          <span class="token-name-big">${esc(d.name)}</span>
+          <span class="token-symbol">${esc(d.symbol?.toUpperCase())}</span>
+          ${d.market_cap_rank ? `<span class="token-rank">Rank #${d.market_cap_rank}</span>` : ''}
+          <div class="token-cats">${cats.map(c => `<span class="token-cat-badge">${esc(c)}</span>`).join('')}</div>
         </div>
-        ${pillarsHtml}
-        ${sections['INVESTOR THESIS'] ? `
-        <div class="thesis-block">
-          <div class="thesis-label">💡 Investor Thesis</div>
-          <div class="thesis-text">${esc(sections['INVESTOR THESIS'])}</div>
-        </div>` : ''}
-        ${sections['VERDICT'] ? `
-        <div class="pillar-block" style="margin-top:14px">
-          <div class="pillar-label">⚖️ Verdict</div>
-          <div class="pillar-content">${esc(sections['VERDICT'])}</div>
-        </div>` : ''}
+        <div class="token-price-row">
+          <span class="token-price">${fmtUSD(price)}</span>
+          <span class="change-pill ${ch24cls}">${fmtPct(ch24)} 24h</span>
+          ${ch7  !== undefined ? `<span class="change-pill ${ch7  >= 0 ? 'change-up' : 'change-down'}">${fmtPct(ch7)}  7d</span>`  : ''}
+          ${ch30 !== undefined ? `<span class="change-pill ${ch30 >= 0 ? 'change-up' : 'change-down'}">${fmtPct(ch30)} 30d</span>` : ''}
+        </div>
       </div>`;
+
+    // Pillar 1 — Basics
+    const p1 = `<div class="pillar-card pillar-full">
+      <div class="pillar-hdr">
+        <span class="pillar-num">1</span>
+        <span class="pillar-title">The Basics</span>
+        <span class="pillar-subtitle">What it does · GitHub</span>
+      </div>
+      ${desc ? `<div class="pillar-desc">${esc(desc)}${d.description?.en?.length > 350 ? '…' : ''}</div>` : ''}
+      <div class="stat-table">
+        ${sr('Genesis date',  d.genesis_date || 'N/A')}
+        ${sr('Hashing algo',  d.hashing_algorithm || 'N/A')}
+        ${sr('GH Stars',      dev.stars        != null ? fmtNum(dev.stars)        : '<span class="stat-na">N/A</span>')}
+        ${sr('GH Forks',      dev.forks        != null ? fmtNum(dev.forks)        : '<span class="stat-na">N/A</span>')}
+        ${sr('Commits (4w)',  dev.commit_count_4_weeks != null ? dev.commit_count_4_weeks : '<span class="stat-na">N/A</span>')}
+        ${sr('Subscribers',   dev.subscribers  != null ? fmtNum(dev.subscribers)  : '<span class="stat-na">N/A</span>')}
+      </div>
+    </div>`;
+
+    // Pillar 2 — Narratives
+    const p2 = `<div class="pillar-card">
+      <div class="pillar-hdr">
+        <span class="pillar-num">2</span>
+        <span class="pillar-title">Narratives</span>
+        <span class="pillar-subtitle">Sector · Rank</span>
+      </div>
+      <div class="stat-table">
+        ${sr('Market cap rank', d.market_cap_rank ? `#${d.market_cap_rank}` : 'N/A')}
+        ${sr('Market cap',      fmtUSD(mcap))}
+        ${sr('Sector(s)',       cats.length ? `<span style="font-size:11px;text-align:right">${cats.map(c=>esc(c)).join('<br>')}</span>` : 'N/A')}
+        ${sr('Coingecko score', d.coingecko_score != null ? Number(d.coingecko_score).toFixed(1) + ' / 100' : 'N/A')}
+        ${sr('Community score', d.community_score != null ? Number(d.community_score).toFixed(1) : 'N/A')}
+        ${sr('Dev score',       d.developer_score != null ? Number(d.developer_score).toFixed(1) : 'N/A')}
+      </div>
+    </div>`;
+
+    // Pillar 3 — Chart & Volatility
+    const p3 = `<div class="pillar-card">
+      <div class="pillar-hdr">
+        <span class="pillar-num">3</span>
+        <span class="pillar-title">Chart &amp; Volatility</span>
+        <span class="pillar-subtitle">Price · ATH · Changes</span>
+      </div>
+      <div class="stat-table">
+        ${sr('Price now',  fmtUSD(price), price != null ? '' : 'stat-na')}
+        ${sr('24h change', fmtPct(ch24),  pctCls(ch24))}
+        ${sr('7d change',  fmtPct(ch7),   pctCls(ch7))}
+        ${sr('30d change', fmtPct(ch30),  pctCls(ch30))}
+        ${sr('1y change',  fmtPct(ch1y),  pctCls(ch1y))}
+        ${sr('ATH',        ath != null ? `${fmtUSD(ath)} <span class="${pctCls(athChg)}" style="font-size:11px">(${fmtPct(athChg)})</span>` : 'N/A')}
+        ${sr('ATL',        atl != null ? `${fmtUSD(atl)} <span class="${pctCls(atlChg)}" style="font-size:11px">(${fmtPct(atlChg)})</span>` : 'N/A')}
+      </div>
+    </div>`;
+
+    // Pillar 4 — Team & Community
+    const p4 = `<div class="pillar-card">
+      <div class="pillar-hdr">
+        <span class="pillar-num">4</span>
+        <span class="pillar-title">Team &amp; Community</span>
+        <span class="pillar-subtitle">Followers · Activity</span>
+      </div>
+      <div class="stat-table">
+        ${sr('Twitter followers', cd.twitter_followers != null ? fmtNum(cd.twitter_followers) : '<span class="stat-na">N/A</span>')}
+        ${sr('Reddit subs',       cd.reddit_subscribers != null ? fmtNum(cd.reddit_subscribers) : '<span class="stat-na">N/A</span>')}
+        ${sr('Reddit posts/48h',  cd.reddit_average_posts_48h != null ? Number(cd.reddit_average_posts_48h).toFixed(1) : '<span class="stat-na">N/A</span>')}
+        ${sr('Reddit comments/48h', cd.reddit_average_comments_48h != null ? Number(cd.reddit_average_comments_48h).toFixed(0) : '<span class="stat-na">N/A</span>')}
+        ${sr('Telegram users',    cd.telegram_channel_user_count != null ? fmtNum(cd.telegram_channel_user_count) : '<span class="stat-na">N/A</span>')}
+        ${sr('Country',           d.country_origin || '<span class="stat-na">N/A</span>')}
+      </div>
+    </div>`;
+
+    // Pillar 5 — Tokenomics
+    const p5 = `<div class="pillar-card">
+      <div class="pillar-hdr">
+        <span class="pillar-num">5</span>
+        <span class="pillar-title">Tokenomics</span>
+        <span class="pillar-subtitle">Supply · FDV · Volume</span>
+      </div>
+      <div class="stat-table">
+        ${sr('Circulating supply', circ  != null ? fmtNum(circ)  : '<span class="stat-na">N/A</span>')}
+        ${sr('Total supply',       total != null ? fmtNum(total) : '<span class="stat-na">∞ Inflationary</span>')}
+        ${sr('Max supply',         maxS  != null ? fmtNum(maxS)  : '<span class="stat-na">No hard cap</span>')}
+        ${sr('% circulating',      pctCirc)}
+        ${sr('Market cap',         fmtUSD(mcap))}
+        ${sr('FDV',                fmtUSD(fdv))}
+        ${sr('Vol / Mcap',         volMcap)}
+      </div>
+    </div>`;
+
+    // Deep AI Analysis prompt box
+    const promptText = buildPrompt(d.name);
+    const promptHtml = `
+      <div class="prompt-box">
+        <div class="prompt-box-hdr">
+          <span class="prompt-box-title">✨ Deep AI Analysis</span>
+          <span class="prompt-box-hint">Paste into Claude or ChatGPT for the full written analysis</span>
+        </div>
+        <textarea class="prompt-textarea" id="prompt-textarea" readonly>${promptText}</textarea>
+        <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">📋 Copy Prompt</button>
+      </div>`;
+
+    document.getElementById('research-output').innerHTML =
+      headerHtml +
+      `<div class="pillar-grid">${p1}${p2}${p3}${p4}${p5}</div>` +
+      promptHtml;
+  }
+
+  function buildPrompt(tokenName) {
+    return `Do a deep research analysis on ${tokenName} as a potential long-term crypto investment.
+
+PILLAR 1 — THE BASICS: What does this project do? What problem does it solve? Does it have active development? Any recent protocol updates or roadmap milestones?
+
+PILLAR 2 — NARRATIVES: What market narrative does it sit in (DeFi, L1, AI, RWA, GameFi, etc.)? Is that narrative gaining or losing attention? Is this project a leader or follower in its category?
+
+PILLAR 3 — CHART & VOLATILITY: How volatile is it compared to Bitcoin? What is the macro price trend over 1–2 years? Key support and resistance levels to watch?
+
+PILLAR 4 — TEAM & COMMUNITY: Who built it? What is their track record? Is the community active and organic, or mostly hype? Any notable backers or VCs?
+
+PILLAR 5 — TOKENOMICS: Is the supply fixed, inflationary, or deflationary? What is the circulating vs total supply ratio? Are there significant VC allocations or upcoming token unlocks that could create sell pressure?
+
+INVESTOR THESIS: Write one to two sentences summarising the long-term bull case. Then list three specific things that would break confidence in this investment.
+
+VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and why?`;
+  }
+
+  function copyPrompt() {
+    const ta  = document.getElementById('prompt-textarea');
+    const btn = document.getElementById('copy-btn');
+    if (!ta || !btn) return;
+    navigator.clipboard.writeText(ta.value).then(() => {
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      ta.select();
+      document.execCommand('copy');
+    });
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // WATCHLIST
+  // WATCHLIST — Morning Monitor
   // ══════════════════════════════════════════════════════════════════════════
-
   const BULLISH_KW = ['surge','surges','rally','rallies','soar','soars','pump','pumps','adoption',
-    'partnership','launch','upgrade','bullish','record','high','all-time','integration',
-    'mainstream','approved','approval','growth','milestone','buy','accumulate'];
-  const BEARISH_KW = ['crash','crashes','dump','dumps','drop','drops','plunge','plunges','hack',
-    'hacked','exploit','ban','banned','ban','lawsuit','sec','cftc','regulation','bearish',
-    'fraud','scam','rug','bankruptcy','liquidation','sell','outflow','decline','fall'];
+    'partnership','launch','upgrade','bullish','record','all-time high','integration',
+    'approved','approval','growth','milestone','mainstream'];
+  const BEARISH_KW = ['crash','crashes','dump','dumps','drop','plunge','hack','hacked','exploit',
+    'ban','banned','lawsuit','sec','cftc','bearish','fraud','scam','rug','bankruptcy',
+    'liquidation','outflow','decline','sell-off','warning'];
 
   function sentimentOf(title) {
-    const t = title.toLowerCase();
+    const t    = title.toLowerCase();
     const bull = BULLISH_KW.filter(k => t.includes(k)).length;
     const bear = BEARISH_KW.filter(k => t.includes(k)).length;
     if (bull > bear) return 'bullish';
@@ -1325,7 +1289,10 @@ Format your response as structured sections using the exact headers: PILLAR 1, P
   function loadWatchlist()  { try { return JSON.parse(localStorage.getItem('cs_watchlist') || '[]'); } catch { return []; } }
   function saveWatchlist(w) { localStorage.setItem('cs_watchlist', JSON.stringify(w)); }
 
-  function addToWatchlist() {
+  // Cached price data: { coinId: { usd, usd_24h_change } }
+  let wlPriceCache = {};
+
+  async function addToWatchlist() {
     const input = document.getElementById('wl-input');
     const name  = input.value.trim();
     if (!name) { input.focus(); return; }
@@ -1334,62 +1301,115 @@ Format your response as structured sections using the exact headers: PILLAR 1, P
       input.value = '';
       return;
     }
-    wl.push({ name, addedAt: Date.now() });
+    // Try to resolve CoinGecko ID immediately
+    let coinId = null, symbol = null;
+    try {
+      const res = await fetch(`/api/coingecko/search?query=${encodeURIComponent(name)}`).then(r => r.json());
+      if (res.ok && res.data?.coins?.length) {
+        coinId = res.data.coins[0].id;
+        symbol = res.data.coins[0].symbol?.toUpperCase();
+      }
+    } catch {}
+    wl.push({ name, coinId, symbol, addedAt: Date.now() });
     saveWatchlist(wl);
     input.value = '';
     renderWatchlist();
+    if (coinId) refreshWatchlistPrices();
   }
 
   function removeFromWatchlist(name) {
-    const wl = loadWatchlist().filter(t => t.name !== name);
-    saveWatchlist(wl);
+    saveWatchlist(loadWatchlist().filter(t => t.name !== name));
     renderWatchlist();
   }
 
-  function articlesForToken(name) {
-    const kw = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  function articlesForToken(nameOrSymbol) {
+    const kws = [nameOrSymbol.toLowerCase().replace(/[^a-z0-9]/g,'')];
     return allArticles.filter(a => {
-      const text = (a.title + ' ' + (a.desc || '')).toLowerCase().replace(/[^a-z0-9\s]/g, '');
-      return text.includes(kw);
-    }).slice(0, 5);
+      const text = (a.title + ' ' + (a.desc||'')).toLowerCase().replace(/[^a-z0-9\s]/g,'');
+      return kws.some(k => k.length > 1 && text.includes(k));
+    }).filter(a => ageMs(a.pubDate) < 24*60*60*1000) // last 24h only
+      .slice(0, 6);
+  }
+
+  async function refreshWatchlistPrices() {
+    const wl  = loadWatchlist();
+    const ids = wl.map(t => t.coinId).filter(Boolean).join(',');
+    if (!ids) return;
+    try {
+      const res = await fetch(`/api/coingecko/price?ids=${encodeURIComponent(ids)}`).then(r => r.json());
+      if (res.ok && res.data) {
+        wlPriceCache = res.data;
+        renderWatchlist();
+      }
+    } catch {}
   }
 
   function renderWatchlist() {
     const wl        = loadWatchlist();
     const container = document.getElementById('watchlist-container');
     if (!wl.length) {
-      container.innerHTML = '<div class="watchlist-empty"><span>📋</span>No tokens yet. Add one above.</div>';
+      container.innerHTML = '<div class="wl-empty"><span>📋</span>No tokens yet.<br>Add one above.</div>';
       return;
     }
     container.innerHTML = wl.map(token => {
-      const matches = articlesForToken(token.name);
+      // Price row
+      const priceData = token.coinId ? wlPriceCache[token.coinId] : null;
+      let priceHtml;
+      if (priceData) {
+        const chg    = priceData.usd_24h_change;
+        const chgCls = chg >= 0 ? 'wl-change-up' : 'wl-change-down';
+        priceHtml = `<div class="wl-price-row">
+          <span class="wl-price">${fmtUSD(priceData.usd)}</span>
+          <span class="wl-change ${chgCls}">${fmtPct(chg)} 24h</span>
+        </div>`;
+      } else if (token.coinId) {
+        priceHtml = `<div class="wl-price-row"><span class="wl-price-loading">Loading price…</span></div>`;
+      } else {
+        priceHtml = `<div class="wl-price-row"><span class="wl-price-loading" style="font-size:11px">Token not on CoinGecko</span></div>`;
+      }
+
+      // News headlines (last 24h only)
+      const matches  = articlesForToken(token.symbol || token.name);
+      const bulls    = matches.filter(a => sentimentOf(a.title) === 'bullish').length;
+      const bears    = matches.filter(a => sentimentOf(a.title) === 'bearish').length;
+      const neutrls  = matches.length - bulls - bears;
+
       const headlinesHtml = matches.length
         ? matches.map(a => {
             const snt = sentimentOf(a.title);
+            const cls = snt === 'bullish' ? 'wl-bullish' : snt === 'bearish' ? 'wl-bearish' : 'wl-neutral';
+            const lbl = snt === 'bullish' ? '▲' : snt === 'bearish' ? '▼' : '—';
             return `<div class="wl-headline">
-              <span class="wl-sentiment ${snt === 'bullish' ? 'wl-bullish' : snt === 'bearish' ? 'wl-bearish' : 'wl-neutral'}">${snt === 'bullish' ? '▲ Bull' : snt === 'bearish' ? '▼ Bear' : '— Neu'}</span>
+              <span class="wl-sentiment ${cls}">${lbl}</span>
               <a class="wl-headline-link" href="${esc(a.link)}" target="_blank" rel="noopener">${esc(a.title)}</a>
             </div>`;
           }).join('')
-        : '<div class="wl-no-news">No recent headlines found.</div>';
+        : '<div class="wl-no-news">No headlines in last 24h</div>';
 
-      return `<div class="wl-token">
+      const summaryHtml = matches.length ? `
+        <div class="wl-summary">
+          ${bulls  ? `<span class="wl-sum-chip wl-sum-bull">▲ ${bulls} bullish</span>`  : ''}
+          ${bears  ? `<span class="wl-sum-chip wl-sum-bear">▼ ${bears} bearish</span>`  : ''}
+          ${neutrls ? `<span class="wl-sum-chip wl-sum-neu">— ${neutrls} neutral</span>` : ''}
+        </div>` : '';
+
+      return `<div class="wl-token-card">
         <div class="wl-token-hdr">
           <span class="wl-token-name">${esc(token.name)}</span>
-          <span class="wl-token-count">${matches.length} headline${matches.length !== 1 ? 's' : ''}</span>
+          ${token.symbol ? `<span class="wl-token-symbol">${esc(token.symbol)}</span>` : ''}
           <button class="wl-remove-btn" onclick="removeFromWatchlist('${esc(token.name)}')" title="Remove">✕</button>
         </div>
+        ${priceHtml}
         <div class="wl-headlines">${headlinesHtml}</div>
-        <div class="wl-checked">Last checked: ${timeAgo(Date.now())}</div>
+        ${summaryHtml}
+        <div class="wl-checked">Updated ${timeAgo(Date.now())}</div>
       </div>`;
     }).join('');
   }
 
-  // Re-render watchlist whenever news loads so sentiments are fresh
-  const _origLoadNews = loadNews;
-
   // ── Init ───────────────────────────────────────────────────────────────────
   renderWatchlist();
+  refreshWatchlistPrices();
   loadNews();
 </script>
 </body>
