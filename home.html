@@ -26,6 +26,7 @@
       --red-dim: rgba(239,68,68,.1);
       --orange: #f97316;
       --blue: #3b82f6;
+      --yellow: #eab308;
     }
 
     body {
@@ -62,9 +63,7 @@
     }
 
     /* ── Top nav tabs ── */
-    .top-nav {
-      display: flex; gap: 4px; margin-left: auto;
-    }
+    .top-nav { display: flex; gap: 4px; margin-left: auto; }
     .nav-tab {
       display: flex; align-items: center; gap: 6px;
       padding: 6px 14px; border-radius: 8px;
@@ -75,9 +74,7 @@
     }
     .nav-tab:hover { color: var(--t1); background: var(--bg3); border-color: var(--border); }
     .nav-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .nav-tab.pill-outline {
-      border-color: var(--border); color: var(--t2);
-    }
+    .nav-tab.pill-outline { border-color: var(--border); color: var(--t2); }
     .nav-tab.pill-outline:hover { border-color: var(--accent); color: var(--t1); }
     .badge-new {
       background: var(--green); color: #000;
@@ -91,24 +88,20 @@
     }
 
     /* ── Page sections ── */
-    .section { display: none; padding: 24px 22px; max-width: 1200px; margin: 0 auto; }
+    .section { display: none; padding: 24px 22px; max-width: 1300px; margin: 0 auto; }
     .section.active { display: block; }
 
-    /* ── Section header ── */
+    /* ── Section header row ── */
     .sec-hdr {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
     }
-    .sec-title {
-      font-size: 22px; font-weight: 800; letter-spacing: -.4px;
-    }
+    .sec-title { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
     .sec-title span {
       background: linear-gradient(135deg,#a78bfa,#60a5fa);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .refresh-row {
-      display: flex; align-items: center; gap: 10px;
-    }
+    .refresh-row { display: flex; align-items: center; gap: 10px; }
     .refresh-btn {
       display: flex; align-items: center; gap: 6px;
       background: var(--bg3); border: 1px solid var(--border);
@@ -121,17 +114,97 @@
     .spin { display: inline-block; }
     .spinning { animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .countdown-label {
-      font-size: 12px; color: var(--t3);
-    }
+    .countdown-label { font-size: 12px; color: var(--t3); }
     .countdown-label span { color: var(--accent); font-variant-numeric: tabular-nums; }
 
-    /* ── Grid layouts ── */
+    /* ── "What's Hot" banner ── */
+    .hot-banner {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(124,58,237,.12), rgba(37,99,235,.08));
+      border: 1px solid rgba(124,58,237,.35);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 22px;
+      transition: border-color .2s;
+    }
+    .hot-banner:hover { border-color: rgba(124,58,237,.6); }
+    .hot-banner::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, #7c3aed, #2563eb, #7c3aed);
+      background-size: 200% 100%;
+      animation: gradMove 3s linear infinite;
+    }
+    @keyframes gradMove { to { background-position: -200% 0; } }
+    .hot-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 800; letter-spacing: .8px;
+      text-transform: uppercase; color: #a78bfa;
+      margin-bottom: 10px;
+    }
+    .hot-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--red); box-shadow: 0 0 6px var(--red);
+      animation: blink 1.4s ease infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+    .hot-title {
+      font-size: 19px; font-weight: 800; line-height: 1.35;
+      color: var(--t1); text-decoration: none;
+      display: block; margin-bottom: 8px;
+    }
+    .hot-title:hover { color: #c4b5fd; }
+    .hot-meta {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .hot-desc {
+      font-size: 13px; color: var(--t2); line-height: 1.5; margin-bottom: 10px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ── Category filter chips ── */
+    .filter-row {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .filter-chip {
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      border: 1px solid var(--border); color: var(--t2);
+      background: var(--bg2); transition: all .15s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .filter-chip:hover { border-color: var(--accent); color: var(--t1); background: var(--bg3); }
+    .filter-chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .chip-count {
+      background: rgba(255,255,255,.15); border-radius: 10px;
+      padding: 1px 6px; font-size: 10px; font-weight: 800;
+    }
+    .filter-chip.on .chip-count { background: rgba(255,255,255,.25); }
+
+    /* ── Time-group header ── */
+    .time-group { margin-bottom: 28px; }
+    .time-group-hdr {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .time-group-label {
+      font-size: 11px; font-weight: 800; letter-spacing: .8px;
+      text-transform: uppercase; white-space: nowrap;
+    }
+    .tg-hour  { color: var(--red);    }
+    .tg-6h    { color: var(--orange); }
+    .tg-24h   { color: var(--yellow); }
+    .tg-older { color: var(--t3);     }
+    .time-group-line { flex: 1; height: 1px; background: var(--border); }
+    .time-group-count {
+      font-size: 11px; color: var(--t3); white-space: nowrap;
+    }
+
+    /* ── News 3-column grid ── */
     .news-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin-bottom: 32px;
     }
 
     /* ── News card ── */
@@ -139,82 +212,120 @@
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 14px 16px;
-      transition: border-color .18s, background .18s;
-      display: flex; flex-direction: column; gap: 8px;
+      padding: 15px 16px;
+      transition: border-color .18s, background .18s, transform .15s;
+      display: flex; flex-direction: column; gap: 9px;
+      cursor: pointer;
     }
-    .news-card:hover { border-color: var(--border-hi); background: var(--bg3); }
+    .news-card:hover {
+      border-color: var(--border-hi);
+      background: var(--bg3);
+      transform: translateY(-1px);
+    }
     .news-card-top {
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      display: flex; align-items: center; gap: 8px;
     }
     .source-badge {
       font-size: 10px; font-weight: 700; letter-spacing: .4px;
-      padding: 2px 7px; border-radius: 5px;
-      text-transform: uppercase;
+      padding: 2px 7px; border-radius: 5px; text-transform: uppercase;
+      flex-shrink: 0;
     }
-    .source-coindesk     { background: rgba(247,147,26,.15); color: #f7931a; }
-    .source-cointelegraph{ background: rgba(37,99,235,.15);  color: #60a5fa; }
-    .source-theblock     { background: rgba(124,58,237,.15); color: #a78bfa; }
-    .source-decrypt      { background: rgba(34,197,94,.15);  color: #4ade80; }
-    .source-default      { background: var(--bg4);           color: var(--t2); }
+    .source-coindesk      { background: rgba(247,147,26,.15); color: #f7931a; }
+    .source-cointelegraph { background: rgba(37,99,235,.15);  color: #60a5fa; }
+    .source-theblock      { background: rgba(124,58,237,.15); color: #a78bfa; }
+    .source-decrypt       { background: rgba(34,197,94,.15);  color: #4ade80; }
+    .source-default       { background: var(--bg4);           color: var(--t2); }
+    .news-time { font-size: 11px; color: var(--t3); white-space: nowrap; margin-left: auto; }
 
-    .news-time { font-size: 11px; color: var(--t3); white-space: nowrap; }
+    .cat-badge {
+      font-size: 9px; font-weight: 800; letter-spacing: .4px;
+      padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .cat-defi       { background: rgba(34,197,94,.12);  color: #4ade80; }
+    .cat-bitcoin    { background: rgba(247,147,26,.12); color: #fb923c; }
+    .cat-altcoins   { background: rgba(37,99,235,.12);  color: #60a5fa; }
+    .cat-regulation { background: rgba(239,68,68,.12);  color: #f87171; }
+    .cat-breaking   { background: rgba(239,68,68,.18);  color: #fca5a5; }
+
     .news-title {
-      font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--t1);
+      font-size: 15px; font-weight: 700; line-height: 1.4; color: var(--t1);
       text-decoration: none;
       display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
     }
     .news-title:hover { color: #a78bfa; }
     .news-desc {
       font-size: 12px; color: var(--t2); line-height: 1.5;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    /* ── Subsection label ── */
-    .subsec-label {
-      font-size: 11px; font-weight: 700; letter-spacing: .8px;
-      text-transform: uppercase; color: var(--t3);
-      margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
+    /* ── Reddit section ── */
+    .reddit-section { margin-top: 32px; }
+    .reddit-hdr {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
     }
-    .subsec-label::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
+    .reddit-hdr-label {
+      font-size: 11px; font-weight: 800; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--orange);
     }
+    .reddit-hdr-line { flex: 1; height: 1px; background: var(--border); }
+    .reddit-sub-tabs {
+      display: flex; gap: 4px;
+    }
+    .reddit-sub-tab {
+      padding: 3px 10px; border-radius: 6px;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      border: 1px solid var(--border); color: var(--t3);
+      background: var(--bg2); transition: all .15s;
+    }
+    .reddit-sub-tab:hover { border-color: var(--orange); color: var(--orange); }
+    .reddit-sub-tab.on { background: rgba(249,115,22,.15); border-color: var(--orange); color: var(--orange); }
 
-    /* ── Reddit list ── */
     .reddit-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin-bottom: 32px;
     }
     .reddit-card {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 12px 14px;
-      display: flex; flex-direction: column; gap: 6px;
+      padding: 13px 14px;
+      display: flex; flex-direction: column; gap: 7px;
       transition: border-color .18s, background .18s;
     }
-    .reddit-card:hover { border-color: var(--border-hi); background: var(--bg3); }
-    .reddit-card-top {
-      display: flex; align-items: center; gap: 8px;
+    .reddit-card:hover { border-color: rgba(249,115,22,.4); background: var(--bg3); }
+    .reddit-card-top { display: flex; align-items: center; gap: 8px; }
+    .reddit-rank {
+      font-size: 12px; font-weight: 800; color: var(--t3);
+      min-width: 18px;
     }
     .sub-badge {
       font-size: 10px; font-weight: 700; padding: 2px 7px;
       border-radius: 5px; letter-spacing: .3px;
       background: rgba(249,115,22,.12); color: var(--orange);
     }
-    .reddit-score {
-      margin-left: auto; font-size: 11px; color: var(--t3);
+    .reddit-score-row {
+      display: flex; align-items: center; gap: 8px; margin-left: auto;
     }
-    .reddit-score strong { color: var(--orange); }
+    .upvote-count {
+      font-size: 11px; color: var(--orange); font-weight: 700;
+    }
+    .comment-count { font-size: 11px; color: var(--t3); }
     .reddit-title {
-      font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--t1);
+      font-size: 13px; font-weight: 600; line-height: 1.45; color: var(--t1);
       text-decoration: none;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     .reddit-title:hover { color: #fb923c; }
+    .reddit-bar-wrap {
+      height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden;
+    }
+    .reddit-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), #fbbf24);
+      border-radius: 2px; transition: width .4s ease;
+    }
     .reddit-meta { font-size: 11px; color: var(--t3); }
 
     /* ── Empty / Error states ── */
@@ -224,7 +335,21 @@
       text-align: center; color: var(--t3); font-size: 14px;
     }
     .state-box .icon { font-size: 28px; margin-bottom: 10px; }
-    .state-box .msg { color: var(--t2); margin-bottom: 6px; }
+    .state-box .msg  { color: var(--t2); margin-bottom: 6px; }
+
+    /* ── Skeleton loader ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 50%, var(--bg3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .skeleton-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 15px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
 
     /* ── Placeholder sections ── */
     .placeholder-grid {
@@ -238,7 +363,7 @@
       text-align: center; display: flex; flex-direction: column;
       align-items: center; gap: 10px;
     }
-    .placeholder-icon { font-size: 32px; opacity: .5; }
+    .placeholder-icon  { font-size: 32px; opacity: .5; }
     .placeholder-title { font-size: 15px; font-weight: 700; color: var(--t2); }
     .placeholder-desc  { font-size: 12px; color: var(--t3); line-height: 1.5; }
     .coming-soon-chip {
@@ -247,40 +372,20 @@
       font-size: 11px; color: var(--t3); font-weight: 600;
     }
 
-    /* ── Skeleton loader ── */
-    .skeleton {
-      background: linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 50%, var(--bg3) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 6px;
-    }
-    @keyframes shimmer { to { background-position: -200% 0; } }
-    .skeleton-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px 16px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-
-    /* ── Source filter ── */
-    .filter-row {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
-    }
-    .filter-chip {
-      padding: 4px 12px; border-radius: 20px;
-      font-size: 12px; font-weight: 600; cursor: pointer;
-      border: 1px solid var(--border); color: var(--t2);
-      background: var(--bg2); transition: all .15s;
-    }
-    .filter-chip:hover { border-color: var(--accent); color: var(--t1); }
-    .filter-chip.on    { background: var(--accent); color: #fff; border-color: var(--accent); }
-
     /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .news-grid   { grid-template-columns: repeat(2, 1fr); }
+      .reddit-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 640px) {
-      .hdr { padding: 10px 14px; gap: 8px; }
-      .section { padding: 16px 14px; }
-      .top-nav { gap: 2px; }
-      .nav-tab { padding: 5px 10px; font-size: 12px; }
+      .hdr         { padding: 10px 14px; gap: 8px; }
+      .section     { padding: 16px 14px; }
+      .top-nav     { gap: 2px; }
+      .nav-tab     { padding: 5px 10px; font-size: 12px; }
       .nav-tab .badge-new, .nav-tab .badge-soon { display: none; }
+      .news-grid   { grid-template-columns: 1fr; }
+      .reddit-grid { grid-template-columns: 1fr; }
+      .hot-title   { font-size: 16px; }
     }
   </style>
 </head>
@@ -292,7 +397,6 @@
     <div class="logo-mark">⚡</div>
     <span class="logo-text">CryptoSignal</span>
   </a>
-
   <nav class="top-nav">
     <button class="nav-tab active" data-section="news" onclick="switchSection('news')">
       📰 News &amp; Trends <span class="badge-new">LIVE</span>
@@ -313,10 +417,12 @@
 <!-- NEWS & TRENDS SECTION                        -->
 <!-- ════════════════════════════════════════════ -->
 <section class="section active" id="sec-news">
+
+  <!-- Top row: title + refresh -->
   <div class="sec-hdr">
     <div>
       <div class="sec-title">📰 <span>Crypto News</span> &amp; Trends</div>
-      <div style="font-size:13px;color:var(--t3);margin-top:4px;">Aggregated from CoinDesk · CoinTelegraph · The Block · Decrypt</div>
+      <div style="font-size:13px;color:var(--t3);margin-top:4px;">CoinDesk · CoinTelegraph · The Block · Decrypt · Reddit</div>
     </div>
     <div class="refresh-row">
       <div class="countdown-label">Refreshes in <span id="news-countdown">15:00</span></div>
@@ -326,33 +432,71 @@
     </div>
   </div>
 
-  <!-- Source filter chips -->
-  <div class="filter-row" id="source-filters">
-    <button class="filter-chip on" data-source="all"          onclick="setSourceFilter('all')">All</button>
-    <button class="filter-chip"    data-source="CoinDesk"     onclick="setSourceFilter('CoinDesk')">CoinDesk</button>
-    <button class="filter-chip"    data-source="CoinTelegraph" onclick="setSourceFilter('CoinTelegraph')">CoinTelegraph</button>
-    <button class="filter-chip"    data-source="The Block"    onclick="setSourceFilter('The Block')">The Block</button>
-    <button class="filter-chip"    data-source="Decrypt"      onclick="setSourceFilter('Decrypt')">Decrypt</button>
+  <!-- "What's Hot Right Now" banner -->
+  <div id="hot-banner" class="hot-banner" style="display:none">
+    <div class="hot-label"><span class="hot-dot"></span> What's Hot Right Now</div>
+    <a id="hot-title" class="hot-title" href="#" target="_blank" rel="noopener"></a>
+    <div id="hot-desc" class="hot-desc"></div>
+    <div class="hot-meta">
+      <span id="hot-source" class="source-badge"></span>
+      <span id="hot-time"   class="news-time"></span>
+    </div>
+  </div>
+  <!-- Banner skeleton -->
+  <div id="hot-skeleton" class="hot-banner">
+    <div class="skeleton" style="height:12px;width:130px;margin-bottom:12px"></div>
+    <div class="skeleton" style="height:22px;margin-bottom:8px"></div>
+    <div class="skeleton" style="height:18px;width:70%;margin-bottom:12px"></div>
+    <div style="display:flex;gap:8px">
+      <div class="skeleton" style="height:20px;width:80px"></div>
+      <div class="skeleton" style="height:20px;width:60px"></div>
+    </div>
   </div>
 
-  <!-- News grid -->
-  <div class="news-grid" id="news-grid">
-    <!-- skeleton placeholders while loading -->
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:40px"></div><div class="skeleton" style="height:24px;width:80%"></div></div>
+  <!-- Category filter chips -->
+  <div class="filter-row" id="cat-filters">
+    <button class="filter-chip on" data-cat="all"        onclick="setCatFilter('all')">All <span class="chip-count" id="cnt-all">0</span></button>
+    <button class="filter-chip"    data-cat="breaking"   onclick="setCatFilter('breaking')">🔴 Breaking <span class="chip-count" id="cnt-breaking">0</span></button>
+    <button class="filter-chip"    data-cat="bitcoin"    onclick="setCatFilter('bitcoin')">₿ Bitcoin <span class="chip-count" id="cnt-bitcoin">0</span></button>
+    <button class="filter-chip"    data-cat="defi"       onclick="setCatFilter('defi')">🌀 DeFi <span class="chip-count" id="cnt-defi">0</span></button>
+    <button class="filter-chip"    data-cat="altcoins"   onclick="setCatFilter('altcoins')">🪙 Altcoins <span class="chip-count" id="cnt-altcoins">0</span></button>
+    <button class="filter-chip"    data-cat="regulation" onclick="setCatFilter('regulation')">⚖️ Regulation <span class="chip-count" id="cnt-regulation">0</span></button>
+  </div>
+
+  <!-- Time-grouped news container -->
+  <div id="news-container">
+    <!-- skeleton grid -->
+    <div class="time-group">
+      <div class="news-grid">
+        <div class="skeleton-card"><div class="skeleton" style="height:12px;width:55%"></div><div class="skeleton" style="height:48px"></div><div class="skeleton" style="height:16px;width:75%"></div></div>
+        <div class="skeleton-card"><div class="skeleton" style="height:12px;width:55%"></div><div class="skeleton" style="height:48px"></div><div class="skeleton" style="height:16px;width:75%"></div></div>
+        <div class="skeleton-card"><div class="skeleton" style="height:12px;width:55%"></div><div class="skeleton" style="height:48px"></div><div class="skeleton" style="height:16px;width:75%"></div></div>
+        <div class="skeleton-card"><div class="skeleton" style="height:12px;width:55%"></div><div class="skeleton" style="height:48px"></div><div class="skeleton" style="height:16px;width:75%"></div></div>
+        <div class="skeleton-card"><div class="skeleton" style="height:12px;width:55%"></div><div class="skeleton" style="height:48px"></div><div class="skeleton" style="height:16px;width:75%"></div></div>
+        <div class="skeleton-card"><div class="skeleton" style="height:12px;width:55%"></div><div class="skeleton" style="height:48px"></div><div class="skeleton" style="height:16px;width:75%"></div></div>
+      </div>
+    </div>
   </div>
 
   <!-- Reddit section -->
-  <div class="subsec-label">🟠 Reddit Sentiment</div>
-  <div class="reddit-grid" id="reddit-grid">
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:40%"></div><div class="skeleton" style="height:32px"></div></div>
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:40%"></div><div class="skeleton" style="height:32px"></div></div>
-    <div class="skeleton-card"><div class="skeleton" style="height:14px;width:40%"></div><div class="skeleton" style="height:32px"></div></div>
+  <div class="reddit-section" id="reddit-section">
+    <div class="reddit-hdr">
+      <div class="reddit-hdr-label">🟠 Trending on Reddit</div>
+      <div class="reddit-hdr-line"></div>
+      <div class="reddit-sub-tabs" id="reddit-sub-tabs">
+        <button class="reddit-sub-tab on" data-sub="all"           onclick="setRedditSub('all')">All</button>
+        <button class="reddit-sub-tab"    data-sub="CryptoCurrency" onclick="setRedditSub('CryptoCurrency')">r/Crypto</button>
+        <button class="reddit-sub-tab"    data-sub="Bitcoin"        onclick="setRedditSub('Bitcoin')">r/Bitcoin</button>
+        <button class="reddit-sub-tab"    data-sub="solana"         onclick="setRedditSub('solana')">r/Solana</button>
+      </div>
+    </div>
+    <div class="reddit-grid" id="reddit-grid">
+      <div class="skeleton-card"><div class="skeleton" style="height:12px;width:40%"></div><div class="skeleton" style="height:36px"></div></div>
+      <div class="skeleton-card"><div class="skeleton" style="height:12px;width:40%"></div><div class="skeleton" style="height:36px"></div></div>
+      <div class="skeleton-card"><div class="skeleton" style="height:12px;width:40%"></div><div class="skeleton" style="height:36px"></div></div>
+    </div>
   </div>
+
 </section>
 
 <!-- ════════════════════════════════════════════ -->
@@ -366,42 +510,12 @@
     </div>
   </div>
   <div class="placeholder-grid">
-    <div class="placeholder-card">
-      <div class="placeholder-icon">🏦</div>
-      <div class="placeholder-title">Stablecoins (USDC, USDT, DAI)</div>
-      <div class="placeholder-desc">Compare APY across Aave, Compound, Curve, and more DeFi platforms</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">◎</div>
-      <div class="placeholder-title">SOL Yields</div>
-      <div class="placeholder-desc">Liquid staking, lending, and LP yields on Solana</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">⟠</div>
-      <div class="placeholder-title">ETH Yields</div>
-      <div class="placeholder-desc">Lido, Rocket Pool, EigenLayer, and DeFi yields for ETH</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">₿</div>
-      <div class="placeholder-title">BTC Yields</div>
-      <div class="placeholder-desc">Wrapped BTC yields across lending and yield aggregator protocols</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">🌊</div>
-      <div class="placeholder-title">SUI Yields</div>
-      <div class="placeholder-desc">Native staking and DeFi yields on the SUI network</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">📊</div>
-      <div class="placeholder-title">Yield Leaderboard</div>
-      <div class="placeholder-desc">Top 20 highest-yield pools sorted by APY with TVL and risk filters</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
+    <div class="placeholder-card"><div class="placeholder-icon">🏦</div><div class="placeholder-title">Stablecoins (USDC, USDT, DAI)</div><div class="placeholder-desc">Compare APY across Aave, Compound, Curve, and more DeFi platforms</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">◎</div><div class="placeholder-title">SOL Yields</div><div class="placeholder-desc">Liquid staking, lending, and LP yields on Solana</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">⟠</div><div class="placeholder-title">ETH Yields</div><div class="placeholder-desc">Lido, Rocket Pool, EigenLayer, and DeFi yields for ETH</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">₿</div><div class="placeholder-title">BTC Yields</div><div class="placeholder-desc">Wrapped BTC yields across lending and yield aggregator protocols</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">🌊</div><div class="placeholder-title">SUI Yields</div><div class="placeholder-desc">Native staking and DeFi yields on the SUI network</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">📊</div><div class="placeholder-title">Yield Leaderboard</div><div class="placeholder-desc">Top 20 highest-yield pools sorted by APY with TVL and risk filters</div><div class="coming-soon-chip">Coming Soon</div></div>
   </div>
 </section>
 
@@ -416,56 +530,53 @@
     </div>
   </div>
   <div class="placeholder-grid">
-    <div class="placeholder-card">
-      <div class="placeholder-icon">🏛️</div>
-      <div class="placeholder-title">Fed Interest Rate</div>
-      <div class="placeholder-desc">Current federal funds rate and next FOMC meeting date</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">💵</div>
-      <div class="placeholder-title">US Dollar Index (DXY)</div>
-      <div class="placeholder-desc">Real-time DXY with 30-day trend — inversely correlated to crypto</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">😱</div>
-      <div class="placeholder-title">Fear &amp; Greed Index</div>
-      <div class="placeholder-desc">Crypto market sentiment score from 0 (fear) to 100 (greed)</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">₿</div>
-      <div class="placeholder-title">BTC Dominance</div>
-      <div class="placeholder-desc">Bitcoin's share of total crypto market cap</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">🖨️</div>
-      <div class="placeholder-title">M2 Money Supply</div>
-      <div class="placeholder-desc">Global M2 liquidity — historically correlated with BTC price</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
-    <div class="placeholder-card">
-      <div class="placeholder-icon">🗓️</div>
-      <div class="placeholder-title">Economic Calendar</div>
-      <div class="placeholder-desc">Upcoming CPI, FOMC, GDP events that move crypto markets</div>
-      <div class="coming-soon-chip">Coming Soon</div>
-    </div>
+    <div class="placeholder-card"><div class="placeholder-icon">🏛️</div><div class="placeholder-title">Fed Interest Rate</div><div class="placeholder-desc">Current federal funds rate and next FOMC meeting date</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">💵</div><div class="placeholder-title">US Dollar Index (DXY)</div><div class="placeholder-desc">Real-time DXY with 30-day trend — inversely correlated to crypto</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">😱</div><div class="placeholder-title">Fear &amp; Greed Index</div><div class="placeholder-desc">Crypto market sentiment score from 0 (fear) to 100 (greed)</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">₿</div><div class="placeholder-title">BTC Dominance</div><div class="placeholder-desc">Bitcoin's share of total crypto market cap</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">🖨️</div><div class="placeholder-title">M2 Money Supply</div><div class="placeholder-desc">Global M2 liquidity — historically correlated with BTC price</div><div class="coming-soon-chip">Coming Soon</div></div>
+    <div class="placeholder-card"><div class="placeholder-icon">🗓️</div><div class="placeholder-title">Economic Calendar</div><div class="placeholder-desc">Upcoming CPI, FOMC, GDP events that move crypto markets</div><div class="coming-soon-chip">Coming Soon</div></div>
   </div>
 </section>
 
 <script>
   // ── Constants ──────────────────────────────────────────────────────────────
-  const API = '';   // same origin
+  const API        = '';
   const REFRESH_MS = 15 * 60 * 1000;
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let allArticles   = [];
-  let activeSource  = 'all';
-  let countdownSecs = REFRESH_MS / 1000;
-  let countdownInt  = null;
-  let refreshTimer  = null;
+  let allArticles    = [];
+  let allRedditPosts = [];
+  let activeCat      = 'all';
+  let activeRedditSub = 'all';
+  let countdownSecs  = REFRESH_MS / 1000;
+  let countdownInt   = null;
+  let refreshTimer   = null;
+
+  // ── Category keyword maps ──────────────────────────────────────────────────
+  const CAT_KEYWORDS = {
+    breaking:   ['breaking','just in','urgent','alert','crash','surge','plunge','soars','tanks','halts'],
+    bitcoin:    ['bitcoin','btc','satoshi','lightning network','halving','ordinal','rune','taproot'],
+    defi:       ['defi','protocol','yield','liquidity','amm','swap','lending','borrow','aave','uniswap',
+                 'curve','compound','maker','tvl','staking','vault','pool','dex','nft','nfts'],
+    altcoins:   ['ethereum','eth','solana','sol','altcoin','token','layer 2','l2','polygon','matic',
+                 'avalanche','avax','cardano','ada','sui','aptos','bnb','xrp','ripple','dogecoin',
+                 'doge','shiba','pepe','base','arbitrum','optimism','near','cosmos','dot'],
+    regulation: ['regulation','regulator','sec ','cftc','legal','ban','banned','government',
+                 'congress','senate','law','compliance','enforcement','court','lawsuit','ruling',
+                 'policy','sanction','tax','irs','treasury','fincen','eu ','mca'],
+  };
+
+  function categorise(article) {
+    const text = (article.title + ' ' + article.desc).toLowerCase();
+    // Check breaking first (recent articles count as breaking too)
+    const ageMs = Date.now() - (article.pubDate ? new Date(article.pubDate).getTime() : 0);
+    if (ageMs < 60 * 60 * 1000) return 'breaking';
+    for (const [cat, kws] of Object.entries(CAT_KEYWORDS)) {
+      if (kws.some(kw => text.includes(kw))) return cat;
+    }
+    return 'other';
+  }
 
   // ── Section switcher ───────────────────────────────────────────────────────
   function switchSection(name) {
@@ -475,19 +586,26 @@
     document.querySelector(`.nav-tab[data-section="${name}"]`).classList.add('active');
   }
 
-  // ── Source filter ──────────────────────────────────────────────────────────
-  function setSourceFilter(source) {
-    activeSource = source;
-    document.querySelectorAll('.filter-chip').forEach(c => {
-      c.classList.toggle('on', c.dataset.source === source);
-    });
-    renderNews();
+  // ── Category filter ────────────────────────────────────────────────────────
+  function setCatFilter(cat) {
+    activeCat = cat;
+    document.querySelectorAll('.filter-chip').forEach(c =>
+      c.classList.toggle('on', c.dataset.cat === cat));
+    renderNewsContainer();
   }
 
-  // ── Time formatting ────────────────────────────────────────────────────────
-  function timeAgo(dateStr) {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
+  // ── Reddit subreddit filter ────────────────────────────────────────────────
+  function setRedditSub(sub) {
+    activeRedditSub = sub;
+    document.querySelectorAll('.reddit-sub-tab').forEach(t =>
+      t.classList.toggle('on', t.dataset.sub === sub));
+    renderReddit();
+  }
+
+  // ── Time helpers ───────────────────────────────────────────────────────────
+  function timeAgo(dateStrOrMs) {
+    if (!dateStrOrMs) return '';
+    const d = typeof dateStrOrMs === 'number' ? new Date(dateStrOrMs) : new Date(dateStrOrMs);
     if (isNaN(d)) return '';
     const diff = Date.now() - d.getTime();
     const m = Math.floor(diff / 60000);
@@ -495,11 +613,17 @@
     if (m < 60) return `${m}m ago`;
     const h = Math.floor(m / 60);
     if (h < 24) return `${h}h ago`;
-    return `${Math.floor(h/24)}d ago`;
+    return `${Math.floor(h / 24)}d ago`;
+  }
+
+  function ageMs(pubDate) {
+    if (!pubDate) return Infinity;
+    const d = new Date(pubDate);
+    return isNaN(d) ? Infinity : Date.now() - d.getTime();
   }
 
   function fmtScore(n) {
-    return n >= 1000 ? (n/1000).toFixed(1) + 'k' : n;
+    return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
   }
 
   // ── Source badge class ─────────────────────────────────────────────────────
@@ -513,67 +637,171 @@
     return map[source] || 'source-default';
   }
 
-  // ── Render news cards ──────────────────────────────────────────────────────
-  function renderNews() {
-    const grid = document.getElementById('news-grid');
-    const filtered = activeSource === 'all'
-      ? allArticles
-      : allArticles.filter(a => a.source === activeSource);
-
-    if (!filtered.length) {
-      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
-        <div class="icon">📭</div>
-        <div class="msg">No articles found for this source.</div>
-      </div>`;
-      return;
-    }
-
-    grid.innerHTML = filtered.slice(0, 20).map(a => `
-      <div class="news-card">
-        <div class="news-card-top">
-          <span class="source-badge ${sourceCls(a.source)}">${a.source}</span>
-          <span class="news-time">${timeAgo(a.pubDate)}</span>
-        </div>
-        <a class="news-title" href="${escHtml(a.link)}" target="_blank" rel="noopener">${escHtml(a.title)}</a>
-        ${a.desc ? `<div class="news-desc">${escHtml(a.desc)}</div>` : ''}
-      </div>
-    `).join('');
+  function catCls(cat) {
+    const map = {
+      breaking:   'cat-breaking',
+      bitcoin:    'cat-bitcoin',
+      defi:       'cat-defi',
+      altcoins:   'cat-altcoins',
+      regulation: 'cat-regulation',
+    };
+    return map[cat] || '';
+  }
+  function catLabel(cat) {
+    const map = {
+      breaking: 'Breaking', bitcoin: 'BTC', defi: 'DeFi',
+      altcoins: 'Altcoins', regulation: 'Regulation',
+    };
+    return map[cat] || '';
   }
 
-  // ── Render reddit cards ────────────────────────────────────────────────────
-  function renderReddit(posts) {
-    const grid = document.getElementById('reddit-grid');
-    if (!posts || !posts.length) {
-      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
-        <div class="icon">🟠</div>
-        <div class="msg">Could not load Reddit posts.</div>
+  // ── XSS-safe escaping ──────────────────────────────────────────────────────
+  function esc(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // ── "What's Hot" banner ────────────────────────────────────────────────────
+  function renderHotBanner(articles) {
+    const skeleton = document.getElementById('hot-skeleton');
+    const banner   = document.getElementById('hot-banner');
+
+    // Pick the most recent article that has a parseable date
+    const sorted = [...articles].filter(a => a.pubDate && !isNaN(new Date(a.pubDate)))
+      .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+    if (!sorted.length) { skeleton.style.display = 'none'; return; }
+
+    const top = sorted[0];
+    skeleton.style.display = 'none';
+    banner.style.display   = 'block';
+
+    document.getElementById('hot-title').textContent = top.title;
+    document.getElementById('hot-title').href        = top.link;
+    document.getElementById('hot-desc').textContent  = top.desc || '';
+    const srcEl = document.getElementById('hot-source');
+    srcEl.textContent  = top.source;
+    srcEl.className    = `source-badge ${sourceCls(top.source)}`;
+    document.getElementById('hot-time').textContent  = timeAgo(top.pubDate);
+  }
+
+  // ── Update chip counts ─────────────────────────────────────────────────────
+  function updateChipCounts(articles) {
+    const counts = { all: articles.length, breaking: 0, bitcoin: 0, defi: 0, altcoins: 0, regulation: 0 };
+    articles.forEach(a => {
+      const c = a._cat;
+      if (counts[c] !== undefined) counts[c]++;
+    });
+    for (const [key, val] of Object.entries(counts)) {
+      const el = document.getElementById(`cnt-${key}`);
+      if (el) el.textContent = val;
+    }
+  }
+
+  // ── Render time-grouped news ───────────────────────────────────────────────
+  function renderNewsContainer() {
+    const container = document.getElementById('news-container');
+
+    const filtered = activeCat === 'all'
+      ? allArticles
+      : allArticles.filter(a => a._cat === activeCat);
+
+    if (!filtered.length) {
+      container.innerHTML = `<div class="state-box">
+        <div class="icon">📭</div>
+        <div class="msg">No ${activeCat === 'all' ? '' : activeCat + ' '}articles found.</div>
       </div>`;
       return;
     }
-    grid.innerHTML = posts.slice(0, 12).map(p => `
+
+    const now = Date.now();
+    const groups = [
+      { key: 'hour',  label: 'Last Hour',     cls: 'tg-hour',  min: 0,         max: 60 * 60 * 1000 },
+      { key: '6h',    label: 'Last 6 Hours',   cls: 'tg-6h',    min: 60*60*1000, max: 6*60*60*1000 },
+      { key: '24h',   label: 'Last 24 Hours',  cls: 'tg-24h',   min: 6*60*60*1000, max: 24*60*60*1000 },
+      { key: 'older', label: 'Older',          cls: 'tg-older', min: 24*60*60*1000, max: Infinity },
+    ];
+
+    let html = '';
+    for (const g of groups) {
+      const items = filtered.filter(a => {
+        const age = ageMs(a.pubDate);
+        return age >= g.min && age < g.max;
+      });
+      if (!items.length) continue;
+
+      html += `<div class="time-group">
+        <div class="time-group-hdr">
+          <span class="time-group-label ${g.cls}">${g.label}</span>
+          <span class="time-group-line"></span>
+          <span class="time-group-count">${items.length} article${items.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="news-grid">
+          ${items.map(a => newsCardHtml(a)).join('')}
+        </div>
+      </div>`;
+    }
+
+    container.innerHTML = html || `<div class="state-box">
+      <div class="icon">📭</div>
+      <div class="msg">No articles in the last 24 hours for this filter.</div>
+    </div>`;
+  }
+
+  function newsCardHtml(a) {
+    const catCl = catCls(a._cat);
+    const catLbl = catLabel(a._cat);
+    return `<div class="news-card" onclick="window.open('${esc(a.link)}','_blank','noopener')">
+      <div class="news-card-top">
+        <span class="source-badge ${sourceCls(a.source)}">${esc(a.source)}</span>
+        ${catCl ? `<span class="cat-badge ${catCl}">${catLbl}</span>` : ''}
+        <span class="news-time">${timeAgo(a.pubDate)}</span>
+      </div>
+      <a class="news-title" href="${esc(a.link)}" target="_blank" rel="noopener"
+         onclick="event.stopPropagation()">${esc(a.title)}</a>
+      ${a.desc ? `<div class="news-desc">${esc(a.desc)}</div>` : ''}
+    </div>`;
+  }
+
+  // ── Render Reddit ──────────────────────────────────────────────────────────
+  function renderReddit() {
+    const grid = document.getElementById('reddit-grid');
+    const posts = activeRedditSub === 'all'
+      ? allRedditPosts
+      : allRedditPosts.filter(p => p.subreddit === activeRedditSub);
+
+    if (!posts.length) {
+      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
+        <div class="icon">🟠</div>
+        <div class="msg">No posts available.</div>
+      </div>`;
+      return;
+    }
+
+    const maxScore = posts[0]?.score || 1;
+
+    grid.innerHTML = posts.slice(0, 12).map((p, i) => `
       <div class="reddit-card">
         <div class="reddit-card-top">
-          <span class="sub-badge">r/${escHtml(p.subreddit)}</span>
-          <span class="reddit-score"><strong>${fmtScore(p.score)}</strong> pts · ${fmtScore(p.comments)} comments</span>
+          <span class="reddit-rank">#${i + 1}</span>
+          <span class="sub-badge">r/${esc(p.subreddit)}</span>
+          <div class="reddit-score-row">
+            <span class="upvote-count">▲ ${fmtScore(p.score)}</span>
+            <span class="comment-count">💬 ${fmtScore(p.comments)}</span>
+          </div>
         </div>
-        <a class="reddit-title" href="${escHtml(p.link)}" target="_blank" rel="noopener">${escHtml(p.title)}</a>
+        <a class="reddit-title" href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.title)}</a>
+        <div class="reddit-bar-wrap">
+          <div class="reddit-bar" style="width:${Math.round((p.score / maxScore) * 100)}%"></div>
+        </div>
         <div class="reddit-meta">${timeAgo(p.created)}</div>
       </div>
     `).join('');
   }
 
-  // ── XSS-safe HTML escaping ─────────────────────────────────────────────────
-  function escHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  // ── Load news from API ─────────────────────────────────────────────────────
+  // ── Load data from API ─────────────────────────────────────────────────────
   async function loadNews(force = false) {
     const btn  = document.getElementById('refresh-news-btn');
     const spin = document.getElementById('news-spin');
@@ -587,30 +815,35 @@
       ]);
 
       if (newsRes.status === 'fulfilled' && newsRes.value.ok) {
-        allArticles = newsRes.value.articles || [];
-        renderNews();
+        allArticles = (newsRes.value.articles || []).map(a => ({ ...a, _cat: categorise(a) }));
+        updateChipCounts(allArticles);
+        renderHotBanner(allArticles);
+        renderNewsContainer();
       } else {
-        document.getElementById('news-grid').innerHTML = `
-          <div class="state-box" style="grid-column:1/-1">
+        document.getElementById('hot-skeleton').style.display = 'none';
+        document.getElementById('news-container').innerHTML = `
+          <div class="state-box">
             <div class="icon">⚠️</div>
-            <div class="msg">Could not load news. The server may still be starting up.</div>
+            <div class="msg">Could not load news. Server may still be starting up.</div>
             <div style="font-size:12px;color:var(--t3);margin-top:6px;">Try refreshing in a moment.</div>
           </div>`;
       }
 
       if (redditRes.status === 'fulfilled' && redditRes.value.ok) {
-        renderReddit(redditRes.value.posts || []);
+        allRedditPosts = redditRes.value.posts || [];
+        renderReddit();
       } else {
-        renderReddit([]);
+        renderReddit();
       }
     } catch (err) {
-      document.getElementById('news-grid').innerHTML = `
-        <div class="state-box" style="grid-column:1/-1">
+      document.getElementById('hot-skeleton').style.display = 'none';
+      document.getElementById('news-container').innerHTML = `
+        <div class="state-box">
           <div class="icon">🔌</div>
           <div class="msg">Cannot reach the server. Is it running?</div>
-          <div style="font-size:12px;color:var(--t3);margin-top:6px;">${escHtml(err.message)}</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:6px;">${esc(err.message)}</div>
         </div>`;
-      renderReddit([]);
+      renderReddit();
     } finally {
       btn.classList.remove('loading');
       spin.classList.remove('spinning');
@@ -625,10 +858,9 @@
     clearTimeout(refreshTimer);
 
     countdownInt = setInterval(() => {
-      countdownSecs--;
-      if (countdownSecs <= 0) countdownSecs = 0;
-      const m = String(Math.floor(countdownSecs / 60)).padStart(2, '0');
-      const s = String(countdownSecs % 60).padStart(2, '0');
+      countdownSecs = Math.max(0, countdownSecs - 1);
+      const m  = String(Math.floor(countdownSecs / 60)).padStart(2, '0');
+      const s  = String(countdownSecs % 60).padStart(2, '0');
       const el = document.getElementById('news-countdown');
       if (el) el.textContent = `${m}:${s}`;
     }, 1000);

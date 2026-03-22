@@ -24,7 +24,8 @@
 
 ## Platform Expansion
 - [x] New homepage (home.html) with section navigation — serves at "/"
-- [x] Section 1: Crypto News & Trends — RSS from CoinDesk, CoinTelegraph, The Block, Decrypt + Reddit hot posts; /api/news + /api/reddit endpoints; 15min auto-refresh; source filter chips
+- [x] Section 1: Crypto News & Trends — RSS aggregation, Reddit hot posts, 15min auto-refresh
+  - Upgraded: "What's Hot Right Now" banner (newest story), time-grouped sections (Last Hour / Last 6h / Last 24h / Older), category filter chips (Breaking/Bitcoin/DeFi/Altcoins/Regulation with counts), 3-col grid, Reddit subreddit filter tabs + upvote score bars
 - [x] "/dashboard" route serves existing trading dashboard (index.html)
 - [ ] Section 2: Best Yields (DeFiLlama — USDC, USDT, BTC, ETH, SOL, SUI)
 - [ ] Section 3: Macro Dashboard (Fed rates, DXY, BTC dominance, Fear & Greed, M2, Gold/BTC)
