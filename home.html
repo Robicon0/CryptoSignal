@@ -372,10 +372,200 @@
       font-size: 11px; color: var(--t3); font-weight: 600;
     }
 
+    /* ── Token Research ── */
+    .research-layout {
+      display: grid; grid-template-columns: 1fr 380px; gap: 22px; align-items: start;
+    }
+    .research-left, .research-right { display: flex; flex-direction: column; gap: 18px; }
+
+    /* Search box */
+    .research-search-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px;
+    }
+    .research-search-wrap h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .research-search-wrap p  { font-size: 13px; color: var(--t2); margin-bottom: 16px; line-height: 1.5; }
+    .search-row {
+      display: flex; gap: 8px;
+    }
+    .search-input {
+      flex: 1; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 9px; padding: 10px 14px;
+      font-size: 14px; color: var(--t1); outline: none;
+      transition: border-color .2s;
+    }
+    .search-input::placeholder { color: var(--t3); }
+    .search-input:focus { border-color: var(--accent); }
+    .search-btn {
+      padding: 10px 18px; border-radius: 9px;
+      background: var(--accent); color: #fff;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      border: none; transition: opacity .2s; white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .search-btn:hover   { opacity: .88; }
+    .search-btn:disabled{ opacity: .5; cursor: not-allowed; }
+    .quick-chips {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px;
+    }
+    .quick-chip {
+      padding: 4px 11px; border-radius: 16px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); color: var(--t2);
+      background: var(--bg3); transition: all .15s;
+    }
+    .quick-chip:hover { border-color: var(--accent); color: var(--t1); }
+
+    /* Grok credits banner */
+    .grok-notice {
+      background: linear-gradient(135deg, rgba(234,179,8,.08), rgba(249,115,22,.06));
+      border: 1px solid rgba(234,179,8,.3);
+      border-radius: 12px; padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .grok-notice-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .grok-notice-text { font-size: 13px; color: var(--t2); line-height: 1.55; }
+    .grok-notice-text strong { color: var(--yellow); }
+
+    /* AI report card */
+    .report-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .report-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; flex-wrap: wrap; gap: 8px;
+    }
+    .report-token-name {
+      font-size: 20px; font-weight: 900; letter-spacing: -.3px;
+    }
+    .report-token-name span {
+      background: linear-gradient(135deg,#a78bfa,#60a5fa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .report-meta { font-size: 12px; color: var(--t3); }
+    .report-verdict {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+    }
+    .verdict-strong   { background: rgba(34,197,94,.15);  color: #4ade80;  border: 1px solid rgba(34,197,94,.3); }
+    .verdict-moderate { background: rgba(234,179,8,.12);  color: #fbbf24;  border: 1px solid rgba(234,179,8,.3); }
+    .verdict-weak     { background: rgba(239,68,68,.12);  color: #f87171;  border: 1px solid rgba(239,68,68,.3); }
+    .verdict-unknown  { background: var(--bg4); color: var(--t2); border: 1px solid var(--border); }
+
+    .pillar-block { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .pillar-block:last-child { border-bottom: none; padding-bottom: 0; }
+    .pillar-label {
+      font-size: 10px; font-weight: 800; letter-spacing: .7px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 7px;
+    }
+    .pillar-content {
+      font-size: 14px; color: var(--t2); line-height: 1.7;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .pillar-content strong { color: var(--t1); }
+
+    .thesis-block {
+      margin-top: 14px; padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(37,99,235,.05));
+      border: 1px solid rgba(124,58,237,.2); border-radius: 10px;
+    }
+    .thesis-label { font-size: 10px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: #a78bfa; margin-bottom: 6px; }
+    .thesis-text  { font-size: 14px; color: var(--t1); line-height: 1.6; }
+
+    .report-loading {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px; padding: 40px 0; text-align: center;
+    }
+    .report-loading-spinner {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid var(--bg4);
+      border-top-color: var(--accent);
+      animation: spin .8s linear infinite;
+    }
+    .report-loading p { font-size: 13px; color: var(--t2); }
+
+    /* Watchlist panel */
+    .watchlist-panel {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px;
+    }
+    .watchlist-panel h3 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .watchlist-panel p  { font-size: 12px; color: var(--t3); margin-bottom: 14px; }
+    .watchlist-add-row  { display: flex; gap: 7px; margin-bottom: 16px; }
+    .watchlist-input {
+      flex: 1; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px;
+      font-size: 13px; color: var(--t1); outline: none;
+      transition: border-color .2s;
+    }
+    .watchlist-input::placeholder { color: var(--t3); }
+    .watchlist-input:focus { border-color: var(--accent); }
+    .watchlist-add-btn {
+      padding: 8px 14px; border-radius: 8px;
+      background: var(--accent); color: #fff;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      border: none; transition: opacity .2s; white-space: nowrap;
+    }
+    .watchlist-add-btn:hover { opacity: .85; }
+
+    .watchlist-empty {
+      text-align: center; padding: 24px 12px;
+      font-size: 13px; color: var(--t3);
+    }
+    .watchlist-empty span { display: block; font-size: 24px; margin-bottom: 8px; }
+
+    .wl-token {
+      border: 1px solid var(--border); border-radius: 10px;
+      margin-bottom: 10px; overflow: hidden;
+    }
+    .wl-token:last-child { margin-bottom: 0; }
+    .wl-token-hdr {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; background: var(--bg3);
+      cursor: pointer; user-select: none;
+    }
+    .wl-token-name { font-size: 13px; font-weight: 800; flex: 1; }
+    .wl-token-count {
+      font-size: 11px; color: var(--t3);
+    }
+    .wl-remove-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--t3); font-size: 14px; padding: 2px 4px;
+      transition: color .15s; line-height: 1;
+    }
+    .wl-remove-btn:hover { color: var(--red); }
+    .wl-headlines { padding: 8px 12px; display: flex; flex-direction: column; gap: 7px; }
+    .wl-headline {
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .wl-sentiment {
+      font-size: 9px; font-weight: 800; letter-spacing: .4px;
+      padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .wl-bullish { background: rgba(34,197,94,.15); color: #4ade80; }
+    .wl-bearish { background: rgba(239,68,68,.15);  color: #f87171; }
+    .wl-neutral { background: var(--bg4); color: var(--t3); }
+    .wl-headline-link {
+      font-size: 12px; color: var(--t2); line-height: 1.45; text-decoration: none;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .wl-headline-link:hover { color: var(--t1); }
+    .wl-no-news {
+      font-size: 12px; color: var(--t3); padding: 4px 0 6px;
+      text-align: center;
+    }
+    .wl-checked { font-size: 11px; color: var(--t3); padding: 4px 12px 10px; }
+
     /* ── Responsive ── */
     @media (max-width: 1024px) {
-      .news-grid   { grid-template-columns: repeat(2, 1fr); }
-      .reddit-grid { grid-template-columns: repeat(2, 1fr); }
+      .news-grid        { grid-template-columns: repeat(2, 1fr); }
+      .reddit-grid      { grid-template-columns: repeat(2, 1fr); }
+      .research-layout  { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
       .hdr         { padding: 10px 14px; gap: 8px; }
@@ -400,6 +590,9 @@
   <nav class="top-nav">
     <button class="nav-tab active" data-section="news" onclick="switchSection('news')">
       📰 News &amp; Trends <span class="badge-new">LIVE</span>
+    </button>
+    <button class="nav-tab" data-section="research" onclick="switchSection('research')">
+      🔬 Token Research <span class="badge-new">NEW</span>
     </button>
     <button class="nav-tab" data-section="yields" onclick="switchSection('yields')">
       💰 Best Yields <span class="badge-soon">SOON</span>
@@ -497,6 +690,78 @@
     </div>
   </div>
 
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- TOKEN RESEARCH SECTION                       -->
+<!-- ════════════════════════════════════════════ -->
+<section class="section" id="sec-research">
+  <div class="sec-hdr">
+    <div>
+      <div class="sec-title">🔬 <span>Token Research</span></div>
+      <div style="font-size:13px;color:var(--t3);margin-top:4px;">AI-powered 5-pillar deep dive · Watchlist with live news sentiment</div>
+    </div>
+  </div>
+
+  <div class="research-layout">
+
+    <!-- ── LEFT: AI Research ── -->
+    <div class="research-left">
+
+      <!-- Search box -->
+      <div class="research-search-wrap">
+        <h2>🤖 AI Token Analysis</h2>
+        <p>Enter any crypto token to get a 5-pillar deep-dive: fundamentals, narrative, chart context, team, and tokenomics — powered by Grok.</p>
+        <div class="search-row">
+          <input  id="research-input" class="search-input" type="text"
+                  placeholder="e.g. Solana, Ethereum, PEPE…"
+                  onkeydown="if(event.key==='Enter') runResearch()" />
+          <button id="research-btn" class="search-btn" onclick="runResearch()">
+            <span id="research-spin" class="spin">🔍</span> Analyze
+          </button>
+        </div>
+        <div class="quick-chips">
+          <span style="font-size:11px;color:var(--t3);align-self:center;margin-right:2px;">Quick:</span>
+          <button class="quick-chip" onclick="quickResearch('Bitcoin')">Bitcoin</button>
+          <button class="quick-chip" onclick="quickResearch('Ethereum')">Ethereum</button>
+          <button class="quick-chip" onclick="quickResearch('Solana')">Solana</button>
+          <button class="quick-chip" onclick="quickResearch('Sui')">SUI</button>
+          <button class="quick-chip" onclick="quickResearch('Chainlink')">Chainlink</button>
+        </div>
+      </div>
+
+      <!-- Grok credits notice (shown when no key) -->
+      <div class="grok-notice" id="grok-notice" style="display:none">
+        <div class="grok-notice-icon">⚡</div>
+        <div class="grok-notice-text">
+          <strong>Grok API key required.</strong> Add your key as the <code style="background:var(--bg4);padding:1px 5px;border-radius:4px;font-size:12px">GROK_API_KEY</code>
+          environment variable on Railway, then redeploy. Once set, all 5-pillar analyses will run automatically.
+        </div>
+      </div>
+
+      <!-- Report output area -->
+      <div id="research-output"></div>
+
+    </div>
+
+    <!-- ── RIGHT: Watchlist ── -->
+    <div class="research-right">
+      <div class="watchlist-panel">
+        <h3>📌 Token Watchlist</h3>
+        <p>Track tokens and see matching news headlines with sentiment tags.</p>
+        <div class="watchlist-add-row">
+          <input  id="wl-input" class="watchlist-input" type="text"
+                  placeholder="Token name…"
+                  onkeydown="if(event.key==='Enter') addToWatchlist()" />
+          <button class="watchlist-add-btn" onclick="addToWatchlist()">+ Add</button>
+        </div>
+        <div id="watchlist-container">
+          <div class="watchlist-empty"><span>📋</span>No tokens yet. Add one above.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 <!-- ════════════════════════════════════════════ -->
@@ -848,6 +1113,7 @@
       btn.classList.remove('loading');
       spin.classList.remove('spinning');
       resetCountdown();
+      renderWatchlist();
     }
   }
 
@@ -868,7 +1134,262 @@
     refreshTimer = setTimeout(() => loadNews(true), REFRESH_MS);
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // TOKEN RESEARCH — AI analysis
+  // ══════════════════════════════════════════════════════════════════════════
+
+  const GROK_MODEL  = 'grok-3-latest';
+  const GROK_PROMPT = (token) => `Do a deep research analysis on ${token} as a potential long-term crypto investment.
+
+PILLAR 1 — THE BASICS: What does this project do? What problem does it solve? Does it have active development?
+
+PILLAR 2 — NARRATIVES: What market narrative does it sit in (DeFi, L1, AI, RWA)? Is that narrative gaining or losing attention? Leader or follower?
+
+PILLAR 3 — CHART & VOLATILITY: How volatile vs Bitcoin? Macro price trend over 1-2 years? Key support/resistance levels?
+
+PILLAR 4 — TEAM & COMMUNITY: Who built it? Track record? Active community or hype? Notable backers?
+
+PILLAR 5 — TOKENOMICS: Fixed/inflationary/deflationary supply? Circulating vs total? VC allocations? Upcoming unlocks?
+
+INVESTOR THESIS: One-two sentence thesis. Three things that would break confidence.
+
+VERDICT: Strong, moderate, or weak candidate for long-term hold, and why.
+
+Format your response as structured sections using the exact headers: PILLAR 1, PILLAR 2, PILLAR 3, PILLAR 4, PILLAR 5, INVESTOR THESIS, VERDICT.`;
+
+  function quickResearch(token) {
+    document.getElementById('research-input').value = token;
+    runResearch();
+  }
+
+  async function runResearch() {
+    const input = document.getElementById('research-input');
+    const token = input.value.trim();
+    if (!token) { input.focus(); return; }
+
+    const btn    = document.getElementById('research-btn');
+    const spin   = document.getElementById('research-spin');
+    const output = document.getElementById('research-output');
+    const notice = document.getElementById('grok-notice');
+
+    btn.disabled = true;
+    spin.classList.add('spinning');
+    notice.style.display = 'none';
+
+    output.innerHTML = `<div class="report-card">
+      <div class="report-loading">
+        <div class="report-loading-spinner"></div>
+        <p>Analyzing <strong>${esc(token)}</strong> across 5 pillars…<br>
+        <span style="font-size:11px;color:var(--t3);">This takes 15–30 seconds</span></p>
+      </div>
+    </div>`;
+
+    try {
+      // Fetch Grok key from server (env var)
+      const envRes  = await fetch('/api/env-keys').then(r => r.json());
+      const grokKey = envRes.grokKey || '';
+
+      if (!grokKey) {
+        notice.style.display = 'flex';
+        output.innerHTML = '';
+        return;
+      }
+
+      const resp = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${grokKey}`,
+        },
+        body: JSON.stringify({
+          model: GROK_MODEL,
+          messages: [{ role: 'user', content: GROK_PROMPT(token) }],
+          temperature: 0.7,
+        }),
+      });
+
+      if (!resp.ok) {
+        const errText = await resp.text();
+        throw new Error(`Grok API error ${resp.status}: ${errText.slice(0, 200)}`);
+      }
+
+      const data    = await resp.json();
+      const rawText = data.choices?.[0]?.message?.content || '';
+      renderReport(token, rawText);
+
+    } catch (err) {
+      output.innerHTML = `<div class="report-card">
+        <div class="state-box" style="border:none;padding:24px 0">
+          <div class="icon">⚠️</div>
+          <div class="msg">${esc(err.message)}</div>
+        </div>
+      </div>`;
+    } finally {
+      btn.disabled = false;
+      spin.classList.remove('spinning');
+      spin.textContent = '🔍';
+    }
+  }
+
+  function renderReport(token, rawText) {
+    // Parse sections from the response
+    const sections = {
+      'PILLAR 1': '', 'PILLAR 2': '', 'PILLAR 3': '',
+      'PILLAR 4': '', 'PILLAR 5': '', 'INVESTOR THESIS': '', 'VERDICT': '',
+    };
+    const keys  = Object.keys(sections);
+    const regex = new RegExp(
+      keys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'gi'
+    );
+    let lastKey = null;
+    let lastIdx = 0;
+    const matches = [...rawText.matchAll(new RegExp(
+      `(${keys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi'
+    ))];
+    for (let i = 0; i < matches.length; i++) {
+      const m    = matches[i];
+      const key  = keys.find(k => k.toLowerCase() === m[0].toLowerCase());
+      const next = matches[i + 1];
+      const chunk = rawText.slice(m.index + m[0].length, next ? next.index : undefined);
+      if (key) sections[key] = chunk.replace(/^[\s:—\-]+/, '').trim();
+    }
+
+    // Determine verdict class
+    const verdictText = sections['VERDICT'].toLowerCase();
+    let verdictCls = 'verdict-unknown', verdictEmoji = '❓';
+    if (verdictText.includes('strong'))   { verdictCls = 'verdict-strong';   verdictEmoji = '✅'; }
+    if (verdictText.includes('moderate')) { verdictCls = 'verdict-moderate'; verdictEmoji = '🟡'; }
+    if (verdictText.includes('weak'))     { verdictCls = 'verdict-weak';     verdictEmoji = '🔴'; }
+
+    const pillarMeta = [
+      { key: 'PILLAR 1', icon: '📋', label: 'The Basics' },
+      { key: 'PILLAR 2', icon: '📣', label: 'Narratives' },
+      { key: 'PILLAR 3', icon: '📈', label: 'Chart & Volatility' },
+      { key: 'PILLAR 4', icon: '👥', label: 'Team & Community' },
+      { key: 'PILLAR 5', icon: '🔢', label: 'Tokenomics' },
+    ];
+
+    const pillarsHtml = pillarMeta.map(p => {
+      const content = sections[p.key] || '<em style="color:var(--t3)">No data extracted.</em>';
+      return `<div class="pillar-block">
+        <div class="pillar-label">${p.icon} ${p.key} — ${p.label}</div>
+        <div class="pillar-content">${esc(content)}</div>
+      </div>`;
+    }).join('');
+
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    document.getElementById('research-output').innerHTML = `
+      <div class="report-card">
+        <div class="report-header">
+          <div>
+            <div class="report-token-name"><span>${esc(token.toUpperCase())}</span> Research Report</div>
+            <div class="report-meta">Generated via Grok · ${now}</div>
+          </div>
+          <span class="report-verdict ${verdictCls}">${verdictEmoji} ${verdictText.includes('strong') ? 'Strong' : verdictText.includes('moderate') ? 'Moderate' : verdictText.includes('weak') ? 'Weak' : 'See verdict'}</span>
+        </div>
+        ${pillarsHtml}
+        ${sections['INVESTOR THESIS'] ? `
+        <div class="thesis-block">
+          <div class="thesis-label">💡 Investor Thesis</div>
+          <div class="thesis-text">${esc(sections['INVESTOR THESIS'])}</div>
+        </div>` : ''}
+        ${sections['VERDICT'] ? `
+        <div class="pillar-block" style="margin-top:14px">
+          <div class="pillar-label">⚖️ Verdict</div>
+          <div class="pillar-content">${esc(sections['VERDICT'])}</div>
+        </div>` : ''}
+      </div>`;
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // WATCHLIST
+  // ══════════════════════════════════════════════════════════════════════════
+
+  const BULLISH_KW = ['surge','surges','rally','rallies','soar','soars','pump','pumps','adoption',
+    'partnership','launch','upgrade','bullish','record','high','all-time','integration',
+    'mainstream','approved','approval','growth','milestone','buy','accumulate'];
+  const BEARISH_KW = ['crash','crashes','dump','dumps','drop','drops','plunge','plunges','hack',
+    'hacked','exploit','ban','banned','ban','lawsuit','sec','cftc','regulation','bearish',
+    'fraud','scam','rug','bankruptcy','liquidation','sell','outflow','decline','fall'];
+
+  function sentimentOf(title) {
+    const t = title.toLowerCase();
+    const bull = BULLISH_KW.filter(k => t.includes(k)).length;
+    const bear = BEARISH_KW.filter(k => t.includes(k)).length;
+    if (bull > bear) return 'bullish';
+    if (bear > bull) return 'bearish';
+    return 'neutral';
+  }
+
+  function loadWatchlist()  { try { return JSON.parse(localStorage.getItem('cs_watchlist') || '[]'); } catch { return []; } }
+  function saveWatchlist(w) { localStorage.setItem('cs_watchlist', JSON.stringify(w)); }
+
+  function addToWatchlist() {
+    const input = document.getElementById('wl-input');
+    const name  = input.value.trim();
+    if (!name) { input.focus(); return; }
+    const wl = loadWatchlist();
+    if (wl.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+      input.value = '';
+      return;
+    }
+    wl.push({ name, addedAt: Date.now() });
+    saveWatchlist(wl);
+    input.value = '';
+    renderWatchlist();
+  }
+
+  function removeFromWatchlist(name) {
+    const wl = loadWatchlist().filter(t => t.name !== name);
+    saveWatchlist(wl);
+    renderWatchlist();
+  }
+
+  function articlesForToken(name) {
+    const kw = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return allArticles.filter(a => {
+      const text = (a.title + ' ' + (a.desc || '')).toLowerCase().replace(/[^a-z0-9\s]/g, '');
+      return text.includes(kw);
+    }).slice(0, 5);
+  }
+
+  function renderWatchlist() {
+    const wl        = loadWatchlist();
+    const container = document.getElementById('watchlist-container');
+    if (!wl.length) {
+      container.innerHTML = '<div class="watchlist-empty"><span>📋</span>No tokens yet. Add one above.</div>';
+      return;
+    }
+    container.innerHTML = wl.map(token => {
+      const matches = articlesForToken(token.name);
+      const headlinesHtml = matches.length
+        ? matches.map(a => {
+            const snt = sentimentOf(a.title);
+            return `<div class="wl-headline">
+              <span class="wl-sentiment ${snt === 'bullish' ? 'wl-bullish' : snt === 'bearish' ? 'wl-bearish' : 'wl-neutral'}">${snt === 'bullish' ? '▲ Bull' : snt === 'bearish' ? '▼ Bear' : '— Neu'}</span>
+              <a class="wl-headline-link" href="${esc(a.link)}" target="_blank" rel="noopener">${esc(a.title)}</a>
+            </div>`;
+          }).join('')
+        : '<div class="wl-no-news">No recent headlines found.</div>';
+
+      return `<div class="wl-token">
+        <div class="wl-token-hdr">
+          <span class="wl-token-name">${esc(token.name)}</span>
+          <span class="wl-token-count">${matches.length} headline${matches.length !== 1 ? 's' : ''}</span>
+          <button class="wl-remove-btn" onclick="removeFromWatchlist('${esc(token.name)}')" title="Remove">✕</button>
+        </div>
+        <div class="wl-headlines">${headlinesHtml}</div>
+        <div class="wl-checked">Last checked: ${timeAgo(Date.now())}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Re-render watchlist whenever news loads so sentiments are fresh
+  const _origLoadNews = loadNews;
+
   // ── Init ───────────────────────────────────────────────────────────────────
+  renderWatchlist();
   loadNews();
 </script>
 </body>
