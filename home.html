@@ -1065,8 +1065,8 @@
     </div>`;
 
     try {
-      // Step 1: resolve to CoinGecko ID via search
-      const srchRes = await fetch(`/api/coingecko/search?query=${encodeURIComponent(query)}`).then(r => r.json());
+      // Step 1: resolve to CoinGecko ID via search (direct browser call — no server proxy)
+      const srchRes = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`).then(r => r.json());
       if (srchRes.error) throw new Error(srchRes.error);
       const coins = srchRes.coins || [];
       if (!coins.length) {
@@ -1117,7 +1117,10 @@
   }
 
   async function fetchAndRenderCoin(coin, output) {
-    const coinRes = await fetch(`/api/coingecko/coin/${encodeURIComponent(coin.id)}`).then(r => r.json());
+    const coinRes = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(coin.id)}` +
+      `?localization=false&tickers=false&market_data=true&community_data=true&developer_data=true`
+    ).then(r => r.json());
     if (coinRes.error) throw new Error(coinRes.error);
     renderResearchData(coinRes);
   }
@@ -1339,7 +1342,7 @@ VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and
     // Try to resolve CoinGecko ID immediately
     let coinId = null, symbol = null;
     try {
-      const res = await fetch(`/api/coingecko/search?query=${encodeURIComponent(name)}`).then(r => r.json());
+      const res = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(name)}`).then(r => r.json());
       const coins = res.coins || [];
       if (coins.length) {
         // Prefer exact name/symbol/id match, else take top result
@@ -1381,7 +1384,9 @@ VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and
     const ids = wl.map(t => t.coinId).filter(Boolean).join(',');
     if (!ids) return;
     try {
-      const res = await fetch(`/api/coingecko/price?ids=${encodeURIComponent(ids)}`).then(r => r.json());
+      const res = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(ids)}&vs_currencies=usd&include_24hr_change=true`
+      ).then(r => r.json());
       if (res && !res.error) {
         wlPriceCache = res;
         renderWatchlist();
