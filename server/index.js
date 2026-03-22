@@ -667,14 +667,19 @@ app.get('/api/watchlist-news', async (req, res) => {
   if (!tokens.length) return res.status(400).json({ error: 'tokens param required' });
   try {
     const articles = await fetchAllNews();
-    const cutoff   = Date.now() - 24 * 60 * 60 * 1000;
     const result   = {};
     for (const token of tokens) {
-      result[token] = articles.filter(a => {
-        const ts  = a.pubDate ? new Date(a.pubDate).getTime() : 0;
-        const txt = (a.title + ' ' + a.desc).toLowerCase();
-        return ts >= cutoff && txt.includes(token);
-      }).slice(0, 5);
+      result[token] = articles
+        .filter(a => {
+          const txt = (a.title + ' ' + (a.desc||'')).toLowerCase();
+          return txt.includes(token);
+        })
+        .sort((a, b) => {
+          const ta = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+          const tb = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+          return tb - ta; // newest first
+        })
+        .slice(0, 10);
     }
     res.json({ ok: true, result });
   } catch (err) {

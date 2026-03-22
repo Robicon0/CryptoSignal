@@ -1065,19 +1065,41 @@
     </div>`;
 
     try {
-      // Step 1: resolve to CoinGecko ID
+      // Step 1: resolve to CoinGecko ID via search
       const srchRes = await fetch(`/api/coingecko/search?query=${encodeURIComponent(query)}`).then(r => r.json());
-      if (!srchRes.ok || !srchRes.data?.coins?.length) {
+      if (srchRes.error) throw new Error(srchRes.error);
+      const coins = srchRes.coins || [];
+      if (!coins.length) {
         output.innerHTML = `<div class="state-box"><div class="icon">🔎</div><div class="msg">Token not found: "${esc(query)}"</div><div style="font-size:12px;color:var(--t3);margin-top:6px;">Try the full name, e.g. "Solana" instead of "SOL".</div></div>`;
         return;
       }
-      const coin = srchRes.data.coins[0];
 
-      // Step 2: fetch full coin data
-      const coinRes = await fetch(`/api/coingecko/coin/${coin.id}`).then(r => r.json());
-      if (!coinRes.ok) throw new Error(coinRes.error || 'CoinGecko fetch failed');
+      // If top match is exact name/symbol match, auto-select; otherwise show picker
+      const q = query.toLowerCase().trim();
+      const exact = coins.find(c => c.id === q || c.symbol?.toLowerCase() === q || c.name?.toLowerCase() === q);
+      const top5  = coins.slice(0, 5);
 
-      renderResearchData(coinRes.data);
+      if (exact || top5.length === 1) {
+        // Auto-select the exact or only match
+        await fetchAndRenderCoin(exact || top5[0], output);
+      } else {
+        // Show picker of top 5
+        output.innerHTML = `
+          <div class="state-box" style="text-align:left;padding:18px 20px;">
+            <div style="font-size:13px;color:var(--t3);margin-bottom:12px;">Multiple matches for "<strong>${esc(query)}</strong>" — pick one:</div>
+            ${top5.map(c => `
+              <button onclick="selectResearchCoin('${esc(c.id)}','${esc(c.name)}','${esc(c.symbol||'')}')"
+                style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;cursor:pointer;color:var(--t1);">
+                <span style="font-weight:600;">${esc(c.name)}</span>
+                <span style="font-size:11px;color:var(--t3);text-transform:uppercase;">${esc(c.symbol||'')}</span>
+                ${c.market_cap_rank ? `<span style="margin-left:auto;font-size:11px;color:var(--t3);">Rank #${c.market_cap_rank}</span>` : ''}
+              </button>`).join('')}
+          </div>`;
+        btn.disabled = false;
+        rspin.classList.remove('spinning');
+        rspin.textContent = '🔍';
+        return;
+      }
     } catch (err) {
       output.innerHTML = `<div class="state-box"><div class="icon">⚠️</div><div class="msg">${esc(err.message)}</div></div>`;
     } finally {
@@ -1085,6 +1107,19 @@
       rspin.classList.remove('spinning');
       rspin.textContent = '🔍';
     }
+  }
+
+  async function selectResearchCoin(id, name, symbol) {
+    document.getElementById('research-input').value = name;
+    const output = document.getElementById('research-output');
+    output.innerHTML = `<div class="research-loading"><div class="research-spinner"></div><p>Fetching data for <strong>${esc(name)}</strong>…</p></div>`;
+    await fetchAndRenderCoin({ id, name, symbol }, output);
+  }
+
+  async function fetchAndRenderCoin(coin, output) {
+    const coinRes = await fetch(`/api/coingecko/coin/${encodeURIComponent(coin.id)}`).then(r => r.json());
+    if (coinRes.error) throw new Error(coinRes.error);
+    renderResearchData(coinRes);
   }
 
   function renderResearchData(d) {
@@ -1305,9 +1340,13 @@ VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and
     let coinId = null, symbol = null;
     try {
       const res = await fetch(`/api/coingecko/search?query=${encodeURIComponent(name)}`).then(r => r.json());
-      if (res.ok && res.data?.coins?.length) {
-        coinId = res.data.coins[0].id;
-        symbol = res.data.coins[0].symbol?.toUpperCase();
+      const coins = res.coins || [];
+      if (coins.length) {
+        // Prefer exact name/symbol/id match, else take top result
+        const q = name.toLowerCase().trim();
+        const match = coins.find(c => c.id === q || c.symbol?.toLowerCase() === q || c.name?.toLowerCase() === q) || coins[0];
+        coinId = match.id;
+        symbol = match.symbol?.toUpperCase();
       }
     } catch {}
     wl.push({ name, coinId, symbol, addedAt: Date.now() });
@@ -1324,11 +1363,17 @@ VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and
 
   function articlesForToken(nameOrSymbol) {
     const kws = [nameOrSymbol.toLowerCase().replace(/[^a-z0-9]/g,'')];
-    return allArticles.filter(a => {
-      const text = (a.title + ' ' + (a.desc||'')).toLowerCase().replace(/[^a-z0-9\s]/g,'');
-      return kws.some(k => k.length > 1 && text.includes(k));
-    }).filter(a => ageMs(a.pubDate) < 24*60*60*1000) // last 24h only
-      .slice(0, 6);
+    return allArticles
+      .filter(a => {
+        const text = (a.title + ' ' + (a.desc||'')).toLowerCase().replace(/[^a-z0-9\s]/g,'');
+        return kws.some(k => k.length > 1 && text.includes(k));
+      })
+      .sort((a, b) => {
+        const ta = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+        const tb = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+        return tb - ta; // newest first
+      })
+      .slice(0, 8);
   }
 
   async function refreshWatchlistPrices() {
@@ -1337,8 +1382,8 @@ VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and
     if (!ids) return;
     try {
       const res = await fetch(`/api/coingecko/price?ids=${encodeURIComponent(ids)}`).then(r => r.json());
-      if (res.ok && res.data) {
-        wlPriceCache = res.data;
+      if (res && !res.error) {
+        wlPriceCache = res;
         renderWatchlist();
       }
     } catch {}
@@ -1368,7 +1413,7 @@ VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and
         priceHtml = `<div class="wl-price-row"><span class="wl-price-loading" style="font-size:11px">Token not on CoinGecko</span></div>`;
       }
 
-      // News headlines (last 24h only)
+      // News headlines (all available — newest first)
       const matches  = articlesForToken(token.symbol || token.name);
       const bulls    = matches.filter(a => sentimentOf(a.title) === 'bullish').length;
       const bears    = matches.filter(a => sentimentOf(a.title) === 'bearish').length;
@@ -1384,13 +1429,14 @@ VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and
               <a class="wl-headline-link" href="${esc(a.link)}" target="_blank" rel="noopener">${esc(a.title)}</a>
             </div>`;
           }).join('')
-        : '<div class="wl-no-news">No headlines in last 24h</div>';
+        : '<div class="wl-no-news">No headlines found yet — refreshes every 15 min</div>';
 
       const summaryHtml = matches.length ? `
         <div class="wl-summary">
-          ${bulls  ? `<span class="wl-sum-chip wl-sum-bull">▲ ${bulls} bullish</span>`  : ''}
-          ${bears  ? `<span class="wl-sum-chip wl-sum-bear">▼ ${bears} bearish</span>`  : ''}
+          ${bulls   ? `<span class="wl-sum-chip wl-sum-bull">▲ ${bulls} bullish</span>`  : ''}
+          ${bears   ? `<span class="wl-sum-chip wl-sum-bear">▼ ${bears} bearish</span>`  : ''}
           ${neutrls ? `<span class="wl-sum-chip wl-sum-neu">— ${neutrls} neutral</span>` : ''}
+          <span style="font-size:10px;color:var(--t3);margin-left:4px;">all time</span>
         </div>` : '';
 
       return `<div class="wl-token-card">

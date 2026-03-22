@@ -31,5 +31,12 @@
   - Left: CoinGecko real data across 5 pillars (fundamentals, market, price, community, tokenomics) + Deep AI Analysis prompt box with Copy button
   - Right: Morning Monitor watchlist — live price/24h change, news headlines, bullish/bearish/neutral sentiment, 15min auto-refresh
   - Server: CoinGecko proxy routes (/api/coingecko/search, /coin/:id, /price) with 5min cache + /api/watchlist-news endpoint
+- [x] Token Research fixes (2026-03-23)
+  - Search: fixed broken API response parsing (raw CoinGecko format, not {ok,data} wrapper)
+  - Search: shows top 5 picker when ambiguous query; auto-selects on exact name/symbol/id match
+  - Search: works for any CoinGecko token (sui, pepe, dogecoin, arbitrum, render, pendle, jupiter, etc.)
+  - Watchlist: removed 24h filter — fetches ALL available articles from feeds (1-2 weeks back)
+  - Watchlist: articles sorted newest first; summary shows "all time" count
+  - Watchlist: server /api/watchlist-news also removed 24h cutoff, returns up to 10 articles per token sorted newest first
 - [ ] Section 2: Best Yields (DeFiLlama — USDC, USDT, BTC, ETH, SOL, SUI)
 - [ ] Section 3: Macro Dashboard (Fed rates, DXY, BTC dominance, Fear & Greed, M2, Gold/BTC)
