@@ -24,6 +24,7 @@ const DEFAULT_CONFIG = {
   minLiquidityUSD:  3000,
   bitqueryKey:      '',   // synced from frontend Settings
   moralisKey:       '',   // synced from frontend Settings
+  grokKey:          '',   // synced from frontend Settings or GROK_API_KEY env var
 };
 
 // Scaled exit tranches: sell 25% of original tokens at each level
@@ -607,6 +608,54 @@ app.get('/api/reddit', async (_req, res) => {
 
 // CoinGecko proxy routes removed — browser calls CoinGecko directly
 
+// ── Grok AI analysis ─────────────────────────
+app.post('/api/grok-analyze', async (req, res) => {
+  const grokKey = process.env.GROK_API_KEY || loadConfig().grokKey;
+  if (!grokKey) {
+    return res.status(503).json({ ok: false, error: 'Grok API key not configured. Set GROK_API_KEY on Railway (or enter it in Settings).' });
+  }
+
+  const { tokenName, context: tokenContext } = req.body || {};
+  if (!tokenName) return res.status(400).json({ ok: false, error: 'tokenName required' });
+
+  const prompt = `You are a professional crypto analyst. Analyze ${tokenName} as a potential investment using this live market data:
+
+${tokenContext || ''}
+
+Provide a structured analysis covering:
+
+**THESIS** — One clear sentence: what is the long-term bull case for ${tokenName}?
+
+**VERDICT** — Bullish / Bearish / Neutral, with a one-sentence reason.
+
+**KEY RISKS** — List exactly 3 specific risks (not generic "crypto is volatile" platitudes).
+
+**ENTRY / EXIT** — Practical suggestion: what price levels or conditions would make this a buy? What would make you exit?
+
+Keep the total response under 400 words. Be direct and specific.`;
+
+  try {
+    const grokRes = await fetch('https://api.x.ai/v1/chat/completions', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${grokKey}` },
+      body:    JSON.stringify({
+        model:      'grok-3-mini',
+        messages:   [{ role: 'user', content: prompt }],
+        max_tokens: 600,
+      }),
+    });
+    if (!grokRes.ok) {
+      const text = await grokRes.text().then(t => t.slice(0, 300));
+      return res.status(502).json({ ok: false, error: `Grok API error ${grokRes.status}: ${text}` });
+    }
+    const data   = await grokRes.json();
+    const result = data.choices?.[0]?.message?.content || '';
+    res.json({ ok: true, result });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 // ── Scanner / Activity ───────────────────────
 app.get('/api/scanner/status',   (_req, res) => res.json(getScannerStatus()));
 app.get('/api/activity',         (req, res)  => res.json(getActivity(parseInt(req.query.limit) || 100)));
@@ -620,11 +669,13 @@ app.listen(PORT, () => {
   // config.json was somehow persisted across deploys.
   const bqEnv  = process.env.BITQUERY_API_KEY || '';
   const moEnv  = process.env.MORALIS_API_KEY  || '';
+  const gkEnv  = process.env.GROK_API_KEY     || '';
   const cfg    = loadConfig();
   let changed  = false;
 
   if (bqEnv && cfg.bitqueryKey !== bqEnv) { cfg.bitqueryKey = bqEnv; changed = true; }
   if (moEnv && cfg.moralisKey  !== moEnv) { cfg.moralisKey  = moEnv; changed = true; }
+  if (gkEnv && cfg.grokKey     !== gkEnv) { cfg.grokKey     = gkEnv; changed = true; }
   if (changed) {
     saveConfig(cfg);
     console.log('[Server] API keys updated from environment variables');
@@ -643,4 +694,4 @@ app.listen(PORT, () => {
   startScanner(loadConfig);
 });
 
-module.exports = { openPosition, updatePositions, closePosition, getStats };
+module.exports = app; // Vercel serverless entry point

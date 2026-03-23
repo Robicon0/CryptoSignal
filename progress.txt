@@ -42,5 +42,18 @@
   - Watchlist: removed 24h filter — fetches ALL available articles from feeds (1-2 weeks back)
   - Watchlist: articles sorted newest first; summary shows "all time" count
   - Watchlist: server /api/watchlist-news also removed 24h cutoff, returns up to 10 articles per token sorted newest first
+- [x] Grok AI Integration (2026-03-23)
+  - /api/grok-analyze POST endpoint on server — calls https://api.x.ai/v1/chat/completions with grok-3-mini
+  - Reads GROK_API_KEY from Railway env var (or config.grokKey synced from Settings)
+  - Sends live token data (price, mcap, supply, community, dev stats, categories) as context
+  - Prompt asks for: THESIS, VERDICT (bull/bear/neutral), KEY RISKS x3, ENTRY/EXIT
+  - home.html: "Run AI Analysis" button replaces copy-prompt textarea
+  - Shows spinner while generating; renders result with **bold** markdown support
+  - Fallback "Copy prompt" link for Claude/ChatGPT when Grok key not set
+- [x] Vercel deployment config (2026-03-23)
+  - vercel.json routes all requests through server/index.js (Express)
+  - Express already serves / → home.html, /dashboard → index.html, /api/* routes
+  - module.exports = app added for Vercel serverless entry point
+  - Set GROK_API_KEY on Vercel dashboard to enable AI analysis on that deployment
 - [ ] Section 2: Best Yields (DeFiLlama — USDC, USDT, BTC, ETH, SOL, SUI)
 - [ ] Section 3: Macro Dashboard (Fed rates, DXY, BTC dominance, Fear & Greed, M2, Gold/BTC)

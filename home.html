@@ -404,6 +404,27 @@
     }
     .copy-btn:hover { background: rgba(234,179,8,.2); }
     .copy-btn.copied { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+    .grok-run-btn {
+      padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, rgba(234,179,8,.18), rgba(249,115,22,.12));
+      border: 1px solid rgba(234,179,8,.4); color: var(--yellow);
+      display: inline-flex; align-items: center; gap: 8px; transition: all .2s;
+    }
+    .grok-run-btn:hover:not(:disabled) { background: linear-gradient(135deg, rgba(234,179,8,.28), rgba(249,115,22,.2)); }
+    .grok-run-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .grok-spinner { width: 16px; height: 16px; border: 2px solid rgba(234,179,8,.3); border-top-color: var(--yellow); border-radius: 50%; animation: spin .7s linear infinite; display: none; }
+    .grok-result {
+      margin-top: 14px; padding: 16px; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      font-size: 13px; color: var(--t1); line-height: 1.75;
+      white-space: pre-wrap; display: none;
+    }
+    .grok-result strong { color: var(--yellow); }
+    .grok-result.visible { display: block; }
+    .grok-error { color: #f87171; font-size: 12px; margin-top: 8px; display: none; }
+    .grok-error.visible { display: block; }
+    .grok-fallback { font-size: 11px; color: var(--t3); margin-top: 10px; }
+    .grok-fallback a { color: var(--t3); text-decoration: underline; cursor: pointer; }
 
     /* Loading state */
     .research-loading {
@@ -1255,16 +1276,27 @@
       </div>
     </div>`;
 
-    // Deep AI Analysis prompt box
-    const promptText = buildPrompt(d.name);
+    // Deep AI Analysis — live Grok analysis
+    const promptText   = buildPrompt(d.name);
+    const tokenContext = buildTokenContext(d);
     const promptHtml = `
       <div class="prompt-box">
         <div class="prompt-box-hdr">
           <span class="prompt-box-title">✨ Deep AI Analysis</span>
-          <span class="prompt-box-hint">Paste into Claude or ChatGPT for the full written analysis</span>
+          <span class="prompt-box-hint">Powered by Grok · grok-3-mini</span>
         </div>
-        <textarea class="prompt-textarea" id="prompt-textarea" readonly>${promptText}</textarea>
-        <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">📋 Copy Prompt</button>
+        <button class="grok-run-btn" id="grok-run-btn" onclick="runGrokAnalysis('${esc(d.name)}')">
+          <span id="grok-spinner" class="grok-spinner"></span>
+          <span id="grok-btn-label">🤖 Run AI Analysis</span>
+        </button>
+        <div class="grok-error" id="grok-error"></div>
+        <div class="grok-result" id="grok-result"></div>
+        <div id="grok-context-data" style="display:none">${esc(tokenContext)}</div>
+        <div class="grok-fallback">No Grok key? <a onclick="showCopyPrompt()">Copy prompt for Claude / ChatGPT instead</a></div>
+        <div id="copy-prompt-area" style="display:none;margin-top:12px;">
+          <textarea class="prompt-textarea" id="prompt-textarea" readonly>${esc(promptText)}</textarea>
+          <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">📋 Copy Prompt</button>
+        </div>
       </div>`;
 
     document.getElementById('research-output').innerHTML =
@@ -1289,6 +1321,76 @@ PILLAR 5 — TOKENOMICS: Is the supply fixed, inflationary, or deflationary? Wha
 INVESTOR THESIS: Write one to two sentences summarising the long-term bull case. Then list three specific things that would break confidence in this investment.
 
 VERDICT: Is this a strong, moderate, or weak candidate for a long-term hold, and why?`;
+  }
+
+  function buildTokenContext(d) {
+    const md  = d.market_data || {};
+    const cd  = d.community_data || {};
+    const dev = d.developer_data || {};
+    const fmt = (v, prefix='$') => v != null ? `${prefix}${Number(v).toLocaleString()}` : 'N/A';
+    const pct = v => v != null ? `${v >= 0 ? '+' : ''}${Number(v).toFixed(2)}%` : 'N/A';
+    const cats = (d.categories || []).filter(Boolean).slice(0, 4).join(', ') || 'N/A';
+    const desc = (d.description?.en || '').replace(/<[^>]+>/g, '').slice(0, 300);
+    return [
+      `Token: ${d.name} (${(d.symbol||'').toUpperCase()}) — Rank #${d.market_cap_rank || 'N/A'}`,
+      `Categories: ${cats}`,
+      desc ? `Description: ${desc}` : '',
+      `Price: ${fmt(md.current_price?.usd)} | 24h: ${pct(md.price_change_percentage_24h)} | 7d: ${pct(md.price_change_percentage_7d_in_currency?.usd)} | 30d: ${pct(md.price_change_percentage_30d_in_currency?.usd)} | 1y: ${pct(md.price_change_percentage_1y_in_currency?.usd)}`,
+      `Market cap: ${fmt(md.market_cap?.usd)} | Volume 24h: ${fmt(md.total_volume?.usd)} | FDV: ${fmt(md.fully_diluted_valuation?.usd)}`,
+      `ATH: ${fmt(md.ath?.usd)} (${pct(md.ath_change_percentage?.usd)} from ATH) | ATL: ${fmt(md.atl?.usd)}`,
+      `Supply — Circulating: ${fmt(md.circulating_supply, '')} | Total: ${fmt(md.total_supply, '')} | Max: ${fmt(md.max_supply, '')}`,
+      `Community — Twitter: ${fmt(cd.twitter_followers, '')} | Reddit: ${fmt(cd.reddit_subscribers, '')} | Telegram: ${fmt(cd.telegram_channel_user_count, '')}`,
+      `GitHub — Stars: ${fmt(dev.stars, '')} | Forks: ${fmt(dev.forks, '')} | Commits (4w): ${dev.commit_count_4_weeks ?? 'N/A'}`,
+      `CoinGecko scores — Overall: ${d.coingecko_score?.toFixed(1) ?? 'N/A'} | Community: ${d.community_score?.toFixed(1) ?? 'N/A'} | Dev: ${d.developer_score?.toFixed(1) ?? 'N/A'}`,
+    ].filter(Boolean).join('\n');
+  }
+
+  async function runGrokAnalysis(tokenName) {
+    const btn    = document.getElementById('grok-run-btn');
+    const label  = document.getElementById('grok-btn-label');
+    const spinner = document.getElementById('grok-spinner');
+    const result = document.getElementById('grok-result');
+    const errEl  = document.getElementById('grok-error');
+    if (!btn) return;
+
+    btn.disabled = true;
+    label.textContent = 'Analyzing…';
+    spinner.style.display = 'block';
+    result.classList.remove('visible');
+    errEl.classList.remove('visible');
+
+    // Grab the token context from the current rendered data
+    // It was stored on the button's data attr when the box was built
+    const contextEl = document.getElementById('grok-context-data');
+    const tokenContext = contextEl ? contextEl.textContent : '';
+
+    try {
+      const res  = await fetch('/api/grok-analyze', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ tokenName, context: tokenContext }),
+      }).then(r => r.json());
+
+      if (!res.ok) throw new Error(res.error || 'Analysis failed');
+
+      // Render markdown-style bold (**text**) as <strong>
+      result.innerHTML = res.result
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      result.classList.add('visible');
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.add('visible');
+    } finally {
+      btn.disabled = false;
+      label.textContent = '🤖 Run AI Analysis';
+      spinner.style.display = 'none';
+    }
+  }
+
+  function showCopyPrompt() {
+    const area = document.getElementById('copy-prompt-area');
+    if (area) area.style.display = 'block';
   }
 
   function copyPrompt() {
